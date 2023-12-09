@@ -1,0 +1,7 @@
+repos:
+- repo: local
+  hooks:
+    - id: prettier
+      name: Prettier
+      entry: npx prettier --write .
+      types: [text]
