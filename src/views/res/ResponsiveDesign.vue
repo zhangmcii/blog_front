@@ -91,13 +91,13 @@ onMounted(() => {
 const a = ref(0)
 const abc = (ref < String) | (Number > 2023)
 
-            function add() {
-            a.value++
-            // b.value++
-            // a.value = '20230'
-            abc.value = '2021'
-         console.log('a', a.value)
-  console   .log('c', abc.value)
+function add() {
+  a.value++
+  // b.value++
+  // a.value = '20230'
+  abc.value = '2021'
+  console.log('a', a.value)
+  console.log('c', abc.value)
 }
 const { x, y } = add2()
 console.log('x,y的值', x.value, y.value)
