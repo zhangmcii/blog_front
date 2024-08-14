@@ -1,7 +1,9 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      isCollapse: false
+    }
   },
   mounted() {},
   methods: {}
@@ -9,53 +11,39 @@ export default {
 </script>
 
 <template>
-  <div>
-    Aside
-    <el-scrollbar>
-      <el-menu :default-openeds="['1', '3']">
-        <el-sub-menu index="1">
-          <template #title>
-            <el-icon><message /></el-icon>导航1
-          </template>
-          <el-menu-item-group>
-            <template #title>Group 1</template>
-            <el-menu-item index="1-1">Option 1</el-menu-item>
-            <el-menu-item index="1-2">Option 2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="Group 2">
-            <el-menu-item index="1-3">Option 3</el-menu-item>
-          </el-menu-item-group>
-          <el-sub-menu index="1-4">
-            <template #title>Option4</template>
-            <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-          </el-sub-menu>
-        </el-sub-menu>
-
-        <el-sub-menu index="3">
-          <template #title>
-            <el-icon><setting /></el-icon>导航2
-          </template>
-          <el-menu-item-group>
-            <template #title>Group 1</template>
-            <el-menu-item index="3-1">Option 1</el-menu-item>
-            <el-menu-item index="3-2">Option 2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="Group 2">
-            <el-menu-item index="3-3">Option 3</el-menu-item>
-          </el-menu-item-group>
-
-          <el-sub-menu index="3-4">
-            <template #title>Option 4</template>
-            <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
-          </el-sub-menu>
-        </el-sub-menu>
-      </el-menu>
-    </el-scrollbar>
-  </div>
+  <el-button @click="isCollapse = !isCollapse"> 折叠</el-button>
+  <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse">
+    <el-sub-menu index="1">
+      <template #title>
+        <el-icon><i-ep-location /></el-icon>
+        <span>导航1</span>
+      </template>
+      <el-menu-item-group>
+        <template #title><span>Group One</span></template>
+        <el-menu-item index="1-1">item one</el-menu-item>
+        <el-menu-item index="1-2">item two</el-menu-item>
+      </el-menu-item-group>
+      <el-menu-item-group title="Group Two">
+        <el-menu-item index="1-3">item three</el-menu-item>
+      </el-menu-item-group>
+    </el-sub-menu>
+    <el-menu-item index="2">
+      <el-icon><i-ep-menu /></el-icon>
+      <template #title>导航2</template>
+    </el-menu-item>
+    <el-menu-item index="3" disabled>
+      <el-icon> <i-ep-Document /></el-icon>
+      <template #title>导航3</template>
+    </el-menu-item>
+    <el-menu-item index="4">
+      <el-icon><i-ep-setting /></el-icon>
+      <template #title>导航4</template>
+    </el-menu-item>
+  </el-menu>
 </template>
 <style scoped>
-.layout-container-demo .el-aside {
-  color: var(--el-text-color-primary);
-  background: var(--el-color-primary-light-8);
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
 }
 </style>

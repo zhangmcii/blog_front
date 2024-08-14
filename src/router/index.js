@@ -17,6 +17,11 @@ const router = createRouter({
           path: '/responsive',
           name: 'responsive',
           component: () => import('../views/res/ResponsiveDesign.vue')
+        },
+        {
+          path: '/history',
+          name: 'history',
+          component: () => import('../views/data_manage/HistoryData.vue')
         }
       ]
     }

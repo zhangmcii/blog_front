@@ -8,7 +8,7 @@ export default {
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside width="140px">
+      <el-aside>
         <AppAside />
       </el-aside>
       <el-main>
@@ -18,3 +18,12 @@ export default {
     </el-container>
   </div>
 </template>
+
+<style>
+:root {
+  --el-aside-width: auto;
+}
+.el-aside {
+  width: var(--el-aside-width);
+}
+</style>
