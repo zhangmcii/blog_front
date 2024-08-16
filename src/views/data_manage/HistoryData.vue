@@ -1,7 +1,12 @@
 <script>
+import ButtonClick from '@/util/components/ButtonClick.vue'
 export default {
+  components: {
+    ButtonClick
+  },
   data() {
     return {
+      input3: '',
       tableData: [
         {
           date: '2016-05-03',
@@ -68,6 +73,20 @@ export default {
 </script>
 
 <template>
+  <el-row :gutter="10">
+    <el-col :xs="16" :xl="16">
+      <el-input
+        v-model="input3"
+        size="small"
+        placeholder="Please Input"
+        :suffix-icon="i - ep - Search"
+      />
+    </el-col>
+    <el-col :xs="8" :xl="8">
+      <ButtonClick content="搜索" type="warning" size="small" @do-search="doSearch" />
+    </el-col>
+  </el-row>
+
   <el-table :data="tableData" style="width: 100%" height="250">
     <el-table-column fixed prop="date" label="Date" width="150" />
     <el-table-column prop="name" label="Name" width="120" />
@@ -77,6 +96,7 @@ export default {
     <el-table-column prop="zip" label="Zip" />
   </el-table>
 </template>
+
 <style scoped>
 .el-table {
   width: 100%;

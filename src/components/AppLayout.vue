@@ -12,7 +12,6 @@ export default {
         <AppAside />
       </el-aside>
       <el-main>
-        main
         <router-view />
       </el-main>
     </el-container>
