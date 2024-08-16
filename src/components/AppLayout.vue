@@ -9,7 +9,7 @@ export default {
   <div class="common-layout">
     <el-container>
       <el-aside>
-        <AppAside />
+        <!-- <AppAside /> -->
       </el-aside>
       <el-main>
         <router-view />

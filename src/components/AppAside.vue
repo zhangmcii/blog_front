@@ -2,7 +2,7 @@
 export default {
   data() {
     return {
-      isCollapse: false
+      isCollapse: true
     }
   },
   mounted() {},
@@ -15,7 +15,7 @@ export default {
   <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse">
     <el-sub-menu index="1">
       <template #title>
-        <el-icon><i-ep-location /></el-icon>
+        <el-icon :class="{ disappear: isCollapse }"><i-ep-location /></el-icon>
         <span>导航1</span>
       </template>
       <el-menu-item-group>
@@ -28,20 +28,26 @@ export default {
       </el-menu-item-group>
     </el-sub-menu>
     <el-menu-item index="2">
-      <el-icon><i-ep-menu /></el-icon>
+      <el-icon :class="{ disappear: isCollapse }"><i-ep-menu /></el-icon>
       <template #title>导航2</template>
     </el-menu-item>
     <el-menu-item index="3" disabled>
-      <el-icon> <i-ep-Document /></el-icon>
+      <el-icon :class="{ disappear: isCollapse }"> <i-ep-Document /></el-icon>
       <template #title>导航3</template>
     </el-menu-item>
     <el-menu-item index="4">
-      <el-icon><i-ep-setting /></el-icon>
+      <el-icon :class="{ disappear: isCollapse }"><i-ep-setting /></el-icon>
       <template #title>导航4</template>
     </el-menu-item>
   </el-menu>
 </template>
 <style scoped>
+.el-menu-vertical-demo {
+  width: 0px;
+}
+.disappear {
+  display: none;
+}
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;

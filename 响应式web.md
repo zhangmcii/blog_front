@@ -27,8 +27,8 @@
 1.用<el-row>包裹这两个组件，组件外面分别用<el-col>包裹。这样他们排在来了一行上，不会因为屏幕缩小而挤成2行。
 
 ```
- <el-row  :gutter="10">
-    <el-col :xs="16" :xl="16">
+  <el-row :gutter="10">
+    <el-col :xs="16" :sm="16" :md="16" :lg="16" :xl="16">
       <el-input
         v-model="input3"
         size="small"
@@ -36,10 +36,28 @@
         :suffix-icon="i - ep - Search"
       />
     </el-col>
-    <el-col :xs="8" :xl="8">
+    <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
       <ButtonClick content="搜索" type="warning" size="small" @do-search="doSearch" />
     </el-col>
   </el-row>
 
   <el-row>分别用响应式布局，定义各组件在一行中所占的比例
+```
+
+# 表格响应式高度
+
+```
+calTableHeight() {
+      const h1 = this.$refs.h1.$el.offsetHeight
+      // 其中一个40是盒子的总外边距
+      this.tableHeight = `calc(100vh - ${h1}px - 16px - var(--el-main-padding) * 2`)
+    }
+
+# h1为搜索框高度，16px为body元素的上下外边距8px, el-main-padding为el-main组件的上下padding
+
+
+
+
+# 搜索框 输入关键字进行筛选是怎么做到的尼？
+保存相应关键词，对用户输入的进行匹配，看是否对应上，再对其关键字映射字段分类，给出搜索结果
 ```
