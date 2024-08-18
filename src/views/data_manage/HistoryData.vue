@@ -8,6 +8,7 @@ export default {
     return {
       input3: '',
       tableHeight: '600',
+      loading: false,
       tableData: [
         {
           date: '2016-05-03',
@@ -76,7 +77,13 @@ export default {
     calTableHeight() {
       const h1 = this.$refs.h1.$el.offsetHeight
       // 其中一个40是盒子的总外边距
-      this.tableHeight = `calc(100vh - ${h1}px - 16px - var(--el-main-padding) * 2`
+      this.tableHeight = `calc(100vh - ${h1}px - 16px - 2px - var(--el-main-padding) * 2`
+    },
+    doSearch() {
+      this.loading = true
+      setTimeout(() => {
+        this.loading = false
+      }, 1500)
     }
   }
 }
@@ -93,12 +100,18 @@ export default {
       />
     </el-col>
     <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
-      <ButtonClick content="搜索" type="warning" size="small" @do-search="doSearch" />
+      <ButtonClick
+        content="搜索"
+        type="warning"
+        size="small"
+        :loading="loading"
+        @do-search="doSearch"
+      />
     </el-col>
   </el-row>
 
   <el-row>
-    <el-col ref="h2">
+    <el-skeleton :rows="12" animated :loading="loading">
       <el-table :data="tableData" style="width: 100%" :height="tableHeight">
         <el-table-column fixed prop="date" label="Date" width="80" />
         <el-table-column prop="name" label="Name" width="120" />
@@ -107,13 +120,8 @@ export default {
         <el-table-column prop="address" label="Address" width="600" />
         <el-table-column prop="zip" label="Zip" />
       </el-table>
-    </el-col>
+    </el-skeleton>
   </el-row>
 </template>
 
-<style scoped>
-.el-table {
-  width: 100%;
-  height: 90%;
-}
-</style>
+<style scoped></style>

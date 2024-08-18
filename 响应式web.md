@@ -61,3 +61,25 @@ calTableHeight() {
 # 搜索框 输入关键字进行筛选是怎么做到的尼？
 保存相应关键词，对用户输入的进行匹配，看是否对应上，再对其关键字映射字段分类，给出搜索结果
 ```
+
+# 闪烁的loading...
+
+```
+ p {
+        animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+        0% {
+            color: white;
+        }
+
+        50% {
+            color: black;
+        }
+
+        100% {
+            color: white;
+        }
+    }
+```
