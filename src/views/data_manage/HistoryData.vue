@@ -9,6 +9,7 @@ export default {
       input3: '',
       tableHeight: '600',
       loading: false,
+      filter: false,
       tableData: [
         {
           date: '2016-05-03',
@@ -69,6 +70,16 @@ export default {
       ]
     }
   },
+  watch: {
+    // 当筛选卡片展开时，重新计算表格高度
+    filter() {
+      if (this.filter) {
+        this.$nextTick(() => {
+          this.calTableHeight()
+        })
+      }
+    }
+  },
   mounted() {
     this.calTableHeight()
   },
@@ -76,8 +87,9 @@ export default {
     // 功能：表格高度根据内容自适应
     calTableHeight() {
       const h1 = this.$refs.h1.$el.offsetHeight
+      const h2 = this.$refs.h2.$el.offsetHeight
       // 其中一个40是盒子的总外边距
-      this.tableHeight = `calc(100vh - ${h1}px - 16px - 2px - var(--el-main-padding) * 2`
+      this.tableHeight = `calc(100vh - ${h1}px - ${h2}px - 16px - 2px - var(--el-main-padding) * 2`
     },
     doSearch() {
       this.loading = true
@@ -96,6 +108,7 @@ export default {
         v-model="input3"
         size="small"
         placeholder="Please Input"
+        :focus="() => (this.filter = true)"
         :suffix-icon="i - ep - Search"
       />
     </el-col>
@@ -108,6 +121,17 @@ export default {
         @do-search="doSearch"
       />
     </el-col>
+  </el-row>
+
+  <el-row ref="h2">
+    <Transition>
+      <el-card v-show="filter" :class="{ disappear: !filter }">
+        分类
+        <div class="close-card">
+          <el-icon @click="filter = false"><i-ep-ArrowUp /></el-icon>
+        </div>
+      </el-card>
+    </Transition>
   </el-row>
 
   <el-row>
@@ -124,4 +148,38 @@ export default {
   </el-row>
 </template>
 
-<style scoped></style>
+<style scoped>
+.el-card {
+  width: 100%;
+  height: 200px;
+  background-color: #f0f0f0;
+  animation: slideIn 1.75s forwards;
+}
+
+.disappear {
+  animation: fadeOut 1.5s forwards;
+}
+.close-card {
+  font-size: 1.3rem;
+  position: relative;
+  top: 135px;
+  left: 90%;
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    height: 200px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    width: 0; /* 卡片宽度 */
+    height: 0; /* 卡片高度 */
+    opacity: 0;
+  }
+}
+</style>
