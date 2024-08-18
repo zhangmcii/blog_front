@@ -83,3 +83,41 @@ calTableHeight() {
         }
     }
 ```
+
+# 卡片优雅的淡入 淡出 并且下方的表格随卡片消失时同步上移，不会显得很生硬
+
+```
+.el-card {
+  width: 100%;
+  height: 200px;
+  background-color: #f0f0f0;
+  animation: slideIn 1.75s forwards;
+}
+
+.disappear {
+  animation: fadeOut 1.5s forwards;
+}
+.close-card {
+  font-size: 1.3rem;
+  position: relative;
+  top: 135px;
+  left: 90%;
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    height: 200px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    width: 0; /* 卡片宽度 */
+    height: 0; /* 卡片高度 */
+    opacity: 0;
+  }
+}
+```
