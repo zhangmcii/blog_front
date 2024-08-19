@@ -84,7 +84,7 @@ calTableHeight() {
     }
 ```
 
-# 卡片优雅的淡入 淡出 并且下方的表格随卡片消失时同步上移，不会显得很生硬
+# 卡片优雅的淡入 淡出 并且下方的表格高度随卡片消失时同步上移，不会显得很生硬
 
 ```
 .el-card {
@@ -105,6 +105,7 @@ calTableHeight() {
 }
 @keyframes slideIn {
   from {
+    height: 0;
     opacity: 0;
   }
   to {
@@ -120,4 +121,26 @@ calTableHeight() {
     opacity: 0;
   }
 }
+```
+
+当时 from设置height: 0; 会导致取卡片的高度总是以from，也就是0。
+解决：使用组件<Transtion>的回调函数： `@after-enter` 当进入过渡完成时调用
+@keyframes slideIn {
+from {
+height: 0;
+opacity: 0;
+}
+}
+
+<Transition @after-enter="reCalTableHeight"></Transition>
+reCalTableHeight() {
+if (this.filter) {
+const h2 = this.$refs.h2.$el.offsetHeight
+console.log(h2)
+this.calTableHeight()
+}
+}
+
+```
+
 ```

@@ -72,13 +72,13 @@ export default {
   },
   watch: {
     // 当筛选卡片展开时，重新计算表格高度
-    filter() {
-      if (this.filter) {
-        this.$nextTick(() => {
-          this.calTableHeight()
-        })
-      }
-    }
+    // filter() {
+    //   if (this.filter) {
+    //     this.$nextTick(() => {
+    //       this.calTableHeight()
+    //     })
+    //   }
+    // }
   },
   mounted() {
     this.calTableHeight()
@@ -96,6 +96,13 @@ export default {
       setTimeout(() => {
         this.loading = false
       }, 1500)
+    },
+    reCalTableHeight() {
+      if (this.filter) {
+        const h2 = this.$refs.h2.$el.offsetHeight
+        console.log(h2)
+        this.calTableHeight()
+      }
     }
   }
 }
@@ -124,7 +131,7 @@ export default {
   </el-row>
 
   <el-row ref="h2">
-    <Transition>
+    <Transition @after-enter="reCalTableHeight">
       <el-card v-show="filter" :class="{ disappear: !filter }">
         分类
         <div class="close-card">
@@ -153,7 +160,7 @@ export default {
   width: 100%;
   height: 200px;
   background-color: #f0f0f0;
-  animation: slideIn 1.75s forwards;
+  animation: slideIn 0.75s forwards;
 }
 
 .disappear {
@@ -167,6 +174,7 @@ export default {
 }
 @keyframes slideIn {
   from {
+    height: 0;
     opacity: 0;
   }
   to {
