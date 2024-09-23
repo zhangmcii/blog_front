@@ -1,5 +1,5 @@
 <script>
-import ButtonClick from '@/util/components/ButtonClick.vue'
+import ButtonClick from '@/utils/components/ButtonClick.vue'
 export default {
   components: {
     ButtonClick
@@ -70,16 +70,6 @@ export default {
       ]
     }
   },
-  watch: {
-    // 当筛选卡片展开时，重新计算表格高度
-    // filter() {
-    //   if (this.filter) {
-    //     this.$nextTick(() => {
-    //       this.calTableHeight()
-    //     })
-    //   }
-    // }
-  },
   mounted() {
     this.calTableHeight()
   },
@@ -89,7 +79,8 @@ export default {
       const h1 = this.$refs.h1.$el.offsetHeight
       const h2 = this.$refs.h2.$el.offsetHeight
       // 其中一个40是盒子的总外边距
-      this.tableHeight = `calc(100vh - ${h1}px - ${h2}px - 16px - 2px - var(--el-main-padding) * 2`
+      // 6vh 是el-header高度
+      this.tableHeight = `calc(100vh - ${h1}px - ${h2}px - 16px - 2px - var(--el-main-padding) * 2 - 6vh - 5px`
     },
     doSearch() {
       this.loading = true
@@ -114,9 +105,9 @@ export default {
       <el-input
         v-model="input3"
         size="small"
-        placeholder="Please Input"
+        disabled="true"
         :focus="() => (this.filter = true)"
-        :suffix-icon="i - ep - Search"
+        :class="{ input: filter, shrink: !filter }"
       />
     </el-col>
     <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
@@ -156,15 +147,27 @@ export default {
 </template>
 
 <style scoped>
+.el-input {
+  left: 60%;
+  width: 40%;
+  border-radius: 40px;
+}
+.input {
+  animation: expand 1s forwards;
+}
+.shrink {
+  animation: _shrink 1s forwards;
+}
+
 .el-card {
   width: 100%;
   height: 200px;
   background-color: #f0f0f0;
-  animation: slideIn 0.75s forwards;
+  animation: slideIn 0.6s forwards;
 }
 
 .disappear {
-  animation: fadeOut 1.5s forwards;
+  animation: fadeOut 1.2s forwards;
 }
 .close-card {
   font-size: 1.3rem;
@@ -174,6 +177,7 @@ export default {
 }
 @keyframes slideIn {
   from {
+    width: 0;
     height: 0;
     opacity: 0;
   }
@@ -188,6 +192,28 @@ export default {
     width: 0; /* 卡片宽度 */
     height: 0; /* 卡片高度 */
     opacity: 0;
+  }
+}
+
+@keyframes expand {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(2, 1);
+    left: 40%;
+  }
+}
+
+@keyframes _shrink {
+  from {
+    transform: scale(2, 1);
+    left: 40%;
+  }
+  to {
+    transform: scale(1);
+    left: 60%;
   }
 }
 </style>

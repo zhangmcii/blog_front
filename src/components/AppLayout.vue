@@ -1,28 +1,36 @@
 <script>
-import AppAside from './AppAside.vue'
+import AppHeader from './AppHeader.vue'
 export default {
-  components: [AppAside]
+  components: {
+    AppHeader
+  }
 }
 </script>
 
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside>
-        <!-- <AppAside /> -->
-      </el-aside>
+      <el-header>
+        <AppHeader />
+      </el-header>
       <el-main>
-        <router-view />
+        <el-scrollbar>
+          <router-view />
+        </el-scrollbar>
       </el-main>
     </el-container>
   </div>
 </template>
 
 <style>
-:root {
-  --el-aside-width: auto;
+.el-header {
+  height: 6vh;
+  background-color: #fff3e8;
 }
-.el-aside {
-  width: var(--el-aside-width);
+.el-scrollbar {
+  /* 6vh header高度
+    3vh 是随机添加的
+  */
+  height: calc(100vh - 6vh - var(--el-main-padding) * 2 - 3vh);
 }
 </style>
