@@ -63,6 +63,11 @@ const router = createRouter({
           path: '/follow/:action/:userName',
           name: 'follow',
           component: () => import('../views/user/followList.vue')
+        },
+        {
+          path: '/commentManagement',
+          name: 'commentManagement',
+          component: () => import('../views/comment/commentManagement.vue')
         }
       ]
     },

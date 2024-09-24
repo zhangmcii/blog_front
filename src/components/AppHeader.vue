@@ -5,13 +5,16 @@ export default {
     return {}
   },
   setup() {
-    const user = useCurrentUserStore()
-    return { user }
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
   },
   computed: {
     login() {
-      this.user.loadUserName()
-      return this.user.username != ''
+      this.currentUser.loadUserName()
+      return this.currentUser.username != ''
+    },
+    isCommentManage() {
+      return this.currentUser.roleId >= 2
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -21,17 +24,18 @@ export default {
     })
   },
   mounted() {
-    this.user.loadUserName()
+    this.currentUser.loadUserName()
+    this.currentUser.loadRoleId()
   },
   methods: {
     log_out() {
       localStorage.removeItem('token')
       localStorage.removeItem('currentUserName')
       localStorage.removeItem('isAdmin')
+      localStorage.removeItem('roleId')
       localStorage.removeItem('userName')
       // 更新pinia
-      this.user.loadUserName()
-      console.log('33', this.user.username)
+      this.currentUser.loadUserName()
       this.$message.success('已退出')
       this.$router.push('/posts')
     },
@@ -45,24 +49,26 @@ export default {
 </script>
 
 <template>
-  <el-row>
+  <el-row justify="space-between">
     <el-col :xs="4" :sm="6" :md="4" :lg="3" :xl="1">
       <el-link :underline="false" @click="this.$router.push('/posts')">主页</el-link>
     </el-col>
     <el-col v-show="login" :xs="6" :sm="6" :md="4" :lg="3" :xl="1">
-      <el-link :underline="false" @click="this.$router.push(`/user/${user.username}`)"
+      <el-link :underline="false" @click="this.$router.push(`/user/${currentUser.username}`)"
         >个人资料</el-link
       >
     </el-col>
 
-    <!-- <el-col v-show="login" :xs="6" :sm="6" :md="4" :lg="3" :xl="1">
-      <el-link :underline="false" @click="this.$router.push(`/user/${user.username}`)">评论管理员</el-link>
-    </el-col> -->
+    <el-col v-show="login" :xs="6" :sm="6" :md="4" :lg="3" :xl="1" v-if="isCommentManage">
+      <el-link :underline="false" @click="this.$router.push('/commentManagement')"
+        >评论管理</el-link
+      >
+    </el-col>
 
-    <el-col :push="17" v-if="!login" :xs="3" :sm="6" :md="4" :lg="3" :xl="1">
+    <el-col v-if="!login" :xs="3" :sm="6" :md="4" :lg="3" :xl="1">
       <el-link :underline="false" @click="this.$router.push('/login')">登录</el-link>
     </el-col>
-    <el-col :push="10" v-else :xs="5" :sm="6" :md="4" :lg="3" :xl="1" class="example-showcase">
+    <el-col v-else :xs="5" :sm="6" :md="4" :lg="3" :xl="1" class="example-showcase">
       <el-dropdown trigger="click" @command="handleCommand">
         <span class="dropdown">
           账户

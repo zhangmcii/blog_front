@@ -1,8 +1,10 @@
 <script>
 import PostCard from './PostCard.vue'
+import CommentCard from '../comment/CommentCard.vue'
 export default {
   components: {
-    PostCard
+    PostCard,
+    CommentCard
   },
   data() {
     return {
@@ -23,6 +25,10 @@ export default {
 
 <template>
   <PostCard :post="post" />
-  <div>评论...</div>
+  <CommentCard :post-id="post.id" />
 </template>
-<style scoped></style>
+<style scoped>
+.el-button {
+  margin-top: 10px;
+}
+</style>

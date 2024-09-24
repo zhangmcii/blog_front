@@ -10,8 +10,17 @@ export default {
           body: '文章',
           timestamp: '2024-9-20 12:14:00',
           author: '张三',
-          commentCount: 20
+          commentCount: 20,
+          disabled: false
         }
+      }
+    },
+    funcSwitch: {
+      // true 代表post展示
+      // false 代表comment展示
+      type: Boolean,
+      default() {
+        return true
       }
     }
   },
@@ -28,10 +37,17 @@ export default {
         return `昨天 ${this.$dayjs(this.post.timestamp).format('HH:mm')}`
       }
       return this.$dayjs(this.post.timestamp).fromNow()
+    },
+    isCommentManage() {
+      return this.currentUser.roleId >= 2
+    },
+    show_body() {
+      return this.isCommentManage || !this.post.disabled
     }
   },
   mounted() {
     this.currentUser.loadAdmin()
+    this.currentUser.loadRoleId()
   },
   methods: {
     isYesterday(date) {
@@ -56,6 +72,12 @@ export default {
         name: 'editPost',
         params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
       })
+    },
+    comment() {
+      this.$router.push({
+        name: 'share',
+        params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
+      })
     }
   }
 }
@@ -66,7 +88,6 @@ export default {
     <el-row justify="space-between">
       <el-col :xs="18" :sm="18" :md="10" :lg="10" :xl="10">
         <el-link
-          href=""
           target="_blank"
           type="primary"
           @click="this.$router.push(`/user/${post.author}`)"
@@ -77,8 +98,12 @@ export default {
         <el-text class="mx-1" size="small">{{ from_now }}</el-text>
       </el-col>
     </el-row>
-    <el-row>{{ post.body }}</el-row>
-    <el-row :gutter="35" justify="end">
+    <el-row v-if="post.disabled">
+      <p><i>此评论已被版主禁用</i></p>
+    </el-row>
+    <el-row v-if="show_body">{{ post.body }}</el-row>
+
+    <el-row :gutter="35" justify="end" v-if="funcSwitch">
       <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="post.author == currentUser.username">
         <el-button type="info" size="small" @click="edit">编辑</el-button>
       </el-col>
@@ -89,9 +114,12 @@ export default {
         <el-button type="info" size="small" @click="share">分享</el-button>
       </el-col>
       <el-col :xs="6" :sm="6" :md="4" :lg="2" :xl="2">
-        <el-button type="primary" size="small">{{ post.comment_count }} 评论</el-button>
+        <el-button type="primary" size="small" @click="comment"
+          >{{ post.comment_count }} 评论</el-button
+        >
       </el-col>
     </el-row>
+    <slot></slot>
   </el-card>
 </template>
 <style scoped>

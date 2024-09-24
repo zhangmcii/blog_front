@@ -71,6 +71,7 @@ export default {
           localStorage.setItem('token', res.data.token)
           this.currentUser.saveUserName(res.data.username)
           this.currentUser.saveAdmin(res.data.admin)
+          this.currentUser.saveRoleId(res.data.roleId)
           this.$message.success(res.data.msg)
           this.$router.push({ path: '/posts' })
           return
