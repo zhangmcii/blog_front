@@ -25,7 +25,7 @@ export default {
 <style>
 .el-header {
   height: 6vh;
-  background-color: #fff3e8;
+  background-color: #000000;
 }
 .el-scrollbar {
   /* 6vh header高度

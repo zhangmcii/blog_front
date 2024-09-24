@@ -1,26 +1,30 @@
 <script>
 import PostCard from './PostCard.vue'
+import PostPublish from './PostPublish.vue'
 import postApi from '@/api/posts/postApi.js'
 import common from '@/utils/common.js'
 import { useUserStore } from '@/stores/user'
 export default {
   components: {
-    PostCard
+    PostCard,
+    PostPublish
   },
   data() {
     return {
       activeName: 'first',
       posts: [],
-      posts_count: 0
+      posts_count: 0,
+      loading: false,
+      currentPage: 1
     }
   },
   setup() {
-    const user = useUserStore()
-    return { user }
+    const currentUser = useUserStore()
+    return { currentUser }
   },
   mounted() {
-    this.user.loadUserName()
-    this.get_posts()
+    this.currentUser.loadUserName()
+    this.getPosts()
   },
   computed: {
     isLogin() {
@@ -28,33 +32,39 @@ export default {
     }
   },
   methods: {
-    handleSizeChange(val) {
-      console.log(`${val} items per page`)
+    handleCurrentChange() {
+      this.getPosts(this.currentPage)
     },
-    handleCurrentChange(val) {
-      console.log(`current page: ${val}`)
-    },
-    get_posts() {
-      postApi.get_posts().then((res) => {
+    getPosts(page) {
+      postApi.get_posts(page).then((res) => {
         this.posts = res.data.data
         this.posts_count = res.data.total
       })
+    },
+    getPostsResult(res) {
+      this.posts = res.data.data
+      this.posts_count = res.data.total
+      this.loading = false
     }
   }
 }
 </script>
 
 <template>
-  <h1>Hello {{ user.username }}</h1>
+  <h1>Hello {{ currentUser.username }}</h1>
+  <PostPublish @loading-begin="(flag) => (loading = flag)" @posts-result="getPostsResult" />
   <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-click="handleClick">
     <el-tab-pane label="广场" name="first">
-      <PostCard v-for="item in posts" :key="item" :post="item" />
+      <div v-if="!loading">
+        <PostCard v-for="item in posts" :key="item" :post="item" />
+      </div>
+      <el-skeleton :rows="5" animated :loading="loading" :throttle="500" />
     </el-tab-pane>
     <el-tab-pane label="关注" name="second" v-if="isLogin">Config</el-tab-pane>
   </el-tabs>
 
   <el-pagination
-    v-model:current-page="currentPage1"
+    v-model:current-page="currentPage"
     :page-size="20"
     :size="size"
     :disabled="disabled"

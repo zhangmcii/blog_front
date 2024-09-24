@@ -50,8 +50,8 @@ export default {
     }
     return {
       ruleForm: {
-        user: '',
-        pass: ''
+        user: 'zmc',
+        pass: 'zmc'
       },
       rules: {
         user: [{ validator: validatePass, trigger: 'blur' }],
@@ -61,15 +61,16 @@ export default {
     }
   },
   setup() {
-    const user = useUserStore()
-    return { user }
+    const currentUser = useUserStore()
+    return { currentUser }
   },
   methods: {
     submitForm() {
       loginApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
         if (res.data.msg == '登录成功') {
           localStorage.setItem('token', res.data.token)
-          this.user.saveUserName(res.data.username)
+          this.currentUser.saveUserName(res.data.username)
+          this.currentUser.saveAdmin(res.data.admin)
           this.$message.success(res.data.msg)
           this.$router.push({ path: '/posts' })
           return

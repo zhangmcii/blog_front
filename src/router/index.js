@@ -23,6 +23,12 @@ const router = createRouter({
           name: 'history',
           component: () => import('../views/data_manage/HistoryData.vue')
         },
+        // 登陆页面
+        {
+          path: '/login',
+          name: 'login',
+          component: () => import('@/views/login/LoginPage.vue')
+        },
         {
           path: '/posts',
           name: 'posts',
@@ -32,15 +38,25 @@ const router = createRouter({
           path: '/user/:userName',
           name: 'user',
           component: () => import('../views/user/UserData.vue')
+        },
+        {
+          path: '/editProfile/:obj',
+          name: 'editProfile',
+          component: () => import('../views/user/EditProfile.vue')
+        },
+        {
+          path: '/editProfileAdmin/:obj',
+          name: 'editProfileAdmin',
+          component: () => import('../views/user/EditProfileAdmin.vue')
+        },
+        {
+          path: '/share/:obj',
+          name: 'share',
+          component: () => import('../views/posts/PostShare.vue')
         }
       ]
     },
-    // 登陆页面
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('@/views/login/LoginPage.vue')
-    },
+
     {
       path: '/',
       redirect: '/login'

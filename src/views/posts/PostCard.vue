@@ -1,4 +1,5 @@
 <script>
+import { useUserStore } from '@/stores/user'
 export default {
   props: {
     post: {
@@ -17,6 +18,10 @@ export default {
   data() {
     return {}
   },
+  setup() {
+    const currentUser = useUserStore()
+    return { currentUser }
+  },
   computed: {
     from_now() {
       if (this.isYesterday(this.post.timestamp)) {
@@ -25,7 +30,9 @@ export default {
       return this.$dayjs(this.post.timestamp).fromNow()
     }
   },
-  mounted() {},
+  mounted() {
+    this.currentUser.loadAdmin()
+  },
   methods: {
     isYesterday(date) {
       // 将输入的日期字符串转换为 dayjs 对象
@@ -36,6 +43,18 @@ export default {
       const diff = today.diff(inputDate, 'day')
       // 如果差值为 -1，则说明 inputDate 是昨天
       return diff === 1
+    },
+    share() {
+      this.$router.push({
+        name: 'share',
+        params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
+      })
+    },
+    edit() {
+      this.$message.success('编辑成功')
+    },
+    editAdmin() {
+      this.$message.success('编辑成功')
     }
   }
 }
@@ -59,8 +78,14 @@ export default {
     </el-row>
     <el-row>{{ post.body }}</el-row>
     <el-row :gutter="35" justify="end">
+      <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="post.author == currentUser.username">
+        <el-button type="info" size="small" @click="edit">编辑</el-button>
+      </el-col>
+      <el-col :xs="7" :sm="4" :md="2" :lg="2" :xl="2" v-else-if="currentUser.isAdmin == 'true'">
+        <el-button type="danger" size="small" @click="editAdmin">编辑[管理员] </el-button>
+      </el-col>
       <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2">
-        <el-button type="info" size="small">分享</el-button>
+        <el-button type="info" size="small" @click="share">分享</el-button>
       </el-col>
       <el-col :xs="6" :sm="6" :md="4" :lg="2" :xl="2">
         <el-button type="primary" size="small">{{ post.comment_count }} 评论</el-button>
