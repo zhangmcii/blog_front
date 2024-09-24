@@ -27,7 +27,7 @@
 <script>
 import loginApi from '@/api/login/loginApi.js'
 import authApi from '@/api/auth/authApi.js'
-import { useUserStore } from '@/stores/user'
+import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   name: 'LoginPage',
   data() {
@@ -61,7 +61,7 @@ export default {
     }
   },
   setup() {
-    const currentUser = useUserStore()
+    const currentUser = useCurrentUserStore()
     return { currentUser }
   },
   methods: {

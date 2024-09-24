@@ -1,12 +1,11 @@
 <script>
-import common from '@/utils/common.js'
-import { useUserStore } from '@/stores/user'
+import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   data() {
     return {}
   },
   setup() {
-    const user = useUserStore()
+    const user = useCurrentUserStore()
     return { user }
   },
   computed: {
@@ -27,8 +26,9 @@ export default {
   methods: {
     log_out() {
       localStorage.removeItem('token')
-      localStorage.removeItem('userName')
+      localStorage.removeItem('currentUserName')
       localStorage.removeItem('isAdmin')
+      localStorage.removeItem('userName')
       // 更新pinia
       this.user.loadUserName()
       console.log('33', this.user.username)

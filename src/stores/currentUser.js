@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 
-export const useUserStore = defineStore('user', {
+export const useCurrentUserStore = defineStore('currentUser', {
   state: () => ({ username: '', isAdmin: false }),
   actions: {
     saveUserName(data) {
       this.username = data
-      localStorage.setItem('userName', data)
+      localStorage.setItem('currentUserName', data)
     },
     loadUserName() {
-      const data = localStorage.getItem('userName')
+      const data = localStorage.getItem('currentUserName')
       if (data) {
         this.username = data
       } else {

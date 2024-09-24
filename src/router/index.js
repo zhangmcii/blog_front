@@ -53,6 +53,16 @@ const router = createRouter({
           path: '/share/:obj',
           name: 'share',
           component: () => import('../views/posts/PostShare.vue')
+        },
+        {
+          path: '/editPost/:obj',
+          name: 'editPost',
+          component: () => import('../views/posts/PostEdit.vue')
+        },
+        {
+          path: '/follow/:action/:userName',
+          name: 'follow',
+          component: () => import('../views/user/followList.vue')
         }
       ]
     },
@@ -63,5 +73,4 @@ const router = createRouter({
     }
   ]
 })
-
 export default router

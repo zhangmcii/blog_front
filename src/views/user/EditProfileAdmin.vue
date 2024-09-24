@@ -81,7 +81,7 @@ export default {
       <el-input v-model="formLabelAlign.location" />
     </el-form-item>
     <el-form-item label="关于我" :label-position="itemLabelPosition">
-      <el-input v-model="formLabelAlign.about_me" />
+      <el-input v-model="formLabelAlign.about_me" show-word-limit maxlength="30" />
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submit">提交</el-button>

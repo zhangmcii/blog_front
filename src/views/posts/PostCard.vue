@@ -1,5 +1,5 @@
 <script>
-import { useUserStore } from '@/stores/user'
+import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   props: {
     post: {
@@ -19,7 +19,7 @@ export default {
     return {}
   },
   setup() {
-    const currentUser = useUserStore()
+    const currentUser = useCurrentUserStore()
     return { currentUser }
   },
   computed: {
@@ -51,10 +51,11 @@ export default {
       })
     },
     edit() {
-      this.$message.success('编辑成功')
-    },
-    editAdmin() {
-      this.$message.success('编辑成功')
+      console.log('编辑')
+      this.$router.push({
+        name: 'editPost',
+        params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
+      })
     }
   }
 }
@@ -82,7 +83,7 @@ export default {
         <el-button type="info" size="small" @click="edit">编辑</el-button>
       </el-col>
       <el-col :xs="7" :sm="4" :md="2" :lg="2" :xl="2" v-else-if="currentUser.isAdmin == 'true'">
-        <el-button type="danger" size="small" @click="editAdmin">编辑[管理员] </el-button>
+        <el-button type="danger" size="small" @click="edit">编辑[管理员] </el-button>
       </el-col>
       <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2">
         <el-button type="info" size="small" @click="share">分享</el-button>

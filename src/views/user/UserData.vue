@@ -1,7 +1,9 @@
 <script>
 import userApi from '@/api/user/userApi.js'
+import authApi from '@/api/auth/authApi.js'
 import common from '@/utils/common.js'
-import { useUserStore } from '@/stores/user'
+import { useCurrentUserStore } from '@/stores/currentUser'
+import { useOtherUserStore } from '@/stores/otherUser'
 export default {
   data() {
     return {
@@ -14,14 +16,19 @@ export default {
         about_me: '天气不错',
         member_since: '2024-9-20 12:14:00',
         last_seen: '2024-9-20 12:14:00',
-        admin: false
-      }
+        admin: false,
+        followers_count: 0,
+        followed_count: 0,
+        is_followed_by_current_user: false,
+        is_following_current_user: false
+      },
+      followPerm: false
     }
   },
   setup() {
-    const currentUser = useUserStore()
-    console.log('current', currentUser.isAdmin)
-    return { currentUser }
+    const currentUser = useCurrentUserStore()
+    const otherUser = useOtherUserStore()
+    return { currentUser, otherUser }
   },
   computed: {
     name_or_location() {
@@ -37,21 +44,41 @@ export default {
         return `昨天 ${this.$dayjs(time).format('HH:mm')}`
       }
       return this.$dayjs(time).fromNow()
+    },
+    isCurrentUser() {
+      return this.user.username == this.currentUser.username
+    },
+    isAdmin() {
+      return this.currentUser.isAdmin == 'true'
+    },
+    follow() {
+      return this.followPerm && this.currentUser.username != this.user.username
+    },
+    isFollowCurrentUser() {
+      return this.currentUser.username && !this.isCurrentUser && this.user.is_following_current_user
     }
   },
   mounted() {
     this.getUserData(this.userName)
+    this.getPermission(1)
     // 页面刷新手动加载一次pinia
+    this.currentUser.loadUserName()
     this.currentUser.loadAdmin()
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userName = to.params.userName
+      // 持久化保存 防止用户刷新本页面导致传入的username丢失
+      vm.otherUser.saveUserName(to.params.userName)
       vm.$nextTick(() => {})
     })
   },
   methods: {
     getUserData(userName) {
+      if (!userName) {
+        this.otherUser.loadUserName()
+        userName = this.otherUser.username
+      }
       if (!userName) {
         this.$message.error('要显示资料的用户名为空！')
         return
@@ -71,28 +98,137 @@ export default {
         name: 'editProfileAdmin',
         params: { obj: encodeURIComponent(JSON.stringify(this.user)) }
       })
+    },
+    // 查询当前登录用户的权限
+    getPermission(perm) {
+      authApi.getPermission(perm).then((res) => {
+        if (res.data.data) {
+          this.followPerm = true
+        } else {
+          this.followPerm = false
+        }
+      })
+    },
+    followUser() {
+      userApi.follow(this.user.username).then((res) => {
+        if (res.data.msg == 'success') {
+          this.$message.success('关注成功')
+          this.user = res.data.data
+        } else {
+          this.$message.error(res.data.msg)
+        }
+      })
+    },
+    unFollowUser() {
+      userApi.unFollow(this.user.username).then((res) => {
+        if (res.data.msg == 'success') {
+          this.$message.success('已取消关注')
+          this.user = res.data.data
+        } else {
+          this.$message.error(res.data.msg)
+        }
+      })
+    },
+    followerDetail() {
+      const f = 'follower'
+      this.$router.push(`/follow/${f}/${this.user.username}`)
+    },
+    followedDetail() {
+      const f = 'followed'
+      this.$router.push(`/follow/${f}/${this.user.username}`)
     }
   }
 }
 </script>
 
 <template>
-  <el-card style="width: 300px">
-    <h1>{{ userName }}</h1>
-    <p v-if="name_or_location">
-      <span v-if="user.name">{{ user.name }}</span>
-      <span v-if="user.location"> 城市 {{ user.location }} </span>
-    </p>
-    <p v-if="user.email">{{ user.email }}</p>
-    <p v-if="user.about_me">{{ user.about_me }}</p>
-    <p>生日 {{ member_since }}. 上线时间 {{ from_now }}.</p>
-    <el-row v-if="user.username == currentUser.username">
-      <el-button @click="editProfile">编辑资料</el-button>
+  <el-card class="user-info" shadow="never">
+    <template #header>
+      <div class="card-header">
+        <span>个人信息</span>
+      </div>
+    </template>
+
+    <el-row v-if="user.about_me">
+      <el-col :xs="6" :xl="4">签名</el-col>
+      <el-col :xs="8" :xl="10" :offset="2">{{ user.about_me }}</el-col>
     </el-row>
-    <el-row v-if="currentUser.isAdmin == 'true'">
-      <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
+
+    <el-row v-if="user.name">
+      <el-col :xs="6" :xl="4">用户名</el-col>
+      <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
+    </el-row>
+
+    <el-row v-if="user.location">
+      <el-col :xs="6" :xl="4">城市</el-col>
+      <el-col :xs="8" :xl="10" :offset="2">{{ user.location }}</el-col>
+    </el-row>
+
+    <el-row v-if="user.email">
+      <el-col :xs="6" :xl="4">电子邮件</el-col>
+      <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :xs="6" :xl="4">生日</el-col>
+      <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :xs="6" :xl="4">上线时间</el-col>
+      <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
+    </el-row>
+  </el-card>
+
+  <el-card shadow="never">
+    <el-row>
+      <el-col v-if="follow" :span="6">
+        <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
+          >取消关注</el-button
+        >
+        <el-button v-else @click="followUser">关注</el-button>
+      </el-col>
+      <el-col :span="4"> </el-col>
+      <el-col :span="6">
+        <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
+      </el-col>
+      <el-col :span="6">
+        <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
+      </el-col>
+      <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
+    </el-row>
+  </el-card>
+
+  <el-card shadow="never" v-if="isCurrentUser || isAdmin">
+    <el-row justify="space-between">
+      <el-col v-if="isCurrentUser" :xs="9" :xl="6">
+        <el-button @click="editProfile">编辑资料</el-button>
+      </el-col>
+      <el-col v-if="isAdmin" :xs="12" :xl="12">
+        <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
+      </el-col>
     </el-row>
   </el-card>
 </template>
 
-<style scoped></style>
+<style scoped>
+.user-info {
+  width: 100%;
+  font-size: 0.9rem;
+  color: #9d9d9d;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+:deep(.el-card__body) {
+  padding: 10px;
+}
+.card-header {
+  color: #000000;
+}
+.user-info .el-row {
+  margin-bottom: 10px;
+}
+.el-card {
+  margin-bottom: 10px;
+}
+</style>
