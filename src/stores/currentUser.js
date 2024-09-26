@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 export const useCurrentUserStore = defineStore('currentUser', {
-  state: () => ({ username: '', isAdmin: false, roleId: 0 }),
+  state: () => ({ username: '', isAdmin: false, roleId: 0, isConfirmed: false }),
   actions: {
     saveUserName(data) {
       this.username = data
@@ -28,6 +28,13 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     loadRoleId() {
       this.roleId = parseInt(localStorage.getItem('roleId'))
+    },
+    saveConfirmed(isConfirmed) {
+      this.isConfirmed = isConfirmed
+      localStorage.setItem('isConfirmed', isConfirmed)
+    },
+    loadConfirmed() {
+      this.isConfirmed = localStorage.getItem('isConfirmed')
     }
   }
 })

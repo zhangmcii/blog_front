@@ -55,7 +55,11 @@ export default {
 
 <template>
   <h1>Hello {{ currentUser.username }}</h1>
-  <PostPublish @loading-begin="(flag) => (loading = flag)" @posts-result="getPostsResult" />
+  <PostPublish
+    @loading-begin="(flag) => (loading = flag)"
+    @posts-result="getPostsResult"
+    v-if="isLogin"
+  />
   <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
     <el-tab-pane label="广场" name="all">
       <div v-if="!loading">

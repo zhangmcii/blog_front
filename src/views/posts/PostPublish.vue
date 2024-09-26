@@ -14,7 +14,11 @@ export default {
       this.$emit('loadingBegin', true)
       postApi.publish_post({ content: this.content }).then((res) => {
         this.$emit('postsResult', res)
-        this.$message.success('发布成功!')
+        if (res.data.msg == 'success') {
+          this.$message.success('发布成功!')
+        } else {
+          this.$message.error('发布失败!')
+        }
       })
     }
   }

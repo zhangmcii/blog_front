@@ -68,6 +68,31 @@ const router = createRouter({
           path: '/commentManagement',
           name: 'commentManagement',
           component: () => import('../views/comment/commentManagement.vue')
+        },
+        {
+          path: '/register',
+          name: 'register',
+          component: () => import('../views/login/RegisterPage.vue')
+        },
+        {
+          path: '/bindEmail',
+          name: 'bindEmail',
+          component: () => import('../views/user/EmailPage.vue')
+        },
+        {
+          path: '/changeEmail',
+          name: 'changeEmail',
+          component: () => import('../views/user/EmailChange.vue')
+        },
+        {
+          path: '/changePassword',
+          name: 'changePassword',
+          component: () => import('../views/user/PasswordChange.vue')
+        },
+        {
+          path: '/resetPassword',
+          name: 'resetPassword',
+          component: () => import('../views/user/PasswordReset.vue')
         }
       ]
     },

@@ -22,10 +22,19 @@
       </el-form-item>
     </el-form>
   </div>
+  <el-row
+    >忘记密码？
+    <el-link type="primary" @click="this.$router.push('/resetPassword')"
+      >点击重新设置密码</el-link
+    ></el-row
+  >
+  <el-row
+    >新用户？
+    <el-link type="primary" @click="this.$router.push('/register')">点击这里去注册</el-link></el-row
+  >
 </template>
 
 <script>
-import loginApi from '@/api/login/loginApi.js'
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
@@ -66,12 +75,13 @@ export default {
   },
   methods: {
     submitForm() {
-      loginApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
+      authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
         if (res.data.msg == '登录成功') {
           localStorage.setItem('token', res.data.token)
           this.currentUser.saveUserName(res.data.username)
           this.currentUser.saveAdmin(res.data.admin)
           this.currentUser.saveRoleId(res.data.roleId)
+          this.currentUser.saveConfirmed(res.data.isConfirmed)
           this.$message.success(res.data.msg)
           this.$router.push({ path: '/posts' })
           return

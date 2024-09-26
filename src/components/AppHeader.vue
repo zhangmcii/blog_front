@@ -15,6 +15,9 @@ export default {
     },
     isCommentManage() {
       return this.currentUser.roleId >= 2
+    },
+    isConfirmed() {
+      return this.currentUser.isConfirmed == 'true'
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -26,6 +29,7 @@ export default {
   mounted() {
     this.currentUser.loadUserName()
     this.currentUser.loadRoleId()
+    this.currentUser.loadConfirmed()
   },
   methods: {
     log_out() {
@@ -34,6 +38,7 @@ export default {
       localStorage.removeItem('isAdmin')
       localStorage.removeItem('roleId')
       localStorage.removeItem('userName')
+      localStorage.removeItem('isConfirmed')
       // 更新pinia
       this.currentUser.loadUserName()
       this.$message.success('已退出')
@@ -78,8 +83,15 @@ export default {
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>修改密码</el-dropdown-item>
-            <el-dropdown-item>修改邮箱</el-dropdown-item>
+            <el-dropdown-item @click="this.$router.push('/changePassword')"
+              >修改密码</el-dropdown-item
+            >
+            <el-dropdown-item v-if="isConfirmed" @click="this.$router.push('/changeEmail')"
+              >修改邮箱</el-dropdown-item
+            >
+            <el-dropdown-item @click="this.$router.push('/bindEmail')" v-else
+              >绑定邮箱</el-dropdown-item
+            >
             <el-dropdown-item command="exit">退出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -93,7 +105,7 @@ export default {
 }
 .el-link,
 .dropdown {
-  font-size: 16px;
+  font-size: 1rem;
   color: #9d9d9d;
 }
 .el-link:hover,
