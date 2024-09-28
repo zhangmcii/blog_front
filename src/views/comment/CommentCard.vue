@@ -36,6 +36,9 @@ export default {
           this.submitComment.body = ''
           this.comments = res.data.data
           this.currentPage = res.data.currentPage
+          this.$message.success('评论成功')
+        } else {
+          this.$message.error('评论失败')
         }
       })
     },
@@ -65,6 +68,8 @@ export default {
     layout="total, prev, pager, next"
     :total="comments_count"
     @current-change="handleCurrentChange"
+    :hide-on-single-page="true"
+    :pager-count="4"
   />
 </template>
 <style scoped>
@@ -74,5 +79,8 @@ export default {
 }
 .el-pagination {
   float: right;
+}
+.el-button {
+  margin: 10px 0px;
 }
 </style>

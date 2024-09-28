@@ -24,6 +24,7 @@ export default {
   },
   mounted() {
     this.currentUser.loadUserName()
+    this.currentUser.loadConfirmed()
     this.getPosts(this.currentPage, this.activeName)
   },
   computed: {
@@ -63,12 +64,14 @@ export default {
   <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
     <el-tab-pane label="广场" name="all">
       <div v-if="!loading">
-        <PostCard v-for="item in posts" :key="item" :post="item" />
+        <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
+        <PostCard v-for="item in posts" :key="item" :post="item" v-else />
       </div>
       <el-skeleton :rows="5" animated :loading="loading" :throttle="500" />
     </el-tab-pane>
     <el-tab-pane label="关注" name="showFollowed" v-if="isLogin">
-      <PostCard v-for="item in posts" :key="item" :post="item" />
+      <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
+      <PostCard v-for="item in posts" :key="item" :post="item" v-else />
     </el-tab-pane>
   </el-tabs>
 
@@ -78,6 +81,8 @@ export default {
     layout="total, prev, pager, next"
     :total="posts_count"
     @current-change="handleCurrentChange"
+    :hide-on-single-page="true"
+    :pager-count="4"
   />
 </template>
 <style scoped>

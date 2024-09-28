@@ -5,25 +5,23 @@ import router from './router'
 import { createPinia } from 'pinia'
 import * as echarts from 'echarts'
 import * as dayjs from 'dayjs'
+import zhCN from 'dayjs/locale/zh-cn'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import updateLocale from 'dayjs/plugin/updateLocale'
 import axios from 'axios'
 // 引入css样式
 import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/index.css'
-
 // element plus配置为中文
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 // 引入RelativeTime插件
-import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 // dayjs语言配置为中文
-import zhCN from 'dayjs/locale/zh-cn'
 dayjs.locale(zhCN)
 
-import updateLocale from 'dayjs/plugin/updateLocale'
 dayjs.extend(updateLocale)
-
 dayjs.updateLocale('zh-cn', {
   relativeTime: {
     future: '%s后',
@@ -45,7 +43,7 @@ const app = createApp(App)
 const pinia = createPinia()
 
 app.config.globalProperties.$echarts = echarts
-app.config.globalProperties.$dayjs = dayjs
+// app.config.globalProperties.$dayjs = dayjs
 app.config.globalProperties.$http = axios
 app.config.globalProperties.$message = ElMessage
 

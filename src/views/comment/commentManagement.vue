@@ -39,6 +39,7 @@ export default {
       commentApi.disable(item.id).then((res) => {
         if (res.data.msg == 'success') {
           this.comments = res.data.data
+          this.$message.warning('已禁用')
         }
       })
     },
@@ -46,6 +47,7 @@ export default {
       commentApi.enable(item.id).then((res) => {
         if (res.data.msg == 'success') {
           this.comments = res.data.data
+          this.$message.success('已开启')
         }
       })
     }
@@ -66,6 +68,8 @@ export default {
     layout="total, prev, pager, next"
     :total="comments_count"
     @current-change="handleCurrentChange"
+    :hide-on-single-page="true"
+    :pager-count="4"
   />
 </template>
 <style scoped></style>

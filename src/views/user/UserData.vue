@@ -4,7 +4,12 @@ import authApi from '@/api/auth/authApi.js'
 import common from '@/utils/common.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { useOtherUserStore } from '@/stores/otherUser'
+import PostCard from '../posts/PostCard.vue'
+import dayjs from 'dayjs'
 export default {
+  components: {
+    PostCard
+  },
   data() {
     return {
       userName: '',
@@ -22,6 +27,9 @@ export default {
         is_followed_by_current_user: false,
         is_following_current_user: false
       },
+      posts: {},
+      currentPage: 1,
+      posts_count: 0,
       followPerm: false
     }
   },
@@ -35,15 +43,15 @@ export default {
       return this.user.name || this.user.location
     },
     member_since() {
-      return this.$dayjs(this.user.member_since).format('YYYY-MM-DD')
+      return dayjs(this.user.member_since).format('YYYY-MM-DD')
     },
     from_now() {
-      const time = this.$dayjs(this.user.last_seen).format('YYYY-MM-DD HH:mm:ss')
+      const time = dayjs(this.user.last_seen).format('YYYY-MM-DD HH:mm:ss')
       console.log(time)
       if (common.isYesterday(time)) {
-        return `昨天 ${this.$dayjs(time).format('HH:mm')}`
+        return `昨天 ${dayjs(time).format('HH:mm')}`
       }
-      return this.$dayjs(time).fromNow()
+      return dayjs(time).fromNow()
     },
     isCurrentUser() {
       return this.user.username == this.currentUser.username
@@ -74,7 +82,7 @@ export default {
     })
   },
   methods: {
-    getUserData(userName) {
+    getUserData(userName, page) {
       if (!userName) {
         this.otherUser.loadUserName()
         userName = this.otherUser.username
@@ -83,8 +91,10 @@ export default {
         this.$message.error('要显示资料的用户名为空！')
         return
       }
-      userApi.get_user(userName).then((res) => {
+      userApi.get_user(userName, page).then((res) => {
         this.user = res.data.data
+        this.posts = res.data.posts
+        this.posts_count = res.data.total
       })
     },
     editProfile() {
@@ -136,6 +146,9 @@ export default {
     followedDetail() {
       const f = 'followed'
       this.$router.push(`/follow/${f}/${this.user.username}`)
+    },
+    handleCurrentChange() {
+      this.getUserData(this.userName, this.currentPage)
     }
   }
 }
@@ -209,11 +222,22 @@ export default {
       </el-col>
     </el-row>
   </el-card>
+
+  <PostCard v-for="item in posts" :key="item" :post="item" />
+
+  <el-pagination
+    v-model:current-page="currentPage"
+    :page-size="10"
+    layout="total, prev, pager, next"
+    :total="posts_count"
+    @current-change="handleCurrentChange"
+    :hide-on-single-page="true"
+    :pager-count="4"
+  />
 </template>
 
 <style scoped>
 .user-info {
-  width: 100%;
   font-size: 0.9rem;
   color: #9d9d9d;
   letter-spacing: 0.05em;
@@ -230,5 +254,8 @@ export default {
 }
 .el-card {
   margin-bottom: 10px;
+}
+.el-pagination {
+  float: right;
 }
 </style>

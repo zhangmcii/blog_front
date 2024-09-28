@@ -1,39 +1,3 @@
-<template>
-  <div id="login-container">
-    <div style="text-align: center; height: 50px">登录</div>
-    <el-form
-      :model="ruleForm"
-      status-icon
-      :rules="rules"
-      ref="ruleForm"
-      label-width="100px"
-      class="demo-ruleForm"
-    >
-      <el-form-item label="账号" prop="user">
-        <el-input type="text" v-model="ruleForm.user" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="密码" prop="pass">
-        <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm">提交</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
-        <el-button @click="logined">111</el-button>
-      </el-form-item>
-    </el-form>
-  </div>
-  <el-row
-    >忘记密码？
-    <el-link type="primary" @click="this.$router.push('/resetPassword')"
-      >点击重新设置密码</el-link
-    ></el-row
-  >
-  <el-row
-    >新用户？
-    <el-link type="primary" @click="this.$router.push('/register')">点击这里去注册</el-link></el-row
-  >
-</template>
-
 <script>
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
@@ -91,21 +55,51 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
-    },
-    logined() {
-      authApi.logined().then((res) => {
-        this.$message.success(res.data.msg)
-      })
     }
   }
 }
 </script>
 
+<template>
+  <div id="login-container">
+    <div style="text-align: center; height: 50px">登录</div>
+    <el-form
+      :model="ruleForm"
+      label-position="left"
+      status-icon
+      :rules="rules"
+      ref="ruleForm"
+      class="demo-ruleForm"
+    >
+      <el-form-item label="账号" prop="user">
+        <el-input type="text" v-model="ruleForm.user" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="pass">
+        <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="submitForm">提交</el-button>
+        <el-button @click="resetForm('ruleForm')">重置</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+  <el-row
+    >忘记密码？
+    <el-link type="primary" @click="this.$router.push('/resetPassword')"
+      >点击重新设置密码</el-link
+    ></el-row
+  >
+  <el-row
+    >新用户？
+    <el-link type="primary" @click="this.$router.push('/register')">点击这里去注册</el-link></el-row
+  >
+</template>
+
 <style scoped>
 body {
   margin: 0;
 }
-#login-container {
+/* #login-container {
   width: 400px;
   height: 290px;
   background: #e5e9f2;
@@ -117,5 +111,12 @@ body {
   border-radius: 5px;
   padding-top: 40px;
   padding-right: 40px;
+} */
+#login-container {
+  width: 90%;
+  height: 100%;
+  padding: 20px;
+  margin: 10vh 0 10vh 0;
+  border-radius: 5px;
 }
 </style>

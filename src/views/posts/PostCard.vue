@@ -1,5 +1,6 @@
 <script>
 import { useCurrentUserStore } from '@/stores/currentUser'
+import dayjs from 'dayjs'
 export default {
   props: {
     post: {
@@ -34,9 +35,10 @@ export default {
   computed: {
     from_now() {
       if (this.isYesterday(this.post.timestamp)) {
-        return `昨天 ${this.$dayjs(this.post.timestamp).format('HH:mm')}`
+        let time = dayjs(this.post.timestamp).format('HH:mm')
+        return `昨天 ${time}`
       }
-      return this.$dayjs(this.post.timestamp).fromNow()
+      return dayjs(this.post.timestamp).fromNow()
     },
     isCommentManage() {
       return this.currentUser.roleId >= 2
@@ -52,9 +54,9 @@ export default {
   methods: {
     isYesterday(date) {
       // 将输入的日期字符串转换为 dayjs 对象
-      const inputDate = this.$dayjs(date).startOf('day')
+      const inputDate = dayjs(date).startOf('day')
       // 获取当前日期的 dayjs 对象
-      const today = this.$dayjs().startOf('day')
+      const today = dayjs().startOf('day')
       // 计算 inputDate 与今天日期的差值，单位为天
       const diff = today.diff(inputDate, 'day')
       // 如果差值为 -1，则说明 inputDate 是昨天
