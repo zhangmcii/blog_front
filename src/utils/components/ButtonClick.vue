@@ -1,7 +1,6 @@
 <!-- 
     搜索按钮
     点击按钮后，向父组件发生点击事件，由父组件来完成点击后的具体执行
-    
     **父组件
     <ButtonClick content="搜索" type="warning" :loading="loading.queryButton" @do-search="doSearch"></ButtonClick>
  -->
@@ -16,7 +15,7 @@ export default {
     // 按钮样式
     type: {
       type: String,
-      default: 'success'
+      default: ''
     },
     // 自定义颜色
     color: {
@@ -37,6 +36,10 @@ export default {
     havaIcon: {
       type: Boolean,
       default: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['doSearch']
@@ -44,17 +47,24 @@ export default {
 </script>
 
 <template>
-  <el-button :type="type" :color="color" :loading="loading" :size="size" @click="$emit('doSearch')">
-    <el-icon v-show="havaIcon">
-      <i-ep-Search />
-    </el-icon>
+  <el-button
+    :type="type"
+    :color="color"
+    :loading="loading"
+    :size="size"
+    :disabled="disabled"
+    @click="$emit('doSearch')"
+  >
     <!-- 自定义图标插槽出口 -->
-    <slot /> {{ content }}
+    {{ content }} <slot />
   </el-button>
 </template>
 <style scoped>
 .el-icon {
   margin-right: 6px;
   font-size: 1.2em;
+}
+.el-button {
+  letter-spacing: 0.08em;
 }
 </style>

@@ -43,6 +43,7 @@ export default {
       postApi.getPosts(page, tabName).then((res) => {
         this.posts = res.data.data
         this.posts_count = res.data.total
+        this.$nextTick(() => {})
       })
     },
     getPostsResult(res) {
@@ -61,20 +62,21 @@ export default {
     @posts-result="getPostsResult"
     v-if="isLogin"
   />
-  <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
-    <el-tab-pane label="广场" name="all">
-      <div v-if="!loading">
+  <Transition name="fade" mode="out-in">
+    <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
+      <el-tab-pane label="广场" name="all">
+        <!-- <div v-if="!loading">
+      </div> -->
         <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
-        <PostCard v-for="item in posts" :key="item" :post="item" v-else />
-      </div>
-      <el-skeleton :rows="5" animated :loading="loading" :throttle="500" />
-    </el-tab-pane>
-    <el-tab-pane label="关注" name="showFollowed" v-if="isLogin">
-      <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
-      <PostCard v-for="item in posts" :key="item" :post="item" v-else />
-    </el-tab-pane>
-  </el-tabs>
-
+        <PostCard v-for="item in posts" :key="item.id" :post="item" />
+        <!-- <el-skeleton :rows="5" animated :loading="loading" :throttle="1000" /> -->
+      </el-tab-pane>
+      <el-tab-pane label="关注" name="showFollowed" v-if="isLogin">
+        <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
+        <PostCard v-for="item in posts" :key="item.id" :post="item" />
+      </el-tab-pane>
+    </el-tabs>
+  </Transition>
   <el-pagination
     v-model:current-page="currentPage"
     :page-size="10"
@@ -82,7 +84,7 @@ export default {
     :total="posts_count"
     @current-change="handleCurrentChange"
     :hide-on-single-page="true"
-    :pager-count="4"
+    :pager-count="5"
   />
 </template>
 <style scoped>
@@ -95,5 +97,15 @@ export default {
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -1,18 +1,25 @@
 <script>
 import postApi from '@/api/posts/postApi.js'
+import ButtonClick from '@/utils/components/ButtonClick.vue'
 export default {
   emits: ['postsResult', 'loadingBegin'],
+  components: {
+    ButtonClick
+  },
   data() {
     return {
       content: '',
-      posts: []
+      posts: [],
+      loading: false
     }
   },
   mounted() {},
   methods: {
     publish() {
       this.$emit('loadingBegin', true)
+      this.loading = true
       postApi.publish_post({ content: this.content }).then((res) => {
+        this.loading = false
         this.$emit('postsResult', res)
         if (res.data.msg == 'success') {
           this.$message.success('发布成功!')
@@ -33,7 +40,15 @@ export default {
     type="textarea"
     placeholder="发你所想"
   />
-  <el-button @click="publish">发布</el-button>
+  <ButtonClick
+    class="custom-button"
+    content="发布"
+    :disabled="!content"
+    :loading="loading"
+    @do-search="publish"
+  >
+    <el-icon><i-ep-Pointer /></el-icon>
+  </ButtonClick>
 </template>
 <style scoped>
 :deep(.el-card__body) {
@@ -42,8 +57,7 @@ export default {
 .el-input {
   width: 100%;
 }
-.el-button {
+.custom-button {
   margin: 10px 0px;
-  letter-spacing: 0.05em;
 }
 </style>

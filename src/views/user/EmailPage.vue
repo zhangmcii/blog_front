@@ -1,6 +1,11 @@
 <script>
 import authApi from '@/api/auth/authApi.js'
+import { useCurrentUserStore } from '@/stores/currentUser'
+import ButtonClick from '@/utils/components/ButtonClick.vue'
 export default {
+  components: {
+    ButtonClick
+  },
   props: {
     headerText: {
       type: String,
@@ -30,14 +35,27 @@ export default {
         action: 'bind'
       },
       value: '',
-      showButton: true
+      showButton: true,
+      loading: false,
+      isChange: false
     }
   },
-  mounted() {
-    this.form.action = this.action
+  setup() {
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
   },
+  watch: {
+    form: {
+      deep: true,
+      handler() {
+        this.isChange = true
+      }
+    }
+  },
+  mounted() {},
   methods: {
     applyCode() {
+      this.form.action = this.action
       this.value = Date.now() + 1000 * 60
       this.showButton = !this.showButton
       authApi.applyCode(this.form).then((res) => {
@@ -51,7 +69,9 @@ export default {
     bindEmail() {
       authApi.checkCode(this.form).then((res) => {
         if (res.data.msg == 'success') {
-          this.$message.success('邮件绑定成功！')
+          this.currentUser.saveConfirmed(res.data.isConfirmed)
+          this.$message.success('邮箱绑定成功！')
+          this.$router.push('/posts')
         } else {
           this.$message.error(res.data.detail)
         }
@@ -76,6 +96,7 @@ export default {
       })
     },
     submitForm() {
+      this.loading = true
       if (this.action == 'confirm') {
         this.bindEmail()
       } else if (this.action == 'change') {
@@ -85,6 +106,8 @@ export default {
         this.form.password = this.password
         this.resetPassword()
       }
+      this.loading = false
+      this.isChange = false
     },
     finish() {
       console.log('倒计时结束')
@@ -96,8 +119,24 @@ export default {
 
 <template>
   <h1>{{ headerText }}</h1>
-  <el-form label-position="top" label-width="auto" :model="formLabelAlign" style="max-width: 600px">
-    <el-form-item prop="email" label="邮件">
+  <el-form
+    label-position="top"
+    label-width="auto"
+    :model="form"
+    ref="form"
+    style="max-width: 600px"
+  >
+    <el-form-item
+      prop="email"
+      label="邮件"
+      :rules="[
+        {
+          type: 'email',
+          message: '请输入正确的邮件地址',
+          trigger: ['blur', 'change']
+        }
+      ]"
+    >
       <el-input v-model="form.email">
         <template #append>
           <el-button @click="applyCode" v-if="showButton"> 发送验证码 </el-button>
@@ -110,7 +149,14 @@ export default {
     </el-form-item>
     <slot></slot>
     <el-form-item>
-      <el-button type="primary" @click="submitForm"> 提交 </el-button>
+      <!-- <el-button type="primary" @click="submitForm"> 提交 </el-button> -->
+      <ButtonClick
+        content="提交"
+        type="primary"
+        :disabled="!isChange"
+        :loading="loading"
+        @do-search="submitForm"
+      />
     </el-form-item>
   </el-form>
 </template>

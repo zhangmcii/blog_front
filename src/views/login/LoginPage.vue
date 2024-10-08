@@ -23,8 +23,8 @@ export default {
     }
     return {
       ruleForm: {
-        user: 'zmc',
-        pass: 'zmc'
+        user: '',
+        pass: ''
       },
       rules: {
         user: [{ validator: validatePass, trigger: 'blur' }],
@@ -83,6 +83,7 @@ export default {
       </el-form-item>
     </el-form>
   </div>
+
   <el-row
     >忘记密码？
     <el-link type="primary" @click="this.$router.push('/resetPassword')"
@@ -99,21 +100,8 @@ export default {
 body {
   margin: 0;
 }
-/* #login-container {
-  width: 400px;
-  height: 290px;
-  background: #e5e9f2;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin-left: -220px;
-  margin-top: -170px;
-  border-radius: 5px;
-  padding-top: 40px;
-  padding-right: 40px;
-} */
 #login-container {
-  width: 90%;
+  width: 85%;
   height: 100%;
   padding: 20px;
   margin: 10vh 0 10vh 0;

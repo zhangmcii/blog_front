@@ -1,6 +1,10 @@
 <script>
 import authApi from '@/api/auth/authApi.js'
+import ButtonClick from '@/utils/components/ButtonClick.vue'
 export default {
+  components: {
+    ButtonClick
+  },
   data() {
     var validatePass = (rule, value, callback) => {
       if (value != this.form.newPassword) {
@@ -17,12 +21,25 @@ export default {
       },
       rules: {
         confirmNewPassword: [{ validator: validatePass, trigger: 'blur' }]
+      },
+      loading: false,
+      isChange: false
+    }
+  },
+  watch: {
+    form: {
+      deep: true,
+      handler() {
+        this.isChange = true
       }
     }
   },
   methods: {
     submitForm() {
+      this.loading = true
       authApi.changePassword(this.form).then((res) => {
+        this.loading = false
+        this.isChange = false
         if (res.data.msg == 'success') {
           this.$message.success('修改密码成功')
           this.$router.push('/posts')
@@ -55,7 +72,14 @@ export default {
       <el-input v-model="form.confirmNewPassword" type="password" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitForm"> 提交 </el-button>
+      <!-- <el-button type="primary" @click="submitForm"> 提交 </el-button> -->
+      <ButtonClick
+        content="提交"
+        type="primary"
+        :disabled="!isChange"
+        :loading="loading"
+        @do-search="submitForm"
+      />
     </el-form-item>
   </el-form>
 </template>
