@@ -56,7 +56,7 @@ export default {
 </script>
 
 <template>
-  <h1>Hello {{ currentUser.username }}</h1>
+  <h1>你好 {{ currentUser.username }}</h1>
   <PostPublish
     @loading-begin="(flag) => (loading = flag)"
     @posts-result="getPostsResult"
@@ -65,11 +65,8 @@ export default {
   <Transition name="fade" mode="out-in">
     <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
       <el-tab-pane label="广场" name="all">
-        <!-- <div v-if="!loading">
-      </div> -->
         <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
         <PostCard v-for="item in posts" :key="item.id" :post="item" />
-        <!-- <el-skeleton :rows="5" animated :loading="loading" :throttle="1000" /> -->
       </el-tab-pane>
       <el-tab-pane label="关注" name="showFollowed" v-if="isLogin">
         <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />

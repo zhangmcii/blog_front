@@ -127,8 +127,6 @@ export default {
     </el-row>
     <slot></slot>
   </el-card>
-
-  <!-- <el-skeleton :rows="2" :loading="loading"  animated/> -->
 </template>
 <style scoped>
 .el-card,
