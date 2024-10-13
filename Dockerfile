@@ -1,33 +1,8 @@
-# syntax=docker/dockerfile:1
-
-
-ARG NODE_VERSION=18.17.1
-
-FROM node:${NODE_VERSION} as build-stage
-
-# 设置工作目录
-WORKDIR /app
-
-# 拷贝 package.json 和 package-lock.json 文件到容器中
-COPY package*.json ./
-
-# 设置环境变量为production
-ENV NODE_ENV=production
-
-# 安装依赖
-RUN npm install --production
-
-# 拷贝所有源代码到容器中
-COPY . .
-
-# 构建项目
-RUN npm run build
-
 # 使用 nginx 作为基础镜像
-FROM nginx:latest as production-stage
+FROM nginx:1.27.0
 
-# 将构建好的项目文件复制到 nginx 静态文件目录
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+COPY dist/ /usr/share/nginx/html
 
 # 使用容器内的默认 nginx 配置文件
 COPY nginx.conf /etc/nginx/nginx.conf

@@ -3,7 +3,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
-import * as echarts from 'echarts'
 import * as dayjs from 'dayjs'
 import zhCN from 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -42,7 +41,6 @@ dayjs.updateLocale('zh-cn', {
 const app = createApp(App)
 const pinia = createPinia()
 
-app.config.globalProperties.$echarts = echarts
 // app.config.globalProperties.$dayjs = dayjs
 app.config.globalProperties.$http = axios
 app.config.globalProperties.$message = ElMessage
