@@ -22,6 +22,7 @@ export default {
         this.loading = false
         this.$emit('postsResult', res)
         if (res.data.msg == 'success') {
+          this.content = ''
           this.$message.success('发布成功!')
         } else {
           this.$message.error('发布失败!')
@@ -38,7 +39,7 @@ export default {
     v-model="content"
     :autosize="{ minRows: 2, maxRows: 4 }"
     type="textarea"
-    placeholder="发你所想"
+    placeholder="书写片段,温润流年。"
   />
   <ButtonClick
     class="custom-button"

@@ -47,7 +47,6 @@ export default {
     },
     from_now() {
       const time = dayjs(this.user.last_seen).format('YYYY-MM-DD HH:mm:ss')
-      console.log(time)
       if (common.isYesterday(time)) {
         return `昨天 ${dayjs(time).format('HH:mm')}`
       }

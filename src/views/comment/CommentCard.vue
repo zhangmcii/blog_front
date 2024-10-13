@@ -1,6 +1,7 @@
 <script>
 import commentApi from '@/api/comment/commentApi.js'
 import PostCard from '../posts/PostCard.vue'
+import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   props: {
     postId: {
@@ -24,10 +25,15 @@ export default {
       comments_count: 10
     }
   },
+  setup() {
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
+  },
   mounted() {
     this.$nextTick(() => {
       this.getComment()
     })
+    this.currentUser.loadToken()
   },
   methods: {
     submit() {
@@ -38,7 +44,7 @@ export default {
           this.currentPage = res.data.currentPage
           this.$message.success('评论成功')
         } else {
-          this.$message.error('评论失败')
+          this.$message.error(res.data.detail)
         }
       })
     },
@@ -58,22 +64,36 @@ export default {
 </script>
 
 <template>
-  <h4>输入您的评论</h4>
-  <el-input v-model="submitComment.body" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" />
-  <el-button @click="submit">提交</el-button>
-  <PostCard v-for="item in comments" :key="item" :post="item" :func-switch="false" />
-  <el-pagination
-    v-model:current-page="currentPage"
-    :page-size="10"
-    layout="total, prev, pager, next"
-    :total="comments_count"
-    @current-change="handleCurrentChange"
-    :hide-on-single-page="true"
-    :pager-count="4"
-  />
+  <el-row v-if="currentUser.token != ''">
+    <el-col :span="24">
+      <el-divider content-position="left">输入您的评论</el-divider>
+      <!-- <h4>输入您的评论</h4> -->
+      <el-input
+        v-model="submitComment.body"
+        :autosize="{ minRows: 2, maxRows: 4 }"
+        type="textarea"
+      />
+      <el-button @click="submit">提交</el-button>
+    </el-col>
+  </el-row>
+
+  <el-row>
+    <el-col :span="24">
+      <el-divider content-position="left">评论区</el-divider>
+      <PostCard v-for="item in comments" :key="item" :post="item" :func-switch="false" />
+      <el-pagination
+        v-model:current-page="currentPage"
+        :page-size="10"
+        layout="total, prev, pager, next"
+        :total="comments_count"
+        @current-change="handleCurrentChange"
+        :hide-on-single-page="true"
+        :pager-count="4"
+      />
+    </el-col>
+  </el-row>
 </template>
 <style scoped>
-.el-card,
 .el-row {
   margin: 10px 0px;
 }

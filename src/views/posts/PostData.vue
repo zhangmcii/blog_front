@@ -2,7 +2,6 @@
 import PostCard from './PostCard.vue'
 import PostPublish from './PostPublish.vue'
 import postApi from '@/api/posts/postApi.js'
-import common from '@/utils/common.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   components: {
@@ -23,14 +22,11 @@ export default {
     return { currentUser }
   },
   mounted() {
+    this.currentUser.loadToken()
     this.currentUser.loadUserName()
     this.currentUser.loadConfirmed()
+    this.currentUser.loadRoleId()
     this.getPosts(this.currentPage, this.activeName)
-  },
-  computed: {
-    isLogin() {
-      return common.isLogined()
-    }
   },
   methods: {
     changeTab(tabName) {
@@ -60,7 +56,7 @@ export default {
   <PostPublish
     @loading-begin="(flag) => (loading = flag)"
     @posts-result="getPostsResult"
-    v-if="isLogin"
+    v-if="currentUser.token != ''"
   />
   <Transition name="fade" mode="out-in">
     <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
@@ -68,7 +64,7 @@ export default {
         <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
         <PostCard v-for="item in posts" :key="item.id" :post="item" />
       </el-tab-pane>
-      <el-tab-pane label="关注" name="showFollowed" v-if="isLogin">
+      <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
         <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
         <PostCard v-for="item in posts" :key="item.id" :post="item" />
       </el-tab-pane>

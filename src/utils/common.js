@@ -1,13 +1,6 @@
 import dayjs from 'dayjs'
 
 export default {
-  isLogined() {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      return false
-    }
-    return true
-  },
   isYesterday(date) {
     // 将输入的日期字符串转换为 dayjs 对象
     const inputDate = dayjs(date).startOf('day')

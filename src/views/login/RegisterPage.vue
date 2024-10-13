@@ -59,8 +59,8 @@ export default {
     }
     return {
       ruleForm: {
-        user: 'zmc',
-        password: 'zmc',
+        user: '',
+        password: '',
         confirmPass: '',
         email: ''
       },
@@ -68,8 +68,7 @@ export default {
         user: [{ validator: validatePass, trigger: 'blur' }],
         password: [{ validator: validatePass2, trigger: 'blur' }],
         confirmPass: [{ validator: validatePass3, trigger: 'blur' }]
-      },
-      isLogin: false
+      }
     }
   },
   setup() {

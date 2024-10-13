@@ -29,8 +29,7 @@ export default {
       rules: {
         user: [{ validator: validatePass, trigger: 'blur' }],
         pass: [{ validator: validatePass2, trigger: 'blur' }]
-      },
-      isLogin: false
+      }
     }
   },
   setup() {
@@ -41,7 +40,7 @@ export default {
     submitForm() {
       authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
         if (res.data.msg == '登录成功') {
-          localStorage.setItem('token', res.data.token)
+          this.currentUser.saveToken(res.data.token)
           this.currentUser.saveUserName(res.data.username)
           this.currentUser.saveAdmin(res.data.admin)
           this.currentUser.saveRoleId(res.data.roleId)

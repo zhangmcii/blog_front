@@ -41,6 +41,8 @@ export default {
       localStorage.removeItem('isConfirmed')
       // 更新pinia
       this.currentUser.loadUserName()
+      // 退出后跳转到主页面 隐藏发布文章区域
+      this.currentUser.loadToken()
       this.$message.success('已退出')
       this.$router.push('/posts')
     },

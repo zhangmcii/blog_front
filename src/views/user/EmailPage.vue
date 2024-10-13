@@ -70,6 +70,7 @@ export default {
       authApi.checkCode(this.form).then((res) => {
         if (res.data.msg == 'success') {
           this.currentUser.saveConfirmed(res.data.isConfirmed)
+          this.currentUser.saveRoleId(res.data.roleId)
           this.$message.success('邮箱绑定成功！')
           this.$router.push('/posts')
         } else {
