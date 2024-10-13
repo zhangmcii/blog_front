@@ -22,7 +22,7 @@ export default {
       },
       comments: {},
       currentPage: 1,
-      comments_count: 10
+      comments_count: 0
     }
   },
   setup() {
@@ -67,7 +67,6 @@ export default {
   <el-row v-if="currentUser.token != ''">
     <el-col :span="24">
       <el-divider content-position="left">输入您的评论</el-divider>
-      <!-- <h4>输入您的评论</h4> -->
       <el-input
         v-model="submitComment.body"
         :autosize="{ minRows: 2, maxRows: 4 }"
@@ -79,7 +78,7 @@ export default {
 
   <el-row>
     <el-col :span="24">
-      <el-divider content-position="left">评论区</el-divider>
+      <el-divider content-position="left" v-if="comments_count != 0">评论区</el-divider>
       <PostCard v-for="item in comments" :key="item" :post="item" :func-switch="false" />
       <el-pagination
         v-model:current-page="currentPage"
