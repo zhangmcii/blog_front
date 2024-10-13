@@ -11,7 +11,6 @@ function setInterceptors(...instance) {
         // 从localStorage中获取token
         const token = localStorage.getItem('token')
         if (token) {
-          console.log('==>token', token)
           config.headers['Authorization'] = token
         }
         // 在发送请求之前, 添加请求头

@@ -11,8 +11,11 @@ WORKDIR /app
 # 拷贝 package.json 和 package-lock.json 文件到容器中
 COPY package*.json ./
 
+# 设置环境变量为production
+ENV NODE_ENV=production
+
 # 安装依赖
-RUN npm install
+RUN npm install --production
 
 # 拷贝所有源代码到容器中
 COPY . .
