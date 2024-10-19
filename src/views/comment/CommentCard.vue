@@ -78,7 +78,7 @@ export default {
 
   <el-row>
     <el-col :span="24">
-      <el-divider content-position="left" v-if="comments_count">评论区</el-divider>
+      <el-divider content-position="left" v-if="comments_count">全部评论</el-divider>
       <PostCard v-for="item in comments" :key="item" :post="item" :func-switch="false" />
       <el-pagination
         v-model:current-page="currentPage"

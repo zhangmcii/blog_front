@@ -46,7 +46,8 @@ export default {
       return dayjs(this.user.member_since).format('YYYY-MM-DD')
     },
     from_now() {
-      const time = dayjs(this.user.last_seen).format('YYYY-MM-DD HH:mm:ss')
+      // 防止上线时间与当前时间过于接近而显示"几秒后"
+      const time = dayjs(this.user.last_seen).subtract(5, 'second').format('YYYY-MM-DD HH:mm:ss')
       if (common.isYesterday(time)) {
         return `昨天 ${dayjs(time).format('HH:mm')}`
       }
