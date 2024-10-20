@@ -15,6 +15,7 @@ import 'element-plus/theme-chalk/index.css'
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
 // 引入RelativeTime插件
 dayjs.extend(relativeTime)
 // dayjs语言配置为中文

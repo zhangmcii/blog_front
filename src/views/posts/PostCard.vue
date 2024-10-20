@@ -9,6 +9,7 @@ export default {
         return {
           id: 1,
           body: '文章',
+          body_html: null,
           timestamp: '2024-9-20 12:14:00',
           author: '张三',
           commentCount: 20,
@@ -107,7 +108,8 @@ export default {
     <el-row v-if="post.disabled">
       <p><i>此评论已被版主禁用</i></p>
     </el-row>
-    <el-row v-if="show_body">{{ post.body }}</el-row>
+    <el-row><div v-if="post.body_html && show_body" v-html="post.body_html"></div></el-row>
+    <el-row v-if="!post.body_html && show_body">{{ post.body }}</el-row>
 
     <el-row :gutter="35" justify="end" v-if="funcSwitch">
       <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="post.author == currentUser.username">
