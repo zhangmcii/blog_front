@@ -43,7 +43,12 @@ export default {
       this.currentUser.loadUserName()
       // 退出后跳转到主页面 隐藏发布文章区域
       this.currentUser.loadToken()
-      this.$message.success('已退出')
+      this.$message({
+        message: '已退出',
+        type: 'success',
+        duration: 1700
+      })
+
       this.$router.push('/posts')
     },
     handleCommand(command) {

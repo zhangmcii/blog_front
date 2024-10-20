@@ -30,17 +30,17 @@ export default {
         user: [{ validator: validatePass, trigger: 'blur' }],
         pass: [{ validator: validatePass2, trigger: 'blur' }]
       },
-      isChange:false
+      isChange: false
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     return { currentUser }
   },
-  watch:{
-    ruleForm:{
-      deep:true,
-      handler(){
+  watch: {
+    ruleForm: {
+      deep: true,
+      handler() {
         this.isChange = true
       }
     }
@@ -54,11 +54,19 @@ export default {
           this.currentUser.saveAdmin(res.data.admin)
           this.currentUser.saveRoleId(res.data.roleId)
           this.currentUser.saveConfirmed(res.data.isConfirmed)
-          this.$message.success(res.data.msg)
+          this.$message({
+            message: res.data.msg,
+            type: 'success',
+            duration:1700
+          })
           this.$router.push({ path: '/posts' })
           return
         }
-        this.$message.error(res.data.msg)
+        this.$message({
+            message: res.data.msg,
+            type: 'error',
+            duration:1700
+          })
       })
     },
     resetForm(formName) {

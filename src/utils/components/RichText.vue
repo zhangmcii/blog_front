@@ -61,7 +61,7 @@ export default {
       :mode="mode"
     />
     <Editor
-      style="height: 300px; overflow-y: hidden"
+      style="height: 270px; overflow-y: hidden"
       v-model="bodyHtml"
       :defaultConfig="editorConfig"
       :mode="mode"
