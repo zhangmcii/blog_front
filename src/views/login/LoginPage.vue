@@ -29,12 +29,21 @@ export default {
       rules: {
         user: [{ validator: validatePass, trigger: 'blur' }],
         pass: [{ validator: validatePass2, trigger: 'blur' }]
-      }
+      },
+      isChange:false
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     return { currentUser }
+  },
+  watch:{
+    ruleForm:{
+      deep:true,
+      handler(){
+        this.isChange = true
+      }
+    }
   },
   methods: {
     submitForm() {
@@ -77,7 +86,7 @@ export default {
         <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm">提交</el-button>
+        <el-button type="primary" :disabled="!isChange" @click="submitForm">提交</el-button>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>

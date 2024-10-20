@@ -22,7 +22,7 @@
     </el-form-item>
 
     <el-form-item>
-      <el-button type="primary" @click="register">注册</el-button>
+      <el-button type="primary" :disabled="!isChange" @click="register">注册</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -68,12 +68,21 @@ export default {
         user: [{ validator: validatePass, trigger: 'blur' }],
         password: [{ validator: validatePass2, trigger: 'blur' }],
         confirmPass: [{ validator: validatePass3, trigger: 'blur' }]
-      }
+      },
+      isChange: false
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     return { currentUser }
+  },
+  watch: {
+    ruleForm: {
+      deep: true,
+      handler() {
+        this.isChange = true
+      }
+    }
   },
   methods: {
     register() {
