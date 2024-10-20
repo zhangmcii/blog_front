@@ -1,6 +1,14 @@
 <script>
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 export default {
+  props: {
+    bodyInit: {
+      default: null
+    },
+    bodyHtmlInit: {
+      default: null
+    }
+  },
   components: { Editor, Toolbar },
   data() {
     return {
@@ -14,17 +22,23 @@ export default {
   },
   mounted() {
     this.toolbarConfig.excludeKeys = ['group-image', 'group-video']
+    // this.$nextTick(() => {
+    //   console.log('body', this.bodyInit)
+    //   console.log('bodyHtml', this.bodyHtmlInit)
+    // })
   },
   methods: {
     onCreated(editor) {
       this.editor = Object.seal(editor)
+      if (this.bodyInit) this.editor.insertText(this.bodyInit)
+      if (this.bodyHtmlInit) this.editor.setHtml(this.bodyHtmlInit)
       // 监听内容变化
       editor.on('change', () => {
         this.body = this.editor.getText()
         this.$emit('content_change', { body: this.body, bodyHtml: this.bodyHtml })
       })
     },
-    clean(){
+    clean() {
       this.body = ''
       this.bodyHtml = ''
     }
