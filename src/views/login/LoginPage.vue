@@ -23,8 +23,8 @@ export default {
     }
     return {
       ruleForm: {
-        user: '',
-        pass: ''
+        user: 'admin',
+        pass: 'admin'
       },
       rules: {
         user: [{ validator: validatePass, trigger: 'blur' }],
@@ -46,7 +46,7 @@ export default {
     }
   },
   methods: {
-    submitForm() {
+    login() {
       authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
         if (res.data.msg == '登录成功') {
           this.currentUser.saveToken(res.data.token)
@@ -88,13 +88,13 @@ export default {
       class="demo-ruleForm"
     >
       <el-form-item label="账号" prop="user">
-        <el-input type="text" v-model="ruleForm.user" autocomplete="off"></el-input>
+        <el-input type="text" v-model="ruleForm.user" autocomplete="off" @keyup.enter="login"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="pass">
-        <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+        <el-input type="password" v-model="ruleForm.pass" autocomplete="off" @keyup.enter="login"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :disabled="!isChange" @click="submitForm">提交</el-button>
+        <el-button type="primary" :disabled="!isChange" @click="login">提交</el-button>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>
