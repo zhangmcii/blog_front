@@ -87,7 +87,7 @@ export default {
         :total="comments_count"
         @current-change="handleCurrentChange"
         :hide-on-single-page="true"
-        :pager-count="4"
+        :pager-count="5"
       />
     </el-col>
   </el-row>
