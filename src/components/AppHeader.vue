@@ -22,7 +22,7 @@
           <li v-show="login">
             <a href="/commentManagement">评论管理</a>
           </li>
-          <li v-if="!login"><a href="/login">登录</a></li>
+          <li v-if="!login" class="login-text"><a href="/login">登录</a></li>
           <li v-else>
             <a href="#" @click.prevent="toggleContactDropdown"
               >{{ accountLabel }}<el-icon><i-ep-CaretBottom /></el-icon
@@ -275,6 +275,9 @@ export default {
   }
   .menu-list a:hover {
     background-color: #a9a5a5;
+  }
+  .login-text{
+    margin-right: 20px;
   }
 }
 
