@@ -1,5 +1,6 @@
 <script>
 import editApi from '@/api/user/editApi.js'
+import userApi from '@/api/user/userApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 export default {
   components: {
@@ -10,29 +11,40 @@ export default {
       formLabelAlign: {},
       originalForm: {},
       user: {},
+      userId: -1,
       loading: false,
       isChange: false
     }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      const params = to.params.obj
-      vm.formLabelAlign = params ? JSON.parse(decodeURIComponent(params)) : null
-      vm.originalForm = params ? JSON.parse(decodeURIComponent(params)) : null
+      vm.userId = to.params.id
       vm.$nextTick(() => {})
     })
   },
-  mounted() {},
+  mounted() {
+    if (this.userId != -1) {
+      this.getUserInfo(this.userId)
+    }
+  },
   watch: {
     formLabelAlign: {
       deep: true,
       handler(newVal) {
-        this.isChange = JSON.stringify(newVal) !== JSON.stringify(this.originalForm)
+        this.isChange = JSON.stringify(newVal) !== this.originalForm
       }
     }
   },
   methods: {
-    getUserInfo() {},
+    getUserInfo(userId) {
+      userApi.getUser(userId).then((res) => {
+        if (res.data.msg == 'success') {
+          this.user = res.data.data
+          this.originalForm = JSON.stringify(res.data.data)
+          this.formLabelAlign = res.data.data
+        }
+      })
+    },
     submit() {
       this.loading = true
       editApi.editProfile(this.formLabelAlign).then((res) => {
@@ -58,21 +70,21 @@ export default {
     label-width="auto"
     style="max-width: 600px"
   >
-    <el-form-item label="昵称" :label-position="itemLabelPosition">
+    <el-form-item label="昵称" >
       <el-input v-model="formLabelAlign.name" />
     </el-form-item>
-    <el-form-item label="城市" :label-position="itemLabelPosition">
+    <el-form-item label="城市" >
       <el-input v-model="formLabelAlign.location" />
     </el-form-item>
-    <el-form-item label="关于我" :label-position="itemLabelPosition">
+    <el-form-item label="关于我" >
       <el-input v-model="formLabelAlign.about_me" show-word-limit maxlength="30" />
     </el-form-item>
     <el-form-item>
       <ButtonClick
         content="提交"
         type="primary"
-        :disabled="!isChange"
         :loading="loading"
+        :disabled="!isChange"
         @do-search="submit"
       />
     </el-form-item>

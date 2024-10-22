@@ -30,22 +30,22 @@ const router = createRouter({
           component: () => import('../views/user/UserData.vue')
         },
         {
-          path: '/editProfile/:obj',
+          path: '/editProfile/:id',
           name: 'editProfile',
           component: () => import('../views/user/EditProfile.vue')
         },
         {
-          path: '/editProfileAdmin/:obj',
+          path: '/editProfileAdmin/:id',
           name: 'editProfileAdmin',
           component: () => import('../views/user/EditProfileAdmin.vue')
         },
         {
-          path: '/share/:obj',
+          path: '/share/:id',
           name: 'share',
           component: () => import('../views/posts/PostShare.vue')
         },
         {
-          path: '/editPost/:obj',
+          path: '/editPost/:id',
           name: 'editPost',
           component: () => import('../views/posts/PostEdit.vue')
         },

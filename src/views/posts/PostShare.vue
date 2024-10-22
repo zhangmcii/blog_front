@@ -1,4 +1,5 @@
 <script>
+import postApi from '@/api/posts/postApi.js'
 import PostCard from './PostCard.vue'
 import CommentCard from '../comment/CommentCard.vue'
 export default {
@@ -8,24 +9,36 @@ export default {
   },
   data() {
     return {
-      post: {}
+      post: {},
+      postId:-1,
     }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      const params = to.params.obj
-      vm.post = params ? JSON.parse(decodeURIComponent(params)) : null
+      vm.postId = Number(to.params.id)
       vm.$nextTick(() => {})
     })
   },
-  mounted() {},
-  methods: {}
+  mounted() {
+    if (this.postId != -1) {
+      this.getPostById(this.postId)
+    }
+  },
+  methods: {
+    getPostById(postId) {
+      postApi.getPost(postId).then((res) => {
+        if (res.data.msg == 'success') {
+          this.post = res.data.data
+        }
+      })
+    }
+  }
 }
 </script>
 
 <template>
   <PostCard :post="post" />
-  <CommentCard :post-id="post.id" />
+  <CommentCard :post-id="postId" />
 </template>
 <style scoped>
 .el-button {

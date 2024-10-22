@@ -68,23 +68,13 @@ export default {
       return diff === 1
     },
     share() {
-      this.$router.push({
-        name: 'share',
-        params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
-      })
+      this.$router.push(`/share/${this.post.id}`)
     },
     edit() {
-      console.log('编辑')
-      this.$router.push({
-        name: 'editPost',
-        params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
-      })
+      this.$router.push(`/editPost/${this.post.id}`)
     },
     comment() {
-      this.$router.push({
-        name: 'share',
-        params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
-      })
+      this.$router.push(`/share/${this.post.id}`)
     }
   }
 }

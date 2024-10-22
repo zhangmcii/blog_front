@@ -1,4 +1,5 @@
 import { $http } from '@/api/index'
+const url_prefix = '/api/v1'
 export default {
   getPosts(page, tabName) {
     let params = {}
@@ -9,7 +10,12 @@ export default {
   publish_post(post) {
     return $http.post('/', post)
   },
+  
+  getPost(id){
+    return $http.get(`${url_prefix}/posts/${id}`)
+  },
   editPost(id, post) {
-    return $http.put(`/edit/${id}`, post)
-  }
+    return $http.put(`${url_prefix}/posts/${id}`, post)
+  },
+
 }

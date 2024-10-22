@@ -10,6 +10,7 @@ export default {
   data() {
     return {
       post: {},
+      postId: -1,
       rich_content: {
         body: '',
         bodyHtml: ''
@@ -20,28 +21,33 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      const params = to.params.obj
-      vm.post = params ? JSON.parse(decodeURIComponent(params)) : null
-      if (vm.post.body_html) {
-        console.log('body_f', vm.post.body)
-        console.log('html', vm.post.body_html)
-        vm.activeRichEditor = true
-      }
+      vm.postId = to.params.id
       vm.$nextTick(() => {})
     })
   },
-  mounted() {},
+  mounted() {
+    if (this.postId != -1) {
+      this.getPostById(this.postId)
+    }
+  },
   methods: {
+    getPostById(postId) {
+      postApi.getPost(postId).then((res) => {
+        if (res.data.msg == 'success') {
+          this.post = res.data.data
+          if (this.post.body_html) {
+            this.activeRichEditor = true
+          }
+        }
+      })
+    },
     normalModify() {
       this.loading = true
       postApi.editPost(this.post.id, { body: this.post.body, bodyHtml: null }).then((res) => {
-        if (res.data.data == 'success') {
+        if (res.data.msg == 'success') {
           this.loading = false
           this.$message.success('修改成功')
-          this.$router.push({
-            name: 'share',
-            params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
-          })
+          this.$router.push(`/share/${this.postId}`)
         } else {
           this.loading = false
           this.$message.success('修改失败')
@@ -51,15 +57,12 @@ export default {
     richEditorModify() {
       this.loading = true
       postApi.editPost(this.post.id, this.rich_content).then((res) => {
-        if (res.data.data == 'success') {
+        if (res.data.msg == 'success') {
           this.loading = false
           this.$message.success('修改成功')
           this.post.body = this.rich_content.body
           this.post.body_html = this.rich_content.bodyHtml
-          this.$router.push({
-            name: 'share',
-            params: { obj: encodeURIComponent(JSON.stringify(this.post)) }
-          })
+          this.$router.push(`/share/${this.postId}`)
         } else {
           this.loading = false
           this.$message.success('修改失败')
@@ -97,13 +100,6 @@ export default {
     />
   </Transition>
   <ButtonClick content="修改" :loading="loading" @do-search="modify" />
-  <!-- <el-switch
-    v-model="activeRichEditor"
-    inline-prompt
-    inactive-text="普通编辑器"
-    active-text="富文本编辑器"
-  /> -->
-  <!-- <el-button @click="modify">修改</el-button> -->
 </template>
 <style scoped>
 .el-button {

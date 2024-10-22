@@ -30,19 +30,15 @@ export default {
         user: [{ validator: validatePass, trigger: 'blur' }],
         pass: [{ validator: validatePass2, trigger: 'blur' }]
       },
-      isChange: false
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     return { currentUser }
   },
-  watch: {
-    ruleForm: {
-      deep: true,
-      handler() {
-        this.isChange = true
-      }
+  computed: {
+    formHasValue() {
+      return this.ruleForm.user != '' || this.ruleForm.pass != ''
     }
   },
   methods: {
@@ -57,16 +53,16 @@ export default {
           this.$message({
             message: res.data.msg,
             type: 'success',
-            duration:1700
+            duration: 1700
           })
           this.$router.push({ path: '/posts' })
           return
         }
         this.$message({
-            message: res.data.msg,
-            type: 'error',
-            duration:1700
-          })
+          message: res.data.msg,
+          type: 'error',
+          duration: 1700
+        })
       })
     },
     resetForm(formName) {
@@ -88,13 +84,26 @@ export default {
       class="demo-ruleForm"
     >
       <el-form-item label="账号" prop="user">
-        <el-input type="text" v-model="ruleForm.user" autocomplete="off" @keyup.enter="login"></el-input>
+        <el-input
+          type="text"
+          v-model="ruleForm.user"
+          autocomplete="off"
+          @keyup.enter="login"
+        ></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="pass">
-        <el-input type="password" v-model="ruleForm.pass" autocomplete="off" @keyup.enter="login"></el-input>
+        <el-input
+          type="password"
+          v-model="ruleForm.pass"
+          autocomplete="off"
+          show-password
+          @keyup.enter="login"
+        ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :disabled="!isChange" @click="login">提交</el-button>
+        <el-button type="primary" :disabled="!formHasValue" @click="login"
+          >提交</el-button
+        >
         <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>

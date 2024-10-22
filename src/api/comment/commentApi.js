@@ -1,4 +1,5 @@
 import { $http } from '@/api/index'
+const url_prefix = '/api/v1'
 export default {
   submitComment(postId, comment) {
     return $http.post(`/post/${postId}`, comment)
@@ -6,8 +7,9 @@ export default {
   getComment(postId, page) {
     let params = {}
     params['page'] = page
-    return $http.get(`/post/${postId}`, { params: params })
+    return $http.get(`${url_prefix}/posts/${postId}/comments/`, { params: params })
   },
+
   getAllComments(page) {
     let params = {}
     params['page'] = page

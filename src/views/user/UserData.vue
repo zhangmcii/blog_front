@@ -101,16 +101,10 @@ export default {
       })
     },
     editProfile() {
-      this.$router.push({
-        name: 'editProfile',
-        params: { obj: encodeURIComponent(JSON.stringify(this.user)) }
-      })
+      this.$router.push(`/editProfile/${this.user.id}`)
     },
     editProfileAdmin() {
-      this.$router.push({
-        name: 'editProfileAdmin',
-        params: { obj: encodeURIComponent(JSON.stringify(this.user)) }
-      })
+      this.$router.push(`/editProfileAdmin/${this.user.id}`)
     },
     // 查询当前登录用户的权限
     getPermission(perm) {
@@ -235,7 +229,7 @@ export default {
     :total="posts_count"
     @current-change="handleCurrentChange"
     :hide-on-single-page="true"
-    :pager-count="4"
+    :pager-count="5"
   />
 </template>
 
