@@ -1,8 +1,63 @@
+<template>
+  <div class="burger-menu">
+    <!-- "Home" 标签始终显示 -->
+    <a href="/posts" class="home">主页</a>
+    <!-- 汉堡按钮，只在屏幕尺寸小于500px时显示 -->
+    <button
+      class="menu-toggle"
+      v-if="windowWidth < 500"
+      :class="{ active: isActive }"
+      @click="toggleMenu"
+    >
+      <div class="line" v-for="line in 3" :key="line"></div>
+    </button>
+    <!-- 菜单项容器 -->
+    <div class="menu-container">
+      <!-- 其他菜单项，响应式显示 -->
+      <div class="menu" :class="{ 'is-active': isActive || windowWidth >= 500 }">
+        <ul class="menu-list">
+          <li v-show="login">
+            <a :href="`/user/${currentUser.username}`">个人资料</a>
+          </li>
+          <li v-show="login">
+            <a href="/commentManagement">评论管理</a>
+          </li>
+          <li v-if="!login"><a href="/login">登录</a></li>
+          <li v-else>
+            <a href="#" @click.prevent="toggleContactDropdown"
+              >{{ accountLabel }}<el-icon><i-ep-CaretBottom /></el-icon
+            ></a>
+            <transition name="fade">
+              <div class="contact-dropdown" v-if="isContactDropdownActive">
+                <a href="/changePassword">修改密码</a>
+                <a href="/changeEmail" v-if="isConfirmed">修改邮箱</a>
+                <a href="/bindEmail" v-else>绑定邮箱</a>
+                <a @click="log_out" href="/posts">退出</a>
+              </div>
+            </transition>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
 import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
+  name: 'BurgerMenu',
   data() {
-    return {}
+    return {
+      isActive: false,
+      windowWidth: window.innerWidth,
+      menuItems: [
+        { label: 'About', href: '#' },
+        { label: 'Services', href: '#' },
+        { label: 'Contact', href: '#' }
+      ],
+      isContactDropdownActive: false,
+      accountLabel: '账户'
+    }
   },
   setup() {
     const currentUser = useCurrentUserStore()
@@ -31,7 +86,27 @@ export default {
     this.currentUser.loadRoleId()
     this.currentUser.loadConfirmed()
   },
+  created() {
+    window.addEventListener('resize', this.updateWindowWidth)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateWindowWidth)
+  },
   methods: {
+    toggleMenu() {
+      if (this.windowWidth < 500) {
+        this.isActive = !this.isActive
+        // 添加或移除 .active 类
+        this.$el.querySelector('.menu-toggle').classList.toggle('active')
+      }
+    },
+    updateWindowWidth() {
+      this.windowWidth = window.innerWidth
+    },
+    toggleContactDropdown() {
+      this.isContactDropdownActive = !this.isContactDropdownActive
+      this.accountLabel = this.isContactDropdownActive ? '关闭' : '账户'
+    },
     log_out() {
       localStorage.removeItem('token')
       localStorage.removeItem('currentUserName')
@@ -60,69 +135,170 @@ export default {
 }
 </script>
 
-<template>
-  <el-row justify="space-between">
-    <el-col :xs="4" :sm="6" :md="4" :lg="3" :xl="1">
-      <el-link :underline="false" @click="this.$router.push('/posts')">主页</el-link>
-    </el-col>
-    <el-col v-show="login" :xs="6" :sm="6" :md="4" :lg="3" :xl="1">
-      <el-link :underline="false" @click="this.$router.push(`/user/${currentUser.username}`)"
-        >个人资料</el-link
-      >
-    </el-col>
-
-    <el-col v-show="login" :xs="6" :sm="6" :md="4" :lg="3" :xl="1" v-if="isCommentManage">
-      <el-link :underline="false" @click="this.$router.push('/commentManagement')"
-        >评论管理</el-link
-      >
-    </el-col>
-
-    <el-col v-if="!login" :xs="3" :sm="6" :md="4" :lg="3" :xl="1">
-      <el-link :underline="false" @click="this.$router.push('/login')">登录</el-link>
-    </el-col>
-    <el-col v-else :xs="5" :sm="6" :md="4" :lg="3" :xl="1" class="example-showcase">
-      <el-dropdown trigger="click" @command="handleCommand">
-        <span class="dropdown">
-          账户
-          <el-icon>
-            <i-ep-CaretBottom />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item @click="this.$router.push('/changePassword')"
-              >修改密码</el-dropdown-item
-            >
-            <el-dropdown-item v-if="isConfirmed" @click="this.$router.push('/changeEmail')"
-              >修改邮箱</el-dropdown-item
-            >
-            <el-dropdown-item @click="this.$router.push('/bindEmail')" v-else
-              >绑定邮箱</el-dropdown-item
-            >
-            <el-dropdown-item command="exit">退出</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown></el-col
-    >
-  </el-row>
-</template>
 <style scoped>
-.el-row {
-  margin-top: 1vh;
+.burger-menu {
+  width: 100%;
+  height: 6vh;
+  display: flex;
 }
-.el-link,
-.dropdown {
-  font-size: 1rem;
+/* 汉堡按钮样式 */
+.menu-toggle {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 10px;
+  display: none; /* 默认隐藏汉堡按钮，只有在屏幕小于500px时显示 */
+  margin-left: auto; /* 将汉堡按钮推到右边 */
+  margin-bottom: 10px;
+}
+
+.menu-toggle.active .line:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.menu-toggle.active .line:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active .line:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* 汉堡按钮的线条样式 */
+.menu-toggle .line {
+  width: 20px;
+  height: 3px;
+  background-color: #9d9d9d;
+  margin: 5px 0;
+  transition: transform 0.2s ease-in-out;
+}
+.menu-toggle:hover  .line{
+  background-color: #ffffff;
+}
+/* "Home" 标签样式 */
+.home {
+  margin-right: auto; /* 将 "Home" 标签推到左边 */
+  margin-top: 13px;
+  text-decoration: none;
+  font-size: 1.1rem;
   color: #9d9d9d;
 }
-.el-link:hover,
-.dropdown:hover {
+.home:hover {
   color: #ffffff;
 }
-.example-showcase {
-  cursor: pointer;
-  color: #9d9d9d;
+/* 菜单项容器样式 */
+.menu-container {
   display: flex;
   align-items: center;
 }
+
+/* 其他菜单项的样式 */
+.menu-list {
+  display: flex;
+  flex-wrap: nowrap;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.menu-list li {
+  white-space: nowrap;
+  margin-left: 20px; /* 为其他菜单项添加一些间距 */
+}
+
+.menu-list a {
+  text-decoration: none;
+  font-size: 1rem;
+  color: #9d9d9d;
+  padding: 10px 15px;
+  display: block; /* 使点击区域包括整个<a>标签 */
+}
+
+.menu-list a:hover {
+  color: #ffffff;
+}
+
+/* 其他菜单项在屏幕宽度小于500px时，被汉堡按钮控制 */
+.menu {
+  display: none;
+}
+
+.menu.is-active {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+}
+
+
+/* 下拉框样式 */
+.contact-dropdown {
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 300px;
+}
+.contact-dropdown a{
+  border-bottom: 2px solid rgb(240, 238, 238);
+}
+/* 下拉框的过渡效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 媒体查询，小于500px时的样式 */
+@media (max-width: 499px) {
+  .menu-toggle {
+    display: block; /* 显示汉堡按钮 */
+  }
+  .menu {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    z-index: 15;
+  }
+  .menu-list {
+    flex-direction: column;
+  }
+  .menu-list li {
+    border-bottom: 2px solid rgb(240, 238, 238);
+  }
+  .menu-list a {
+    color: black;
+  }
+  .menu-list a:hover {
+    background-color: #a9a5a5;
+  }
+}
+
+/* 媒体查询，大于等于500px时的样式 */
+@media (min-width: 500px) {
+  .menu {
+    display: flex; /* 菜单项始终显示 */
+  }
+  .menu-toggle {
+    display: none; /* 隐藏汉堡按钮 */
+  }
+  .contact-dropdown {
+    position: absolute;
+    z-index: 5;
+}
+.contact-dropdown a:hover{
+  color: black;
+}
+.home {
+  margin-right: auto; /* 将 "Home" 标签推到左边 */
+  margin-top: 17px;
+  text-decoration: none;
+  font-size: 1rem;
+  color: #9d9d9d;
+}
+}
+
 </style>

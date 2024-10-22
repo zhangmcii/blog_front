@@ -67,7 +67,10 @@ export default {
     }
   },
   mounted() {
-    this.getUserData(this.userName)
+    this.$nextTick(()=>{
+      this.getUserData(this.userName)
+    })
+
     this.getPermission(1)
     // 页面刷新手动加载一次pinia
     this.currentUser.loadUserName()
