@@ -270,7 +270,8 @@ export default {
     border-bottom: 2px solid rgb(240, 238, 238);
   }
   .menu-list a {
-    color: black;
+    font-size: 0.8rem;
+    color: #3c3c43;
   }
   .menu-list a:hover {
     background-color: #a9a5a5;
@@ -292,13 +293,7 @@ export default {
 .contact-dropdown a:hover{
   color: black;
 }
-.home {
-  margin-right: auto; /* 将 "Home" 标签推到左边 */
-  margin-top: 17px;
-  text-decoration: none;
-  font-size: 1rem;
-  color: #9d9d9d;
-}
+
 }
 
 </style>

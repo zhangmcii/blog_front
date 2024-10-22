@@ -20,6 +20,16 @@ export default {
   mounted() {
     this.getFollowList()
   },
+  computed:{
+    followEmpty(){
+      return this.follows.length == 0 && this.action == 'follower'
+    },
+    followedEmpty(){
+      return this.follows.length == 0 && this.action == 'followed'
+    }
+
+
+  },
   methods: {
     load() {},
     getFan() {
@@ -48,7 +58,7 @@ export default {
 </script>
 
 <template>
-  <ul v-infinite-scroll="load" class="infinite-list" style="overflow: auto">
+  <ul v-infinite-scroll="load" class="infinite-list" style="overflow: auto" v-if="follows.length>0">
     <el-link
       :underline="false"
       v-for="i in follows"
@@ -58,6 +68,11 @@ export default {
       >{{ i.username }}</el-link
     >
   </ul>
+  <ul>
+    <el-empty :image-size="200" description="还没有粉丝哦" v-if="followEmpty" />
+    <el-empty :image-size="200" description="还未关注他人呢" v-if="followedEmpty" />
+  </ul>
+
 </template>
 <style scoped>
 .infinite-list {

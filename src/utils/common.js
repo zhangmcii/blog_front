@@ -9,7 +9,6 @@ export default {
     // 计算 inputDate 与今天日期的差值，单位为天
     const diff = today.diff(inputDate, 'day')
     // 如果差值为 -1，则说明 inputDate 是昨天
-    console.log('diff', diff)
     return diff === 1
   }
 }

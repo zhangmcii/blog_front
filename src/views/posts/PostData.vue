@@ -1,12 +1,16 @@
 <script>
+import { defineAsyncComponent, hydrateOnVisible } from 'vue'
 import PostCard from './PostCard.vue'
-import PostPublish from './PostPublish.vue'
 import postApi from '@/api/posts/postApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
+
 export default {
   components: {
     PostCard,
-    PostPublish
+    PostPublish: defineAsyncComponent({
+      loader: () => import('./PostPublish.vue'),
+      hydrate: hydrateOnVisible()
+    })
   },
   data() {
     return {

@@ -1,6 +1,6 @@
 <script>
+import { defineAsyncComponent } from 'vue'
 import commentApi from '@/api/comment/commentApi.js'
-import PostCard from '../posts/PostCard.vue'
 import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   props: {
@@ -12,7 +12,7 @@ export default {
     }
   },
   components: {
-    PostCard
+    PostCard: defineAsyncComponent(() => import('../posts/PostCard.vue'))
   },
   data() {
     return {

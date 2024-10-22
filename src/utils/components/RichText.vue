@@ -21,11 +21,7 @@ export default {
     }
   },
   mounted() {
-    this.toolbarConfig.excludeKeys = ['group-image', 'group-video']
-    // this.$nextTick(() => {
-    //   console.log('body', this.bodyInit)
-    //   console.log('bodyHtml', this.bodyHtmlInit)
-    // })
+    this.toolbarConfig.excludeKeys = ['group-image', 'group-video','insertTable','fullScreen']
   },
   methods: {
     onCreated(editor) {
@@ -61,7 +57,7 @@ export default {
       :mode="mode"
     />
     <Editor
-      style="height: 270px; overflow-y: hidden"
+      style="height: 300px; overflow-y: hidden"
       v-model="bodyHtml"
       :defaultConfig="editorConfig"
       :mode="mode"
