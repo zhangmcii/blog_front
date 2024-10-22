@@ -19,7 +19,7 @@
           <li v-show="login">
             <a :href="`/user/${currentUser.username}`">个人资料</a>
           </li>
-          <li v-show="login">
+          <li v-if="isCommentManage">
             <a href="/commentManagement">评论管理</a>
           </li>
           <li v-if="!login" class="login-text"><a href="/login">登录</a></li>
