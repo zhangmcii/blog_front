@@ -24,7 +24,7 @@ export default {
 
 <style>
 .el-header {
-  height: 6vh;
+  height: 45px;
   background-color: #000000;
 }
 .el-scrollbar {
@@ -33,4 +33,9 @@ export default {
   */
   height: calc(100vh - 6vh - var(--el-main-padding) * 2 - 3vh);
 }
+body {
+  /* 移动端点击可点击元素时，出现蓝色默认背景色 */
+  -webkit-tap-highlight-color: transparent;
+}
+
 </style>

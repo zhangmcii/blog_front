@@ -9,7 +9,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
-
+import AppLoading from 'vite-plugin-app-loading'
 export default defineConfig({
   plugins: [
     vue(),
@@ -33,7 +33,8 @@ export default defineConfig({
     }),
     Icons({
       autoInstall: true
-    })
+    }),
+    AppLoading()
   ],
   resolve: {
     alias: {

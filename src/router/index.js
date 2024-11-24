@@ -90,7 +90,12 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/posts'
-    }
+    },
+    {
+      path: '/login1',
+      name: 'login1',
+      component: () => import('@/views/login/LoginPage1.vue')
+    },
   ]
 })
 export default router

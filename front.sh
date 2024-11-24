@@ -5,7 +5,7 @@ function front_to_remote(){
 
     # 对项目打包
     cd $base_path
-    npm run build
+    npm run build --mode=production
 
     # 删除上次的压缩包
     front_tar=$base_path"flasky_front.tar"
@@ -14,7 +14,7 @@ function front_to_remote(){
         echo "已删除 $front_tar"
     fi
     docker build -t nizhenshi/flasky_front $base_path
-    docker save -o $base_path"flasky_front.tar" nizhenshi/flasky_front
+    docker save -o $front_tar nizhenshi/flasky_front
 
 
     ROMOTE_USER="root"
