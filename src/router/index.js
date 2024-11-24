@@ -13,12 +13,6 @@ const router = createRouter({
           name: 'history',
           component: () => import('../views/data_manage/HistoryData.vue')
         },
-        // 登陆页面
-        {
-          path: '/login',
-          name: 'login',
-          component: () => import('@/views/login/LoginPage.vue')
-        },
         {
           path: '/posts',
           name: 'posts',
@@ -91,10 +85,11 @@ const router = createRouter({
       path: '/',
       redirect: '/posts'
     },
+     // 登陆页面
     {
-      path: '/login1',
-      name: 'login1',
-      component: () => import('@/views/login/LoginPage1.vue')
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/login/LoginPage.vue')
     },
   ]
 })
