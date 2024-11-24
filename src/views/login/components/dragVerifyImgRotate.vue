@@ -55,7 +55,6 @@
         >
         <el-icon v-if="verifySuccess"><i-ep-CircleCheck/></el-icon>
         <el-icon v-else><i-ep-DArrowRight/></el-icon>
-          <!-- <i :class="handlerIcon"></i> -->
         </div>
       </div>
     </div>
@@ -344,6 +343,7 @@
     text-align: center;
     overflow: hidden;
     border:1px solid #e8e8e8;
+    margin-top:1vh;
   }
   .drag_verify .dv_handler {
     position: absolute;

@@ -1,6 +1,6 @@
 <script>
 import dragVerifyImgRotate from './components/dragVerifyImgRotate.vue'
-import img from '../../assets/img/Snipaste_800.png'
+import img from '../../assets/img/cherry.jpg'
 
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
@@ -60,30 +60,30 @@ export default {
     login() {
       if(this.ruleForm.isPassing2){
         this.loading = true
-      // 判断是否勾选记住密码
-      this.hasRemember()
-      authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
-        if (res.data.msg == '登录成功') {
+        authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
+          if (res.data.msg == '登录成功') {
+            this.loading = false
+            // 判断是否勾选记住密码
+            this.hasRemember()
+            this.currentUser.saveToken(res.data.token)
+            this.currentUser.saveUserName(res.data.username)
+            this.currentUser.saveAdmin(res.data.admin)
+            this.currentUser.saveRoleId(res.data.roleId)
+            this.currentUser.saveConfirmed(res.data.isConfirmed)
+            this.$message({
+              message: res.data.msg,
+              type: 'success',
+              duration: 1700
+            })
+            this.$router.push({ path: '/posts' })
+            return
+          }
           this.loading = false
-          this.currentUser.saveToken(res.data.token)
-          this.currentUser.saveUserName(res.data.username)
-          this.currentUser.saveAdmin(res.data.admin)
-          this.currentUser.saveRoleId(res.data.roleId)
-          this.currentUser.saveConfirmed(res.data.isConfirmed)
           this.$message({
             message: res.data.msg,
-            type: 'success',
+            type: 'error',
             duration: 1700
           })
-          this.$router.push({ path: '/posts' })
-          return
-        }
-        this.loading = false
-        this.$message({
-          message: res.data.msg,
-          type: 'error',
-          duration: 1700
-        })
       })
       }else{
         this.$message('请先完成验证')
