@@ -8,24 +8,23 @@ export default {
 </script>
 
 <template>
-  <div class="common-layout">
     <el-container>
       <el-header>
         <AppHeader />
       </el-header>
+      <el-divider />
       <el-main>
         <el-scrollbar>
           <router-view />
         </el-scrollbar>
       </el-main>
     </el-container>
-  </div>
 </template>
 
 <style>
 .el-header {
   height: 45px;
-  background-color: #000000;
+  /* background-color: #FFFFFF; */
 }
 .el-scrollbar {
   /* 6vh header高度
@@ -36,6 +35,9 @@ export default {
 body {
   /* 移动端点击可点击元素时，出现蓝色默认背景色 */
   -webkit-tap-highlight-color: transparent;
+}
+.el-divider--horizontal {
+  margin:2px 0px;
 }
 
 </style>

@@ -1,7 +1,6 @@
 <script>
 import dragVerifyImgRotate from './components/dragVerifyImgRotate.vue'
-import img from '../../assets/img/cherry.jpg'
-
+import img from '../../assets/img/cherry.webp'
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
@@ -30,24 +29,24 @@ export default {
       ruleForm: {
         user: '',
         pass: '',
-       isPassing2:false,
+        isPassing2: false
       },
       rules: {
         user: [{ validator: validatePass, trigger: 'blur' }],
         pass: [{ validator: validatePass2, trigger: 'blur' }]
       },
       // 是否记住账号密码
-      isRemember:false,
-      loading:false
+      isRemember: false,
+      loading: false
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     return { currentUser }
   },
-  computed:{
-    imgPic(){
-      return  img
+  computed: {
+    imgPic() {
+      return img
     },
     formHasValue() {
       return this.ruleForm.user != '' || this.ruleForm.pass != ''
@@ -58,7 +57,7 @@ export default {
   },
   methods: {
     login() {
-      if(this.ruleForm.isPassing2){
+      if (this.ruleForm.isPassing2) {
         this.loading = true
         authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
           if (res.data.msg == '登录成功') {
@@ -84,21 +83,19 @@ export default {
             type: 'error',
             duration: 1700
           })
-      })
-      }else{
+        })
+      } else {
         this.$message('请先完成验证')
       }
-     
     },
-     //  检查本地存储是否有记住的账号密码，如果有则填充到输入框中
-     getAccount() {
+    //  检查本地存储是否有记住的账号密码，如果有则填充到输入框中
+    getAccount() {
       const savedUsername = localStorage.getItem('loginUsername')
       const savedPassword = localStorage.getItem('loginPassword')
       if (savedUsername && savedPassword) {
         this.ruleForm.user = savedUsername
         this.ruleForm.pass = savedPassword
         this.isRemember = true
-        
       }
     },
     // 判断是否勾选记住密码
@@ -123,13 +120,15 @@ export default {
     <p>请输入您的账号信息来开始您的博客之旅</p>
   </div>
 
-  <el-form :model="ruleForm"
-      label-position="left"
-      status-icon
-      :rules="rules"
-      ref="ruleForm"
-      style="max-width: 600px">
-    <el-form-item  prop="user">
+  <el-form
+    :model="ruleForm"
+    label-position="left"
+    status-icon
+    :rules="rules"
+    ref="ruleForm"
+    style="max-width: 600px"
+  >
+    <el-form-item prop="user">
       <el-input v-model="ruleForm.user" size="large" placeholder="请输入用户名" />
     </el-form-item>
     <el-form-item prop="pass">
@@ -148,13 +147,19 @@ export default {
     </el-form-item>
   </el-form>
   <el-row justify="space-between">
-    <el-col :span="4"><el-checkbox label="记住密码" v-model="isRemember" ></el-checkbox></el-col>
+    <el-col :span="4"><el-checkbox label="记住密码" v-model="isRemember"></el-checkbox></el-col>
     <el-col :span="6"
-      ><div class="text"><el-link class="forget-pass" @click="this.$router.push('/resetPassword')">忘记密码？</el-link></div></el-col
+      ><div class="text">
+        <el-link class="forget-pass" @click="this.$router.push('/resetPassword')"
+          >忘记密码？</el-link
+        >
+      </div></el-col
     >
   </el-row>
 
-  <el-button type="primary" round :disabled="!formHasValue" @click="login" :loading="loading">登录</el-button>
+  <el-button type="primary" round :disabled="!formHasValue" @click="login" :loading="loading"
+    >登录</el-button
+  >
 
   <!-- <el-divider> 其他登录方式 </el-divider> -->
   <div class="register-container">
@@ -187,9 +192,7 @@ textarea {
 :deep(.el-checkbox__input.is-checked + .el-checkbox__label) {
   color: #323639;
 }
-/* .el-checkbox {
-  padding-left: 5px;
-} */
+
 .text {
   height: 90%;
   height: 32px;

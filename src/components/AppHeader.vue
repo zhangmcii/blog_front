@@ -168,12 +168,12 @@ export default {
 .menu-toggle .line {
   width: 20px;
   height: 3px;
-  background-color: #9d9d9d;
+  background-color: #606266;
   margin: 5px 0;
   transition: transform 0.2s ease-in-out;
 }
 .menu-toggle:hover  .line{
-  background-color: #ffffff;
+  background-color: #C0C4CC;
 }
 /* "Home" 标签样式 */
 .home {
@@ -181,10 +181,10 @@ export default {
   margin-top: 13px;
   text-decoration: none;
   font-size: 1.1rem;
-  color: #9d9d9d;
+  color: #303133;
 }
 .home:hover {
-  color: #ffffff;
+  color: #C0C4CC;
 }
 /* 菜单项容器样式 */
 .menu-container {
@@ -209,13 +209,13 @@ export default {
 .menu-list a {
   text-decoration: none;
   font-size: 1rem;
-  color: #9d9d9d;
+  color: #303133;
   padding: 10px 15px;
   display: block; /* 使点击区域包括整个<a>标签 */
 }
 
 .menu-list a:hover {
-  color: #ffffff;
+  color: #C0C4CC;
 }
 
 /* 其他菜单项在屏幕宽度小于500px时，被汉堡按钮控制 */
@@ -275,6 +275,7 @@ export default {
   }
   .menu-list a:hover {
     background-color: #a9a5a5;
+    color: #606266;
   }
   .login-text{
     margin-right: 20px;
