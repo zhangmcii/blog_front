@@ -11,6 +11,7 @@ import axios from 'axios'
 // 引入css样式
 import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/index.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 // element plus配置为中文
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'

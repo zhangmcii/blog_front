@@ -1,6 +1,5 @@
 <script>
 import dragVerifyImgRotate from './components/dragVerifyImgRotate.vue'
-import img from '../../assets/img/cherry.webp'
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
@@ -46,7 +45,7 @@ export default {
   },
   computed: {
     imgPic() {
-      return img
+      return 'https://www.helloimg.com/i/2024/12/06/6752f19798224.jpg'
     },
     formHasValue() {
       return this.ruleForm.user != '' || this.ruleForm.pass != ''

@@ -36,6 +36,15 @@
               </div>
             </transition>
           </li>
+          <!-- <li>
+            <el-switch
+              v-model="isDark"
+              style="--el-switch-on-color: #303133; --el-switch-off-color: #c0c4cc"
+              :active-action-icon="_Moon"
+              :inactive-action-icon="_Sunny"
+              @change="toggleDark"
+            />
+          </li> -->
         </ul>
       </div>
     </div>
@@ -44,6 +53,8 @@
 
 <script>
 import { useCurrentUserStore } from '@/stores/currentUser'
+// import { useDark } from "@pureadmin/utils";
+// import { Sunny, Moon } from '@element-plus/icons-vue'
 export default {
   name: 'BurgerMenu',
   data() {
@@ -61,6 +72,8 @@ export default {
   },
   setup() {
     const currentUser = useCurrentUserStore()
+    // const { isDark, toggleDark } = useDark();
+    // return { currentUser,isDark, toggleDark }
     return { currentUser }
   },
   computed: {
@@ -73,7 +86,13 @@ export default {
     },
     isConfirmed() {
       return this.currentUser.isConfirmed == 'true'
-    }
+    },
+    // _Moon(){
+    //   return Moon
+    // },
+    // _Sunny(){
+    //   return Sunny
+    // }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -172,8 +191,8 @@ export default {
   margin: 5px 0;
   transition: transform 0.2s ease-in-out;
 }
-.menu-toggle:hover  .line{
-  background-color: #C0C4CC;
+.menu-toggle:hover .line {
+  background-color: #c0c4cc;
 }
 /* "Home" 标签样式 */
 .home {
@@ -184,7 +203,7 @@ export default {
   color: #303133;
 }
 .home:hover {
-  color: #C0C4CC;
+  color: #c0c4cc;
 }
 /* 菜单项容器样式 */
 .menu-container {
@@ -215,7 +234,7 @@ export default {
 }
 
 .menu-list a:hover {
-  color: #C0C4CC;
+  color: #c0c4cc;
 }
 
 /* 其他菜单项在屏幕宽度小于500px时，被汉堡按钮控制 */
@@ -230,7 +249,6 @@ export default {
   width: 100%;
 }
 
-
 /* 下拉框样式 */
 .contact-dropdown {
   background-color: white;
@@ -239,7 +257,7 @@ export default {
   width: 100%;
   max-width: 300px;
 }
-.contact-dropdown a{
+.contact-dropdown a {
   border-bottom: 2px solid rgb(240, 238, 238);
 }
 /* 下拉框的过渡效果 */
@@ -277,7 +295,7 @@ export default {
     background-color: #a9a5a5;
     color: #606266;
   }
-  .login-text{
+  .login-text {
     margin-right: 20px;
   }
 }
@@ -293,11 +311,9 @@ export default {
   .contact-dropdown {
     position: absolute;
     z-index: 5;
+  }
+  .contact-dropdown a:hover {
+    color: black;
+  }
 }
-.contact-dropdown a:hover{
-  color: black;
-}
-
-}
-
 </style>
