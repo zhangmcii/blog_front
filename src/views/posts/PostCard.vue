@@ -28,6 +28,12 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    
+    // 卡片的背景颜色
+    cardBgColor:{
+      type: String,
+      default: 'white'
     }
   },
   data() {
@@ -131,5 +137,8 @@ export default {
 }
 :deep(.el-card__body) {
   padding: 5px 20px;
+}
+.el-card {
+  background-color:  v-bind(cardBgColor);
 }
 </style>

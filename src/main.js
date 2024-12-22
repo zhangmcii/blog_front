@@ -10,7 +10,7 @@ import updateLocale from 'dayjs/plugin/updateLocale'
 import axios from 'axios'
 // 引入css样式
 import { ElMessage } from 'element-plus'
-import 'element-plus/theme-chalk/index.css'
+import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 // element plus配置为中文
 import ElementPlus from 'element-plus'
