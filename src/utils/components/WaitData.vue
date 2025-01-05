@@ -1,3 +1,6 @@
+<!-- 父组件使用
+  <WaitData content="加载中..." :stop_loading="loading" />
+-->
 <script>
 export default {
   props: {
@@ -10,6 +13,11 @@ export default {
     stop_loading: {
       type: Boolean,
       default: false
+    },
+    // 文字出现的位置 'center', 'left', 'right'
+    position:{
+      type:String,
+      default:'center'
     }
   },
   emits: ['doSearch']
@@ -17,13 +25,20 @@ export default {
 </script>
 
 <template>
-  <div v-show="stop_loading">{{ content }}</div>
+  <div v-show="stop_loading">
+    <el-text>
+      {{ content }}
+    </el-text>
+   </div>
 </template>
 <style scoped>
 div {
+  width: 100%;
+  text-align: v-bind(position);
+}
+.el-text {
   animation: blink 2s infinite;
 }
-
 @keyframes blink {
   0% {
     color: white;

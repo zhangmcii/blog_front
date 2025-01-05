@@ -2,6 +2,8 @@
 import { defineAsyncComponent } from 'vue'
 import commentApi from '@/api/comment/commentApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
+import emitter from '@/utils/emitter.js'
+import WaitData from '@/utils/components/WaitData.vue'
 export default {
   props: {
     postId: {
@@ -12,7 +14,8 @@ export default {
     }
   },
   components: {
-    PostCard: defineAsyncComponent(() => import('../posts/PostCard.vue'))
+    PostCard: defineAsyncComponent(() => import('../posts/PostCard.vue')),
+    WaitData
   },
   data() {
     return {
@@ -20,9 +23,13 @@ export default {
         author: 'zz',
         body: ''
       },
-      comments: {},
+      comments: [],
+
       currentPage: 1,
-      comments_count: 0,
+      pageSize: 10,
+      loading: false,
+      allLoaded: false,
+
       drawer: false,
       currentComment: ''
     }
@@ -36,33 +43,40 @@ export default {
       this.getComment()
     })
     this.currentUser.loadToken()
+    emitter.on('scroll', () => {
+      if (!this.loading && !this.allLoaded) {
+        this.getComment()
+      }
+    })
   },
   methods: {
     submit() {
       commentApi.submitComment(this.postId, { body: this.submitComment.body }).then((res) => {
         if (res.data.msg == 'success') {
+          this.comments.push(res.data.data.at(-1))
           this.submitComment.body = ''
-          this.comments = res.data.data
-          this.currentPage = res.data.currentPage
           this.$message.success('评论成功')
         } else {
           this.$message.error(res.data.detail)
         }
       })
     },
-    getComment(page = 1) {
-      commentApi.getComment(this.postId, page).then((res) => {
+    getComment() {
+      this.loading = true
+      commentApi.getComment(this.postId, this.currentPage).then((res) => {
         if (res.data.msg == 'success') {
-          this.comments = res.data.data
-          this.comments_count = res.data.total
+          this.loading = false
+          const d = res.data.data
+          if (d.length < this.pageSize) {
+            this.allLoaded = true // 如果返回的数据不足一页，标记为全部加载
+          }
+          this.comments = [...this.comments, ...d]
+          this.currentPage++
         }
       })
     },
-    handleCurrentChange() {
-      this.getComment(this.currentPage)
-    },
     showDrawer(commentData) {
-      if (commentData.disabled) {
+      if (commentData.disabled || this.currentUser.token == '') {
         return
       }
       this.drawer = !this.drawer
@@ -88,40 +102,35 @@ export default {
         :autosize="{ minRows: 2, maxRows: 4 }"
         type="textarea"
       />
-      <el-button class="submit-button" @click="submit">提交</el-button>
+      <el-button class="submit-button" :disabled="!submitComment.body" @click="submit">提交</el-button>
     </el-col>
   </el-row>
 
   <el-row>
-    <el-divider content-position="left" v-if="comments_count">全部评论</el-divider>
+    <el-divider content-position="left" v-if="comments.length">全部评论</el-divider>
     <el-col :span="24">
-      <PostCard
-        v-for="item in comments"
-        :key="item"
-        :post="item"
-        :func-switch="false"
-        @click="showDrawer(item)"
-      >
-        <template #default>
-          <PostCard
-            v-if="item.parent_comment_id"
-            :post="comments.find((x) => x.id === item.parent_comment_id)"
-            :func-switch="false"
-            cardBgColor="rgb(243.9, 244.2, 244.8)"
-          >
-          </PostCard>
-        </template>
-      </PostCard>
+        <PostCard
+          v-for="item in comments"
+          :key="item"
+          :post="item"
+          :func-switch="false"
+          @click="showDrawer(item)"
+        >
+          <template #default>
+            <PostCard
+              v-if="item.parent_comment_id"
+              :post="comments.find((x) => x.id === item.parent_comment_id)"
+              :func-switch="false"
+              cardBgColor="rgb(243.9, 244.2, 244.8)"
+            >
+            </PostCard>
+          </template>
+        </PostCard>
     </el-col>
-    <el-pagination
-      v-model:current-page="currentPage"
-      :page-size="10"
-      layout="total, prev, pager, next"
-      :total="comments_count"
-      @current-change="handleCurrentChange"
-      :hide-on-single-page="true"
-      :pager-count="5"
-    />
+    <WaitData content="加载中..." :stop_loading="loading" />
+    <div class="no-more-comment">
+      <el-text v-if="allLoaded">没有更多内容了</el-text>
+    </div>
     <el-drawer v-model="drawer" direction="btt" :with-header="false" size="15%">
       <el-row
         ><el-button type="primary" text class="comment-button" @click="jumpReplyPage"
@@ -152,10 +161,10 @@ export default {
 :deep(.el-drawer__body) {
   padding: 0px;
 }
-/* .comment-link:active {
-  background: #ccc;
-} */
-/* .comment-link:hover {
-  background: #ccc;
-} */
+.no-more-comment {
+  width: 100%;
+  text-align: center;
+  /* display: flex;
+  justify-content: center; */
+}
 </style>

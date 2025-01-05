@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import dayjs from '../config/dayjsCfg'
 
 export default {
   isYesterday(date) {

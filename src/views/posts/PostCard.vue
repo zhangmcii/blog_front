@@ -1,6 +1,6 @@
 <script>
 import { useCurrentUserStore } from '@/stores/currentUser'
-import dayjs from 'dayjs'
+import common from '@/utils/common.js'
 export default {
   props: {
     post: {
@@ -29,9 +29,9 @@ export default {
       type: Boolean,
       default: false
     },
-    
+
     // 卡片的背景颜色
-    cardBgColor:{
+    cardBgColor: {
       type: String,
       default: 'white'
     }
@@ -45,11 +45,11 @@ export default {
   },
   computed: {
     from_now() {
-      if (this.isYesterday(this.post.timestamp)) {
-        let time = dayjs(this.post.timestamp).format('HH:mm')
+      if (common.isYesterday(this.post.timestamp)) {
+        let time = this.$dayjs(this.post.timestamp).format('HH:mm')
         return `昨天 ${time}`
       }
-      return dayjs(this.post.timestamp).fromNow()
+      return this.$dayjs(this.post.timestamp).fromNow()
     },
     isCommentManage() {
       return this.currentUser.roleId >= 2
@@ -63,16 +63,6 @@ export default {
     this.currentUser.loadRoleId()
   },
   methods: {
-    isYesterday(date) {
-      // 将输入的日期字符串转换为 dayjs 对象
-      const inputDate = dayjs(date).startOf('day')
-      // 获取当前日期的 dayjs 对象
-      const today = dayjs().startOf('day')
-      // 计算 inputDate 与今天日期的差值，单位为天
-      const diff = today.diff(inputDate, 'day')
-      // 如果差值为 -1，则说明 inputDate 是昨天
-      return diff === 1
-    },
     share() {
       this.$router.push(`/share/${this.post.id}`)
     },
@@ -139,6 +129,6 @@ export default {
   padding: 5px 20px;
 }
 .el-card {
-  background-color:  v-bind(cardBgColor);
+  background-color: v-bind(cardBgColor);
 }
 </style>

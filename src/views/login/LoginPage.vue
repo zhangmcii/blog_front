@@ -2,9 +2,10 @@
 import dragVerifyImgRotate from './components/dragVerifyImgRotate.vue'
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
+import cherry from '@/asset/cherry1.webp'
 export default {
   components: {
-    dragVerifyImgRotate,
+    dragVerifyImgRotate
   },
   data() {
     var validatePass = (rule, value, callback) => {
@@ -36,7 +37,8 @@ export default {
       },
       // 是否记住账号密码
       isRemember: false,
-      loading: false
+      loading: false,
+      imgPic: 'https://www.helloimg.com/i/2024/12/06/6752f19798224.jpg'
     }
   },
   setup() {
@@ -44,9 +46,6 @@ export default {
     return { currentUser }
   },
   computed: {
-    imgPic() {
-      return 'https://www.helloimg.com/i/2024/12/06/6752f19798224.jpg'
-    },
     formHasValue() {
       return this.ruleForm.user != '' || this.ruleForm.pass != ''
     }
@@ -108,6 +107,9 @@ export default {
         localStorage.removeItem('loginUsername')
         localStorage.removeItem('loginPassword')
       }
+    },
+    handleImageError() {
+      this.imgPic = cherry
     }
   }
 }
@@ -140,7 +142,7 @@ export default {
         v-model:isPassing="ruleForm.isPassing2"
         text="请按住滑块拖动"
         successText="验证通过"
-        @refresh="reimg"
+        @img-error="handleImageError"
       >
       </drag-verify-img-rotate>
     </el-form-item>

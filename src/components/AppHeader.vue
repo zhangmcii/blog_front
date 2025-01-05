@@ -133,6 +133,7 @@ export default {
       localStorage.removeItem('roleId')
       localStorage.removeItem('userName')
       localStorage.removeItem('isConfirmed')
+      localStorage.removeItem('currentComment')
       // 更新pinia
       this.currentUser.loadUserName()
       // 退出后跳转到主页面 隐藏发布文章区域
