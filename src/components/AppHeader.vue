@@ -2,6 +2,8 @@
   <div class="burger-menu">
     <!-- "Home" 标签始终显示 -->
     <a href="/posts" class="home">主页</a>
+    <MarQuee :text=daySentence :speed="0.7"/>
+
     <!-- 汉堡按钮，只在屏幕尺寸小于500px时显示 -->
     <button
       class="menu-toggle"
@@ -11,6 +13,7 @@
     >
       <div class="line" v-for="line in 3" :key="line"></div>
     </button>
+
     <!-- 菜单项容器 -->
     <div class="menu-container">
       <!-- 其他菜单项，响应式显示 -->
@@ -36,15 +39,6 @@
               </div>
             </transition>
           </li>
-          <!-- <li>
-            <el-switch
-              v-model="isDark"
-              style="--el-switch-on-color: #303133; --el-switch-off-color: #c0c4cc"
-              :active-action-icon="_Moon"
-              :inactive-action-icon="_Sunny"
-              @change="toggleDark"
-            />
-          </li> -->
         </ul>
       </div>
     </div>
@@ -53,10 +47,13 @@
 
 <script>
 import { useCurrentUserStore } from '@/stores/currentUser'
-// import { useDark } from "@pureadmin/utils";
-// import { Sunny, Moon } from '@element-plus/icons-vue'
+import MarQuee from '@/utils/components/MarQuee.vue'
+import daysApi from '@/api/days/daysApi.js'
 export default {
   name: 'BurgerMenu',
+  components: {
+    MarQuee
+  },
   data() {
     return {
       isActive: false,
@@ -67,13 +64,12 @@ export default {
         { label: 'Contact', href: '#' }
       ],
       isContactDropdownActive: false,
-      accountLabel: '账户'
+      accountLabel: '账户',
+      daySentence:''
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
-    // const { isDark, toggleDark } = useDark();
-    // return { currentUser,isDark, toggleDark }
     return { currentUser }
   },
   computed: {
@@ -86,13 +82,7 @@ export default {
     },
     isConfirmed() {
       return this.currentUser.isConfirmed == 'true'
-    },
-    // _Moon(){
-    //   return Moon
-    // },
-    // _Sunny(){
-    //   return Sunny
-    // }
+    }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -104,6 +94,7 @@ export default {
     this.currentUser.loadUserName()
     this.currentUser.loadRoleId()
     this.currentUser.loadConfirmed()
+    this.daySentence = daysApi.fetchQuote()
   },
   created() {
     window.addEventListener('resize', this.updateWindowWidth)
@@ -202,6 +193,8 @@ export default {
   text-decoration: none;
   font-size: 1.1rem;
   color: #303133;
+  white-space: nowrap;
+  margin-right:3px;
 }
 .home:hover {
   color: #c0c4cc;
