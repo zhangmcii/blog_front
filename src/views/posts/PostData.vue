@@ -15,8 +15,8 @@ export default {
   data() {
     return {
       activeName: 'all',
-      posts: [],
-      posts_count: 0,
+      posts: [{},{}],
+      posts_count: -1,
       loading: false,
       currentPage: 1
     }
@@ -62,17 +62,18 @@ export default {
     @posts-result="getPostsResult"
     v-if="currentUser.token != ''"
   />
-  <Transition name="fade" mode="out-in">
     <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
       <el-tab-pane label="广场" name="all">
         <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
-        <PostCard v-for="item in posts" :key="item.id" :post="item" />
+        <PostCard v-for="item in posts" :key="item.id" :post="item" :loading="Object.keys(item).length === 0"/>
       </el-tab-pane>
       <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
         <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
-        <PostCard v-for="item in posts" :key="item.id" :post="item" />
+        <PostCard v-for="item in posts" :key="item.id" :post="item" :loading="Object.keys(item).length === 0"/>
       </el-tab-pane>
     </el-tabs>
+  <Transition name="fade" mode="out-in">
+
   </Transition>
   <el-pagination
     v-model:current-page="currentPage"

@@ -78,42 +78,53 @@ export default {
 
 <template>
   <el-card shadow="hover">
-    <el-row justify="space-between">
-      <el-col :xs="18" :sm="18" :md="10" :lg="10" :xl="10">
-        <el-link
-          target="_blank"
-          type="primary"
-          @click="this.$router.push(`/user/${post.author}`)"
-          >{{ post.author }}</el-link
-        >
-      </el-col>
-      <el-col :xs="6" :sm="3" :md="2" :lg="3" :xl="3" :push="2">
-        <el-text class="mx-1" size="small">{{ from_now }}</el-text>
-      </el-col>
-    </el-row>
-    <el-row v-if="post.disabled">
-      <p><i>此评论已被版主禁用</i></p>
-    </el-row>
-    <el-row><div v-if="post.body_html && show_body" v-html="post.body_html"></div></el-row>
-    <el-row v-if="!post.body_html && show_body">{{ post.body }}</el-row>
+    <el-skeleton :rows="4" animated :loading="loading">
+      <template #default>
+        <el-row justify="space-between">
+          <el-col :xs="18" :sm="18" :md="10" :lg="10" :xl="10">
+            <el-link
+              target="_blank"
+              type="primary"
+              @click="this.$router.push(`/user/${post.author}`)"
+              >{{ post.author }}</el-link
+            >
+          </el-col>
+          <el-col :xs="6" :sm="3" :md="2" :lg="3" :xl="3" :push="2">
+            <el-text class="mx-1" size="small">{{ from_now }}</el-text>
+          </el-col>
+        </el-row>
+        <el-row v-if="post.disabled">
+          <p><i>此评论已被版主禁用</i></p>
+        </el-row>
+        <el-row><div v-if="post.body_html && show_body" v-html="post.body_html"></div></el-row>
+        <el-row v-if="!post.body_html && show_body">{{ post.body }}</el-row>
 
-    <el-row :gutter="35" justify="end" v-if="funcSwitch">
-      <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="post.author == currentUser.username">
-        <el-button type="info" size="small" @click="edit">编辑</el-button>
-      </el-col>
-      <el-col :xs="7" :sm="4" :md="2" :lg="2" :xl="2" v-else-if="currentUser.isAdmin == 'true'">
-        <el-button type="danger" size="small" @click="edit">编辑[管理员] </el-button>
-      </el-col>
-      <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2">
-        <el-button type="info" size="small" @click="share">分享</el-button>
-      </el-col>
-      <el-col :xs="6" :sm="6" :md="4" :lg="2" :xl="2">
-        <el-button type="primary" size="small" @click="comment"
-          >{{ post.comment_count }} 评论</el-button
-        >
-      </el-col>
-    </el-row>
-    <slot></slot>
+        <el-row :gutter="35" justify="end" v-if="funcSwitch">
+          <el-col
+            :xs="4"
+            :sm="4"
+            :md="2"
+            :lg="2"
+            :xl="2"
+            v-if="post.author == currentUser.username"
+          >
+            <el-button type="info" size="small" @click="edit">编辑</el-button>
+          </el-col>
+          <el-col :xs="7" :sm="4" :md="2" :lg="2" :xl="2" v-else-if="currentUser.isAdmin == 'true'">
+            <el-button type="danger" size="small" @click="edit">编辑[管理员] </el-button>
+          </el-col>
+          <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2">
+            <el-button type="info" size="small" @click="share">分享</el-button>
+          </el-col>
+          <el-col :xs="6" :sm="6" :md="4" :lg="2" :xl="2">
+            <el-button type="primary" size="small" @click="comment"
+              >{{ post.comment_count }} 评论</el-button
+            >
+          </el-col>
+        </el-row>
+        <slot></slot>
+      </template>
+    </el-skeleton>
   </el-card>
 </template>
 <style scoped>

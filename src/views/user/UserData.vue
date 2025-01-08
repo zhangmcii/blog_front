@@ -30,7 +30,10 @@ export default {
       posts: {},
       currentPage: 1,
       posts_count: 0,
-      followPerm: false
+      followPerm: false,
+      loading:{
+        userData:false,
+      }
     }
   },
   setup() {
@@ -67,7 +70,7 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(()=>{
+    this.$nextTick(() => {
       this.getUserData(this.userName)
     })
 
@@ -86,6 +89,7 @@ export default {
   },
   methods: {
     getUserData(userName, page) {
+      this.loading.userData = true
       if (!userName) {
         this.otherUser.loadUserName()
         userName = this.otherUser.username
@@ -95,6 +99,7 @@ export default {
         return
       }
       userApi.get_user(userName, page).then((res) => {
+        this.loading.userData = false
         this.user = res.data.data
         this.posts = res.data.posts
         this.posts_count = res.data.total
@@ -159,35 +164,39 @@ export default {
       </div>
     </template>
 
-    <el-row v-if="user.about_me">
-      <el-col :xs="6" :xl="4">签名</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ user.about_me }}</el-col>
-    </el-row>
+    <el-skeleton :rows="5" animated :loading="loading.userData">
+      <template #default>
+        <el-row v-if="user.about_me">
+          <el-col :xs="6" :xl="4">签名</el-col>
+          <el-col :xs="8" :xl="10" :offset="2">{{ user.about_me }}</el-col>
+        </el-row>
 
-    <el-row v-if="user.name">
-      <el-col :xs="6" :xl="4">用户名</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
-    </el-row>
+        <el-row v-if="user.name">
+          <el-col :xs="6" :xl="4">用户名</el-col>
+          <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
+        </el-row>
 
-    <el-row v-if="user.location">
-      <el-col :xs="6" :xl="4">城市</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ user.location }}</el-col>
-    </el-row>
+        <el-row v-if="user.location">
+          <el-col :xs="6" :xl="4">城市</el-col>
+          <el-col :xs="8" :xl="10" :offset="2">{{ user.location }}</el-col>
+        </el-row>
 
-    <el-row v-if="user.email">
-      <el-col :xs="6" :xl="4">电子邮件</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
-    </el-row>
+        <el-row v-if="user.email">
+          <el-col :xs="6" :xl="4">电子邮件</el-col>
+          <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
+        </el-row>
 
-    <el-row>
-      <el-col :xs="6" :xl="4">生日</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
-    </el-row>
+        <el-row>
+          <el-col :xs="6" :xl="4">生日</el-col>
+          <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
+        </el-row>
 
-    <el-row>
-      <el-col :xs="6" :xl="4">上线时间</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
-    </el-row>
+        <el-row>
+          <el-col :xs="6" :xl="4">上线时间</el-col>
+          <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
+        </el-row>
+      </template>
+    </el-skeleton>
   </el-card>
 
   <el-card shadow="never">
