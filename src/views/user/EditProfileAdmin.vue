@@ -2,9 +2,11 @@
 import editApi from '@/api/user/editApi.js'
 import userApi from '@/api/user/userApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
   components: {
-    ButtonClick
+    ButtonClick,
+    PageHeadBack
   },
   data() {
     return {
@@ -95,68 +97,70 @@ export default {
 </script>
 
 <template>
-  <el-form
-    :model="formLabelAlign"
-    ref="formLabelAlign"
-    label-position="top"
-    label-width="auto"
-    style="max-width: 600px"
-  >
-    <el-form-item
-      prop="email"
-      label="邮件"
-      :rules="[
-        {
-          type: 'email',
-          message: '请输入正确的邮件地址',
-          trigger: ['blur', 'change']
-        }
-      ]"
+  <PageHeadBack>
+    <el-form
+      :model="formLabelAlign"
+      ref="formLabelAlign"
+      label-position="top"
+      label-width="auto"
+      style="max-width: 600px"
     >
-      <el-input v-model="formLabelAlign.email" />
-    </el-form-item>
-    <el-form-item label="用户名">
-      <el-input v-model="formLabelAlign.username" />
-    </el-form-item>
-    <el-form-item label="认证状态">
-      <el-select v-model="formLabelAlign.confirmed" placeholder="Select" style="width: 240px">
-        <el-option
-          v-for="item in confirm"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="角色">
-      <el-select v-model="formLabelAlign.role" placeholder="Select" style="width: 240px">
-        <el-option
-          v-for="item in roles"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-    </el-form-item>
+      <el-form-item
+        prop="email"
+        label="邮件"
+        :rules="[
+          {
+            type: 'email',
+            message: '请输入正确的邮件地址',
+            trigger: ['blur', 'change']
+          }
+        ]"
+      >
+        <el-input v-model="formLabelAlign.email" />
+      </el-form-item>
+      <el-form-item label="用户名">
+        <el-input v-model="formLabelAlign.username" />
+      </el-form-item>
+      <el-form-item label="认证状态">
+        <el-select v-model="formLabelAlign.confirmed" placeholder="Select" style="width: 240px">
+          <el-option
+            v-for="item in confirm"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="角色">
+        <el-select v-model="formLabelAlign.role" placeholder="Select" style="width: 240px">
+          <el-option
+            v-for="item in roles"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
 
-    <el-form-item label="昵称">
-      <el-input v-model="formLabelAlign.name" />
-    </el-form-item>
-    <el-form-item label="城市">
-      <el-input v-model="formLabelAlign.location" />
-    </el-form-item>
-    <el-form-item label="关于我">
-      <el-input v-model="formLabelAlign.about_me" show-word-limit maxlength="30" />
-    </el-form-item>
-    <el-form-item>
-      <ButtonClick
-        content="提交"
-        type="primary"
-        :disabled="!isChange"
-        :loading="loading"
-        @do-search="submit"
-      />
-    </el-form-item>
-  </el-form>
+      <el-form-item label="昵称">
+        <el-input v-model="formLabelAlign.name" />
+      </el-form-item>
+      <el-form-item label="城市">
+        <el-input v-model="formLabelAlign.location" />
+      </el-form-item>
+      <el-form-item label="关于我">
+        <el-input v-model="formLabelAlign.about_me" show-word-limit maxlength="30" />
+      </el-form-item>
+      <el-form-item>
+        <ButtonClick
+          content="提交"
+          type="primary"
+          :disabled="!isChange"
+          :loading="loading"
+          @do-search="submit"
+        />
+      </el-form-item>
+    </el-form>
+  </PageHeadBack>
 </template>
 <style scoped></style>

@@ -11,18 +11,23 @@ export default {
     return {
       post: {},
       postId:-1,
+      showShare:false,
+      shareOptions: [
+        { name: '微信', icon: 'wechat' },
+        { name: '朋友圈', icon: 'wechat-moments' },
+        { name: '微博', icon: 'weibo' },
+        { name: 'QQ', icon: 'qq' },
+        { name: '复制链接', icon: 'link' },
+      ]
     }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.postId = Number(to.params.id)
-      vm.$nextTick(() => {})
+      vm.$nextTick(() => {
+        vm.getPostById(vm.postId)
+      })
     })
-  },
-  mounted() {
-    if (this.postId != -1) {
-      this.getPostById(this.postId)
-    }
   },
   methods: {
     getPostById(postId) {
@@ -31,14 +36,24 @@ export default {
           this.post = res.data.data
         }
       })
+    },
+    shareSelect(option) {
+      this.$message.info(option.name)
+      this.showShare = false
     }
   }
 }
 </script>
 
 <template>
-  <PostCard :post="post" />
+  <PostCard :post="post" @share="(flag) => (this.showShare = flag)"/>
   <CommentCard :post-id="postId" />
+  <van-share-sheet
+      v-model:show="showShare"
+      title="立即分享给好友"
+      :options="shareOptions"
+      @select="shareSelect"
+    />
 </template>
 <style scoped>
 .el-button {

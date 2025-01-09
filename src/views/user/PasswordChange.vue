@@ -1,9 +1,11 @@
 <script>
 import authApi from '@/api/auth/authApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
   components: {
-    ButtonClick
+    ButtonClick,
+    PageHeadBack
   },
   data() {
     var validatePass = (rule, value, callback) => {
@@ -53,6 +55,7 @@ export default {
 </script>
 
 <template>
+  <PageHeadBack>
   <h1>修改密码</h1>
   <el-form
     :model="form"
@@ -72,7 +75,6 @@ export default {
       <el-input v-model="form.confirmNewPassword" type="password" />
     </el-form-item>
     <el-form-item>
-      <!-- <el-button type="primary" @click="submitForm"> 提交 </el-button> -->
       <ButtonClick
         content="提交"
         type="primary"
@@ -82,5 +84,6 @@ export default {
       />
     </el-form-item>
   </el-form>
+</PageHeadBack>
 </template>
 <style scoped></style>

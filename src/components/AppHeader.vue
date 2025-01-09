@@ -1,7 +1,7 @@
 <template>
   <div class="burger-menu">
     <!-- "Home" 标签始终显示 -->
-    <a href="/posts" class="home">主页</a>
+    <a @click="this.$router.push('/posts')" class="home">主页</a>
     <MarQuee :text=daySentence :speed="0.7"/>
 
     <!-- 汉堡按钮，只在屏幕尺寸小于500px时显示 -->
@@ -20,21 +20,21 @@
       <div class="menu" :class="{ 'is-active': isActive || windowWidth >= 500 }">
         <ul class="menu-list">
           <li v-show="login">
-            <a :href="`/user/${currentUser.username}`">个人资料</a>
+            <a @click="this.toggleMenu();this.$router.push(`/user/${currentUser.username}`)">个人资料</a>
           </li>
           <li v-if="isCommentManage">
-            <a href="/commentManagement">评论管理</a>
+            <a @click="this.toggleMenu();this.$router.push('/commentManagement')">评论管理</a>
           </li>
           <li v-if="!login" class="login-text"><a href="/login">登录</a></li>
           <li v-else>
-            <a href="#" @click.prevent="toggleContactDropdown"
+            <a  @click.prevent="toggleContactDropdown"
               >{{ accountLabel }}<el-icon><i-ep-CaretBottom /></el-icon
             ></a>
             <transition name="fade">
               <div class="contact-dropdown" v-if="isContactDropdownActive">
-                <a href="/changePassword">修改密码</a>
-                <a href="/changeEmail" v-if="isConfirmed">修改邮箱</a>
-                <a href="/bindEmail" v-else>绑定邮箱</a>
+                <a @click="this.toggleMenu();this.$router.push('/changePassword')">修改密码</a>
+                <a @click="this.toggleMenu();this.$router.push('/changeEmail')" v-if="isConfirmed">修改邮箱</a>
+                <a @click="this.toggleMenu();this.$router.push('/bindEmail')" v-else>绑定邮箱</a>
                 <a @click="log_out" href="/posts">退出</a>
               </div>
             </transition>
