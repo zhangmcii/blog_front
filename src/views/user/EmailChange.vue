@@ -3,7 +3,7 @@ import authApi from '@/api/auth/authApi.js'
 import EmailPage from './EmailPage.vue'
 export default {
   components: {
-    EmailPage
+    EmailPage,
   },
   data() {
     return {

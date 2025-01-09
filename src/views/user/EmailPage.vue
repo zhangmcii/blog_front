@@ -2,9 +2,11 @@
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
   components: {
-    ButtonClick
+    ButtonClick,
+    PageHeadBack
   },
   props: {
     headerText: {
@@ -34,6 +36,17 @@ export default {
         password: '',
         action: 'bind'
       },
+      rules: {
+        email: [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          {
+            type: 'email',
+            message: '请输入正确的邮箱地址',
+            trigger: ['blur', 'change']
+          }
+        ]
+      },
+      isEmailValid: false,
       value: '',
       showButton: true,
       loading: false,
@@ -44,12 +57,9 @@ export default {
     const currentUser = useCurrentUserStore()
     return { currentUser }
   },
-  watch: {
-    form: {
-      deep: true,
-      handler() {
-        this.isChange = true
-      }
+  computed:{
+    isSubmit(){
+      return !(this.isEmailValid && this.form.code)
     }
   },
   mounted() {},
@@ -111,55 +121,52 @@ export default {
       this.isChange = false
     },
     finish() {
-      console.log('倒计时结束')
       this.showButton = !this.showButton
+    },
+    validateEmail() {
+      if (this.$refs.formRef) {
+        this.$refs.formRef.validateField('email', (errorMessage) => {
+          this.isEmailValid = errorMessage
+        })
+      }
     }
   }
 }
 </script>
 
 <template>
-  <h1>{{ headerText }}</h1>
-  <el-form
-    label-position="top"
-    label-width="auto"
-    :model="form"
-    ref="form"
-    style="max-width: 600px"
-  >
-    <el-form-item
-      prop="email"
-      label="邮件"
-      :rules="[
-        {
-          type: 'email',
-          message: '请输入正确的邮件地址',
-          trigger: ['blur', 'change']
-        }
-      ]"
+  <PageHeadBack>
+    <h1>{{ headerText }}</h1>
+    <el-form
+      label-position="top"
+      label-width="auto"
+      :model="form"
+      :rules="rules"
+      ref="formRef"
+      style="max-width: 600px"
     >
-      <el-input v-model="form.email">
-        <template #append>
-          <el-button @click="applyCode" v-if="showButton"> 发送验证码 </el-button>
-          <el-countdown prefix="重新发送" format="ss" :value="value" @finish="finish" v-else />
-        </template>
-      </el-input>
-    </el-form-item>
-    <el-form-item prop="code" label="验证码">
-      <el-input v-model="form.code" style="width: 40%" />
-    </el-form-item>
-    <slot></slot>
-    <el-form-item>
-      <!-- <el-button type="primary" @click="submitForm"> 提交 </el-button> -->
-      <ButtonClick
-        content="提交"
-        type="primary"
-        :disabled="!isChange"
-        :loading="loading"
-        @do-search="submitForm"
-      />
-    </el-form-item>
-  </el-form>
+      <el-form-item prop="email" label="邮件">
+        <el-input v-model="form.email" style="width: 65%" @blur="validateEmail" />
+        <el-button @click="applyCode" type="primary" :disabled="!isEmailValid" v-if="showButton">
+          发送验证码
+        </el-button>
+        <el-countdown prefix="重新发送" format="ss" :value="value" @finish="finish" v-else />
+      </el-form-item>
+      <el-form-item prop="code" label="验证码">
+        <el-input v-model="form.code" style="width: 40%" />
+      </el-form-item>
+      <slot></slot>
+      <el-form-item>
+        <ButtonClick
+          content="提交"
+          type="primary"
+          :disabled="isSubmit"
+          :loading="loading"
+          @do-search="submitForm"
+        />
+      </el-form-item>
+    </el-form>
+  </PageHeadBack>
 </template>
 <style scoped>
 /* font-size: 16px; */

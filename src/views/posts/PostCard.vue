@@ -36,6 +36,7 @@ export default {
       default: 'white'
     }
   },
+  emits:['share'],
   data() {
     return {}
   },
@@ -114,7 +115,8 @@ export default {
             <el-button type="danger" size="small" @click="edit">编辑[管理员] </el-button>
           </el-col>
           <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2">
-            <el-button type="info" size="small" @click="share">分享</el-button>
+            <!-- <el-button type="info" size="small" @click="share">分享</el-button> -->
+            <el-button type="info" size="small" @click="this.$emit('share',true)">分享</el-button>
           </el-col>
           <el-col :xs="6" :sm="6" :md="4" :lg="2" :xl="2">
             <el-button type="primary" size="small" @click="comment"

@@ -1,5 +1,5 @@
 import { ElMessage } from 'element-plus'
-
+import router from '../router/index.js'
 /**
  * 设置网路请求监听
  */
@@ -76,10 +76,39 @@ function setInterceptors(...instance) {
           console.log('==>请求结束')
         }
 
-        ElMessage({
-          message: error,
-          type: 'error'
-        })
+        if (error.message == 'Network Error') {
+          ElMessage({
+            message: '网络连接不可用，请检查网络设置',
+            type: 'error'
+          })
+          router.push('/networkError')
+          return Promise.reject(error)
+        }
+        if (error.response) {
+          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
+          const status = error.response.status
+          if (status === 404) {
+            // 处理404错误
+            ElMessage({
+              message: '页面未找到',
+              type: 'error'
+            })
+            router.push('/notFound')
+            return Promise.reject(error)
+          } else {
+            // 处理其他错误
+            ElMessage({
+              message: error.response.data.message || '发生错误',
+              type: 'error'
+            })
+            return Promise.reject(error)
+          }
+        } else {
+          ElMessage({
+            message: error,
+            type: 'error'
+          })
+        }
         return Promise.reject(error)
       }
     )

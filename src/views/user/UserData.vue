@@ -6,9 +6,13 @@ import { useCurrentUserStore } from '@/stores/currentUser'
 import { useOtherUserStore } from '@/stores/otherUser'
 import PostCard from '../posts/PostCard.vue'
 import dayjs from 'dayjs'
+import { areaList } from '@vant/area-data'
+import cityUtil from '@/utils/cityUtil.js'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
   components: {
-    PostCard
+    PostCard,
+    PageHeadBack
   },
   data() {
     return {
@@ -31,19 +35,22 @@ export default {
       currentPage: 1,
       posts_count: 0,
       followPerm: false,
-      loading:{
-        userData:false,
+      loading: {
+        userData: false
       }
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     const otherUser = useOtherUserStore()
-    return { currentUser, otherUser }
+    return { currentUser, otherUser,areaList }
   },
   computed: {
-    name_or_location() {
-      return this.user.name || this.user.location
+    location() {
+      if (this.user.location && !isNaN(this.user.location)) {
+        return cityUtil.getCodeToName(this.user.location, this.areaList)
+      }
+      return ''
     },
     member_since() {
       return dayjs(this.user.member_since).format('YYYY-MM-DD')
@@ -157,6 +164,7 @@ export default {
 </script>
 
 <template>
+  <PageHeadBack>
   <el-card class="user-info" shadow="never">
     <template #header>
       <div class="card-header">
@@ -178,7 +186,7 @@ export default {
 
         <el-row v-if="user.location">
           <el-col :xs="6" :xl="4">城市</el-col>
-          <el-col :xs="8" :xl="10" :offset="2">{{ user.location }}</el-col>
+          <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
         </el-row>
 
         <el-row v-if="user.email">
@@ -240,6 +248,7 @@ export default {
     :hide-on-single-page="true"
     :pager-count="5"
   />
+</PageHeadBack>
 </template>
 
 <style scoped>
