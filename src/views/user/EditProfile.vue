@@ -27,9 +27,6 @@ export default {
   setup() {
     return { areaList }
   },
-  setup() {
-    return { areaList }
-  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userId = to.params.id
@@ -38,11 +35,6 @@ export default {
       vm.$nextTick(() => {})
     })
   },
-  // computed:{
-  //   isLoading(){
-  //     return this.formLabelAlign.name
-  //   }
-  // },
   watch: {
     formLabelAlign: {
       deep: true,
@@ -56,10 +48,6 @@ export default {
       this.isLoading = true
       userApi.getUser(userId).then((res) => {
         if (res.data.msg == 'success') {
-          const location = res.data.data.location
-          if (location && !isNaN(parseInt(location))) {
-            this.cityName = cityUtil.getCodeToName(location, this.areaList)
-          }
           const location = res.data.data.location
           if (location && !isNaN(parseInt(location))) {
             this.cityName = cityUtil.getCodeToName(location, this.areaList)
@@ -89,10 +77,6 @@ export default {
       this.cityShow = false
       this.cityName = cityUtil.getCodeToName(this.formLabelAlign.location, this.areaList)
     },
-    setCity() {
-      this.cityShow = false
-      this.cityName = cityUtil.getCodeToName(this.formLabelAlign.location, this.areaList)
-    }
   }
 }
 </script>
