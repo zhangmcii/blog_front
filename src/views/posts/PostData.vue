@@ -16,7 +16,23 @@ export default {
     return {
       activeName: 'all',
       posts: [{}, {}],
+      posts: [{}, {}],
       posts_count: -1,
+      // loading: false,
+      currentPage: 1,
+      loading: {
+        publishPost: false,
+        fetchPost: false,
+        fetchPostDisabled: false
+      },
+      showShare: false,
+      shareOptions: [
+        { name: '微信', icon: 'wechat' },
+        { name: '朋友圈', icon: 'wechat-moments' },
+        { name: '微博', icon: 'weibo' },
+        { name: 'QQ', icon: 'qq' },
+        { name: '复制链接', icon: 'link' },
+      ]
       // loading: false,
       currentPage: 1,
       loading: {
@@ -57,6 +73,7 @@ export default {
     getPosts(page, tabName) {
       postApi.getPosts(page, tabName).then((res) => {
         this.loading.fetchPost = false
+        this.loading.fetchPost = false
         this.posts = res.data.data
         this.posts_count = res.data.total
         this.$nextTick(() => {})
@@ -65,6 +82,15 @@ export default {
     getPostsResult(res) {
       this.posts = res.data.data
       this.posts_count = res.data.total
+      this.loading.publishPost = false
+    },
+    onRefresh() {
+      this.loading.fetchPost = true
+      this.getPosts(this.currentPage, this.activeName)
+    },
+    shareSelect(option) {
+      this.$message.info(option.name)
+      this.showShare = false
       this.loading.publishPost = false
     },
     onRefresh() {

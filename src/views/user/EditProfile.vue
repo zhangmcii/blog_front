@@ -27,9 +27,13 @@ export default {
   setup() {
     return { areaList }
   },
+  setup() {
+    return { areaList }
+  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userId = to.params.id
+      vm.getUserInfo(to.params.id)
       vm.getUserInfo(to.params.id)
       vm.$nextTick(() => {})
     })
@@ -56,6 +60,10 @@ export default {
           if (location && !isNaN(parseInt(location))) {
             this.cityName = cityUtil.getCodeToName(location, this.areaList)
           }
+          const location = res.data.data.location
+          if (location && !isNaN(parseInt(location))) {
+            this.cityName = cityUtil.getCodeToName(location, this.areaList)
+          }
           this.originalForm = JSON.stringify(res.data.data)
           this.formLabelAlign = res.data.data
           setTimeout(() => {
@@ -76,6 +84,10 @@ export default {
           this.$message.error('修改失败')
         }
       })
+    },
+    setCity() {
+      this.cityShow = false
+      this.cityName = cityUtil.getCodeToName(this.formLabelAlign.location, this.areaList)
     },
     setCity() {
       this.cityShow = false

@@ -21,11 +21,22 @@ export default {
         { name: 'QQ', icon: 'qq' },
         { name: '复制链接', icon: 'link' },
       ]
+      showShare:false,
+      shareOptions: [
+        { name: '微信', icon: 'wechat' },
+        { name: '朋友圈', icon: 'wechat-moments' },
+        { name: '微博', icon: 'weibo' },
+        { name: 'QQ', icon: 'qq' },
+        { name: '复制链接', icon: 'link' },
+      ]
     }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.postId = Number(to.params.id)
+      vm.$nextTick(() => {
+        vm.getPostById(vm.postId)
+      })
       vm.$nextTick(() => {
         vm.getPostById(vm.postId)
       })
@@ -38,6 +49,10 @@ export default {
           this.post = res.data.data
         }
       })
+    },
+    shareSelect(option) {
+      this.$message.info(option.name)
+      this.showShare = false
     },
     shareSelect(option) {
       this.$message.info(option.name)
