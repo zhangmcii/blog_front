@@ -86,7 +86,7 @@ export default {
     @refresh="onRefresh"
     :disabled="loading.fetchPostDisabled"
   >
-    <h1>你好 {{ currentUser.username }}</h1>
+    <h1 class="gradient-text">你好 {{ currentUser.username }}</h1>
     <PostPublish
       @loading-begin="(flag) => (loading.publishPost = flag)"
       @posts-result="getPostsResult"
@@ -134,6 +134,13 @@ export default {
   </van-pull-refresh>
 </template>
 <style scoped>
+/* .gradient-text {
+  background-image: -webkit-linear-gradient(left, #4c8bf5, #f953c6);
+  background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  display: inline-block; 
+  margin:20px 0px 0px 0px;
+} */
 .el-pagination {
   float: right;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="burger-menu">
     <!-- "Home" 标签始终显示 -->
-    <a @click="this.$router.push('/posts')" class="home">主页</a>
+    <a @click="goHomePage" class="home">主页</a>
     <MarQuee :text=daySentence :speed="0.7"/>
 
     <!-- 汉堡按钮，只在屏幕尺寸小于500px时显示 -->
@@ -65,7 +65,7 @@ export default {
       ],
       isContactDropdownActive: false,
       accountLabel: '账户',
-      daySentence:''
+      daySentence:'',
     }
   },
   setup() {
@@ -82,8 +82,11 @@ export default {
     },
     isConfirmed() {
       return this.currentUser.isConfirmed == 'true'
-    }
-  },
+    },
+    isHomePage(){
+      return this.$route.path === '/posts'
+    },
+},
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userName = to.params.userName
@@ -110,8 +113,13 @@ export default {
         this.$el.querySelector('.menu-toggle').classList.toggle('active')
       }
     },
+    closeToggleMenu(){
+      if(this.isActive){
+        this.isActive = false
+      }
+    },
     updateWindowWidth() {
-      this.windowWidth = window.innerWidth
+        this.windowWidth = window.innerWidth
     },
     toggleContactDropdown() {
       this.isContactDropdownActive = !this.isContactDropdownActive
@@ -141,7 +149,18 @@ export default {
       if (command == 'exit') {
         this.log_out()
       }
+    },
+    goHomePage(){
+      // 如果汉堡菜单展开，则关闭
+      if(this.isActive){
+        this.closeToggleMenu()
+      }
+      if(this.isHomePage){
+        return
+      }
+      this.$router.push('/posts')
     }
+
   }
 }
 </script>
@@ -183,9 +202,9 @@ export default {
   margin: 5px 0;
   transition: transform 0.2s ease-in-out;
 }
-.menu-toggle:hover .line {
+/* .menu-toggle:hover .line {
   background-color: #c0c4cc;
-}
+} */
 /* "Home" 标签样式 */
 .home {
   margin-right: auto; /* 将 "Home" 标签推到左边 */
@@ -195,9 +214,6 @@ export default {
   color: #303133;
   white-space: nowrap;
   margin-right:3px;
-}
-.home:hover {
-  color: #c0c4cc;
 }
 /* 菜单项容器样式 */
 .menu-container {

@@ -85,47 +85,6 @@ export default {
 }
 </script>
 
-<!-- <template>
-  <PageHeadBack>
-    <el-form
-      ref="formLabelAlign"
-      :model="formLabelAlign"
-      label-position="top"
-      label-width="auto"
-      style="max-width: 600px"
-    >
-      <el-form-item label="昵称">
-        <el-skeleton :rows="1" animated variant="text"  style="width: 100%"  :loading="isLoading" >
-          <el-input v-model="formLabelAlign.name" />
-        </el-skeleton>
-      </el-form-item>
-      <el-form-item label="城市">
-        <el-skeleton :rows="1" animated :loading="isLoading">
-          <el-input v-model="cityName" disabled />
-        </el-skeleton>
-        <el-button style="width: 100%" @click="cityShow = !cityShow"> 选择城市</el-button>
-      </el-form-item>
-      <el-form-item label="关于我">
-        <el-skeleton :rows="1" animated :loading="isLoading">
-          <el-input v-model="formLabelAlign.about_me" show-word-limit maxlength="30" />
-        </el-skeleton>
-      </el-form-item>
-      <el-form-item>
-        <ButtonClick
-          content="提交"
-          type="primary"
-          :loading="loading"
-          :disabled="!isChange"
-          @do-search="submit"
-        />
-      </el-form-item>
-    </el-form>
-    <van-action-sheet v-model:show="cityShow" title="选择城市">
-      <van-area v-model="formLabelAlign.location" :area-list="areaList" @confirm="setCity" />
-    </van-action-sheet>
-  </PageHeadBack>
-</template> -->
-
 <template>
   <PageHeadBack>
     <el-skeleton
@@ -141,7 +100,9 @@ export default {
         <el-skeleton-item style="width: 100%; height: 25px" class="form-city" />
 
         <el-skeleton-item variant="h3" style="width: 20%" />
-        <el-skeleton-item style="width: 100%; height: 25px" />
+        <el-skeleton-item style="width: 100%; height: 25px" class="form-about"/>
+
+        <el-skeleton-item variant="button" style=" height: 30px" />
       </template>
 
       <template #default>
@@ -181,7 +142,8 @@ export default {
 </template>
 <style scoped>
 .form-name,
-.form-city {
+.form-city,
+.form-about {
   margin-bottom: 30px;
 }
 </style>
