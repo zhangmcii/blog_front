@@ -4,15 +4,7 @@
     <a @click="goHomePage" class="home">主页</a>
     <MarQuee :text=daySentence :speed="0.7"/>
 
-    <!-- 汉堡按钮，只在屏幕尺寸小于500px时显示 -->
-    <button
-      class="menu-toggle"
-      v-if="windowWidth < 500"
-      :class="{ active: isActive }"
-      @click="toggleMenu"
-    >
-      <div class="line" v-for="line in 3" :key="line"></div>
-    </button>
+    <el-avatar size="default" :src="photo.Avatar" @error="errorImage"   @click="toggleMenu"/>
 
     <!-- 菜单项容器 -->
     <div class="menu-container">
@@ -49,6 +41,7 @@
 import { useCurrentUserStore } from '@/stores/currentUser'
 import MarQuee from '@/utils/components/MarQuee.vue'
 import daysApi from '@/api/days/daysApi.js'
+import emitter from '@/utils/emitter.js'
 export default {
   name: 'BurgerMenu',
   components: {
@@ -66,6 +59,10 @@ export default {
       isContactDropdownActive: false,
       accountLabel: '账户',
       daySentence:'',
+      photo:{
+        Avatar:'',
+        default:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+      }
     }
   },
   setup() {
@@ -97,7 +94,11 @@ export default {
     this.currentUser.loadUserName()
     this.currentUser.loadRoleId()
     this.currentUser.loadConfirmed()
+    this.initImage()
     this.daySentence = daysApi.fetchQuote()
+    emitter.on('image', (url) => {
+      this.photo.Avatar = url
+    })
   },
   created() {
     window.addEventListener('resize', this.updateWindowWidth)
@@ -110,7 +111,7 @@ export default {
       if (this.windowWidth < 500) {
         this.isActive = !this.isActive
         // 添加或移除 .active 类
-        this.$el.querySelector('.menu-toggle').classList.toggle('active')
+        // this.$el.querySelector('.menu-toggle').classList.toggle('active')
       }
     },
     closeToggleMenu(){
@@ -133,6 +134,7 @@ export default {
       localStorage.removeItem('userName')
       localStorage.removeItem('isConfirmed')
       localStorage.removeItem('currentComment')
+      localStorage.removeItem('image')
       // 更新pinia
       this.currentUser.loadUserName()
       // 退出后跳转到主页面 隐藏发布文章区域
@@ -159,6 +161,19 @@ export default {
         return
       }
       this.$router.push('/posts')
+    },
+    errorImage(){
+      this.photo.Avatar = this.photo.default
+    },
+    initImage(){
+      this.currentUser.loadImage()
+      console.log('11')
+      if(!this.currentUser.image){
+        console.log('22')
+        this.photo.Avatar = this.photo.default
+        return 
+      }
+      this.photo.Avatar = this.currentUser.image
     }
 
   }
@@ -171,40 +186,6 @@ export default {
   height: 6vh;
   display: flex;
 }
-/* 汉堡按钮样式 */
-.menu-toggle {
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 10px;
-  display: none; /* 默认隐藏汉堡按钮，只有在屏幕小于500px时显示 */
-  margin-left: auto; /* 将汉堡按钮推到右边 */
-  margin-bottom: 10px;
-}
-
-.menu-toggle.active .line:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-
-.menu-toggle.active .line:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-toggle.active .line:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-}
-
-/* 汉堡按钮的线条样式 */
-.menu-toggle .line {
-  width: 20px;
-  height: 3px;
-  background-color: #606266;
-  margin: 5px 0;
-  transition: transform 0.2s ease-in-out;
-}
-/* .menu-toggle:hover .line {
-  background-color: #c0c4cc;
-} */
 /* "Home" 标签样式 */
 .home {
   margin-right: auto; /* 将 "Home" 标签推到左边 */

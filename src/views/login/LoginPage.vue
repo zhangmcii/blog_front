@@ -67,6 +67,7 @@ export default {
             this.currentUser.saveAdmin(res.data.admin)
             this.currentUser.saveRoleId(res.data.roleId)
             this.currentUser.saveConfirmed(res.data.isConfirmed)
+            this.currentUser.saveImage(res.data.image)
             this.$message({
               message: res.data.msg,
               type: 'success',

@@ -1,6 +1,7 @@
 <script>
 import userApi from '@/api/user/userApi.js'
 import authApi from '@/api/auth/authApi.js'
+import image from '@/api/user/image.js'
 import common from '@/utils/common.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { useOtherUserStore } from '@/stores/otherUser'
@@ -9,6 +10,7 @@ import dayjs from 'dayjs'
 import { areaList } from '@vant/area-data'
 import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import emitter from '@/utils/emitter.js'
 export default {
   components: {
     PostCard,
@@ -37,13 +39,21 @@ export default {
       followPerm: false,
       loading: {
         userData: false
-      }
+      },
+      uploadData: {
+        token: '833|sZnIEsyMrBLLJmgbT2bfHRayahzZGsaqsFv4bbMN',
+        album_id: '1442'
+      },
+      headers: {
+        Authorization: 'Bearer 827|hQhMiZ48SRz9iHxOA3Vbw5wWtCgHdyZcHOFH0trU',
+        Accept: 'application/json'
+      },
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     const otherUser = useOtherUserStore()
-    return { currentUser, otherUser,areaList }
+    return { currentUser, otherUser, areaList }
   },
   computed: {
     location() {
@@ -158,6 +168,30 @@ export default {
     },
     handleCurrentChange() {
       this.getUserData(this.userName, this.currentPage)
+    },
+    beforeAvatarUpload(rawFile) {
+      if (rawFile.size / 1024 / 1024 > 1) {
+        this.$message.error('图像的大小不能超过1MB!')
+        return false
+      }
+      return true
+    },
+    handleAvatarSuccess(response) {
+      const url = response.data.links.url
+      image.saveImageUrl({ image: url }).then((res) => {
+        if (res.data.msg == 'success') {
+          emitter.emit('image', url)
+          this.$message.success('图像上传成功')
+        } else {
+          this.$message.error('图像上传失败')
+        }
+      })
+    },
+    submitUpload() {
+      this.$refs.uploadRef.submit()
+    },
+    handlePreview(){
+      return true
     }
   }
 }
@@ -233,6 +267,22 @@ export default {
       </el-row>
     </el-card>
 
+    <el-upload
+      ref="uploadRef"
+      action="https://www.helloimg.com/api/v1/upload"
+      :headers="headers"
+      :data="uploadData"
+      :auto-upload="false"
+      :on-success="handleAvatarSuccess"
+      :before-upload="beforeAvatarUpload"
+      :on-preview="handlePreview"
+    >
+      <template #trigger>
+        <el-button class="select-image" type="primary">从本机选择图像</el-button>
+      </template>
+      <el-button class="upload-image" type="success" @click="submitUpload"> 上传图像 </el-button>
+    </el-upload>
+
     <PostCard v-for="item in posts" :key="item" :post="item" />
 
     <el-pagination
@@ -268,5 +318,8 @@ export default {
 }
 .el-pagination {
   float: right;
+}
+.select-image {
+  margin: 0px 10px 10px 0px;
 }
 </style>
