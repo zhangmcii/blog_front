@@ -165,90 +165,86 @@ export default {
 
 <template>
   <PageHeadBack>
-  <el-card class="user-info" shadow="never">
-    <template #header>
-      <div class="card-header">
-        <span>个人信息</span>
-      </div>
-    </template>
-
-    <el-skeleton :rows="5" animated :loading="loading.userData">
-      <template #default>
-        <el-row v-if="user.about_me">
-          <el-col :xs="6" :xl="4">签名</el-col>
-          <el-col :xs="8" :xl="10" :offset="2">{{ user.about_me }}</el-col>
-        </el-row>
-
-        <el-row v-if="user.name">
-          <el-col :xs="6" :xl="4">用户名</el-col>
-          <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
-        </el-row>
-
-        <el-row v-if="user.location">
-          <el-col :xs="6" :xl="4">城市</el-col>
-          <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
-        </el-row>
-
-        <el-row v-if="user.email">
-          <el-col :xs="6" :xl="4">电子邮件</el-col>
-          <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :xs="6" :xl="4">生日</el-col>
-          <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :xs="6" :xl="4">上线时间</el-col>
-          <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
-        </el-row>
+    <el-card class="user-info" shadow="never">
+      <template #header>
+        <div class="card-header">
+          <span>个人信息</span>
+        </div>
       </template>
-    </el-skeleton>
-  </el-card>
 
-  <el-card shadow="never">
-    <el-row>
-      <el-col v-if="follow" :span="6">
-        <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
-          >取消关注</el-button
-        >
-        <el-button v-else @click="followUser">关注</el-button>
-      </el-col>
-      <el-col :span="4"> </el-col>
-      <el-col :span="6">
-        <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
-      </el-col>
-      <el-col :span="6">
-        <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
-      </el-col>
-      <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
-    </el-row>
-  </el-card>
+      <el-skeleton :rows="5" animated :loading="loading.userData">
+        <template #default>
+          <el-row v-if="user.name">
+            <el-col :xs="6" :xl="4">用户名</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
+          </el-row>
+          <el-row v-if="user.email">
+            <el-col :xs="6" :xl="4">电子邮件</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
+          </el-row>
+          <el-row v-if="user.location">
+            <el-col :xs="6" :xl="4">城市</el-col>
+            <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
+          </el-row>
+          <el-row v-if="user.about_me">
+            <el-col :xs="6" :xl="4">签名</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ user.about_me }}</el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="6" :xl="4">生日</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
+          </el-row>
 
-  <el-card shadow="never" v-if="isCurrentUser || isAdmin">
-    <el-row justify="space-between">
-      <el-col v-if="isCurrentUser" :xs="9" :xl="6">
-        <el-button @click="editProfile">编辑资料</el-button>
-      </el-col>
-      <el-col v-if="isAdmin" :xs="12" :xl="12">
-        <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
-      </el-col>
-    </el-row>
-  </el-card>
+          <el-row>
+            <el-col :xs="6" :xl="4">上线时间</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
+          </el-row>
+        </template>
+      </el-skeleton>
+    </el-card>
 
-  <PostCard v-for="item in posts" :key="item" :post="item" />
+    <el-card shadow="never">
+      <el-row>
+        <el-col v-if="follow" :span="6">
+          <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
+            >取消关注</el-button
+          >
+          <el-button v-else @click="followUser">关注</el-button>
+        </el-col>
+        <el-col :span="4"> </el-col>
+        <el-col :span="6">
+          <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
+        </el-col>
+        <el-col :span="6">
+          <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
+        </el-col>
+        <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
+      </el-row>
+    </el-card>
 
-  <el-pagination
-    v-model:current-page="currentPage"
-    :page-size="10"
-    layout="total, prev, pager, next"
-    :total="posts_count"
-    @current-change="handleCurrentChange"
-    :hide-on-single-page="true"
-    :pager-count="5"
-  />
-</PageHeadBack>
+    <el-card shadow="never" v-if="isCurrentUser || isAdmin">
+      <el-row justify="space-between">
+        <el-col v-if="isCurrentUser" :xs="9" :xl="6">
+          <el-button @click="editProfile">编辑资料</el-button>
+        </el-col>
+        <el-col v-if="isAdmin" :xs="12" :xl="12">
+          <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
+        </el-col>
+      </el-row>
+    </el-card>
+
+    <PostCard v-for="item in posts" :key="item" :post="item" />
+
+    <el-pagination
+      v-model:current-page="currentPage"
+      :page-size="10"
+      layout="total, prev, pager, next"
+      :total="posts_count"
+      @current-change="handleCurrentChange"
+      :hide-on-single-page="true"
+      :pager-count="5"
+    />
+  </PageHeadBack>
 </template>
 
 <style scoped>
