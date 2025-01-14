@@ -116,7 +116,7 @@ export default {
             <el-input v-model="cityName" disabled />
             <el-button style="width: 100%" @click="cityShow = !cityShow"> 选择城市</el-button>
           </el-form-item>
-          <el-form-item label="关于我">
+          <el-form-item label="签名">
             <el-input v-model="formLabelAlign.about_me" show-word-limit maxlength="30" />
           </el-form-item>
           <el-form-item>

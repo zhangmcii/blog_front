@@ -1,4 +1,5 @@
 <template>
+  <PageHeadBack>
   <div style="text-align: center; height: 50px">注册</div>
   <el-form
     :model="ruleForm"
@@ -22,13 +23,18 @@
       <el-button type="primary" :disabled="!isChange" :loading="loading" @click="register">注册</el-button>
     </el-form-item>
   </el-form>
+</PageHeadBack>
 </template>
 
 <script>
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import confetti from 'canvas-confetti'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
+  components:{
+    PageHeadBack
+  },
   name: 'LoginPage',
   data() {
     var validatePass = (rule, value, callback) => {

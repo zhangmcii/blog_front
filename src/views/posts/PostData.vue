@@ -163,4 +163,7 @@ export default {
 .fade-leave-to {
   opacity: 0;
 }
+/* .el-card :deep(.el-card__body ){
+  white-space: pre-wrap;
+} */
 </style>

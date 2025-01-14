@@ -2,6 +2,7 @@
 import authApi from '@/api/auth/authApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   components: {
     ButtonClick,
@@ -28,6 +29,10 @@ export default {
       isChange: false
     }
   },
+  setup() {
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
+  },
   watch: {
     form: {
       deep: true,
@@ -44,12 +49,27 @@ export default {
         this.isChange = false
         if (res.data.msg == 'success') {
           this.$message.success('修改密码成功')
-          this.$router.push('/posts')
+          this.log_out()
         } else {
           this.$message.success(res.data.detail)
         }
       })
-    }
+    },
+    log_out() {
+      localStorage.removeItem('token')
+      localStorage.removeItem('currentUserName')
+      localStorage.removeItem('isAdmin')
+      localStorage.removeItem('roleId')
+      localStorage.removeItem('userName')
+      localStorage.removeItem('isConfirmed')
+      localStorage.removeItem('currentComment')
+      localStorage.removeItem('image')
+      // 更新pinia
+      this.currentUser.loadUserName()
+      // 退出后跳转到主页面 隐藏发布文章区域
+      this.currentUser.loadToken()
+      this.$router.push('/login')
+    },
   }
 }
 </script>

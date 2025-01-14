@@ -218,7 +218,7 @@ export default {
           </el-row>
           <el-row v-if="user.about_me">
             <el-col :xs="6" :xl="4">签名</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ user.about_me }}</el-col>
+            <el-col :xs="16" :xl="10" :offset="2">{{ user.about_me }}</el-col>
           </el-row>
           <el-row>
             <el-col :xs="6" :xl="4">生日</el-col>
