@@ -78,7 +78,7 @@ export default {
           }
           this.loading = false
           this.$message({
-            message: res.data.msg,
+            message: '账号或密码错误',
             type: 'error',
             duration: 1700
           })

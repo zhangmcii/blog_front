@@ -11,6 +11,7 @@ import { areaList } from '@vant/area-data'
 import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import emitter from '@/utils/emitter.js'
+import upload from '@/config/postImageToken.js'
 export default {
   components: {
     PostCard,
@@ -40,14 +41,7 @@ export default {
       loading: {
         userData: false
       },
-      uploadData: {
-        token: '833|sZnIEsyMrBLLJmgbT2bfHRayahzZGsaqsFv4bbMN',
-        album_id: '1442'
-      },
-      headers: {
-        Authorization: 'Bearer 827|hQhMiZ48SRz9iHxOA3Vbw5wWtCgHdyZcHOFH0trU',
-        Accept: 'application/json'
-      },
+      uploadData: upload,
     }
   },
   setup() {
@@ -181,6 +175,8 @@ export default {
       image.saveImageUrl({ image: url }).then((res) => {
         if (res.data.msg == 'success') {
           emitter.emit('image', url)
+          // 换图像成功后，更新本地image字段
+          this.currentUser.saveImage(res.data.image)
           this.$message.success('图像上传成功')
         } else {
           this.$message.error('图像上传失败')
@@ -270,8 +266,8 @@ export default {
     <el-upload
       ref="uploadRef"
       action="https://www.helloimg.com/api/v1/upload"
-      :headers="headers"
-      :data="uploadData"
+      :headers="uploadData.headers"
+      :data="uploadData.data"
       :auto-upload="false"
       :on-success="handleAvatarSuccess"
       :before-upload="beforeAvatarUpload"
