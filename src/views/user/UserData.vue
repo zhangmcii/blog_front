@@ -216,8 +216,12 @@ export default {
       <el-skeleton :rows="5" animated :loading="loading.userData">
         <template #default>
           <el-row v-if="user.name">
-            <el-col :xs="6" :xl="4">用户名</el-col>
+            <el-col :xs="6" :xl="4">昵称</el-col>
             <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
+          </el-row>
+          <el-row v-if="user.name">
+            <el-col :xs="6" :xl="4">账号</el-col>
+            <el-col :xs="16" :xl="10" :offset="2">{{ user.username }}</el-col>
           </el-row>
           <el-row v-if="user.email">
             <el-col :xs="6" :xl="4">电子邮件</el-col>

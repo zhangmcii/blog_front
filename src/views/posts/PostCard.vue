@@ -93,9 +93,10 @@ export default {
   <el-card shadow="hover">
     <el-row>
       <el-col :span="4" v-if="showImage">
-        <el-avatar :src="image"  @click="this.$router.push(`/user/${post.author}`)"/>
+        <el-avatar :src="image" @click="this.$router.push(`/user/${post.author}`)" />
       </el-col>
-      <el-col :span="20">
+
+      <el-col :span="showImage ? 20 : 24">
         <el-row justify="space-between">
           <el-col :xs="18" :sm="18" :md="10" :lg="10" :xl="10">
             <el-link
