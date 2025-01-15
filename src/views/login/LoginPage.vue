@@ -2,7 +2,7 @@
 import dragVerifyImgRotate from './components/dragVerifyImgRotate.vue'
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
-import cherry from '@/asset/cherry1.webp'
+import imageCfg from '@/config/image.js'
 export default {
   components: {
     dragVerifyImgRotate
@@ -38,7 +38,7 @@ export default {
       // 是否记住账号密码
       isRemember: false,
       loading: false,
-      imgPic: 'https://www.helloimg.com/i/2024/12/06/6752f19798224.jpg'
+      imgPic: imageCfg.login
     }
   },
   setup() {
@@ -110,7 +110,7 @@ export default {
       }
     },
     handleImageError() {
-      this.imgPic = cherry
+      this.imgPic = imageCfg.loginFail
     }
   }
 }

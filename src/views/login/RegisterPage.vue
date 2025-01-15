@@ -31,6 +31,7 @@ import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import confetti from 'canvas-confetti'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import imageCfg from '@/config/image.js'
 export default {
   components:{
     PageHeadBack
@@ -96,7 +97,8 @@ export default {
         .register({
           email: this.ruleForm.email,
           username: this.ruleForm.user,
-          password: this.ruleForm.password
+          password: this.ruleForm.password,
+          image:imageCfg.random()
         })
         .then((res) => {
           if (res.data.msg == 'success') {

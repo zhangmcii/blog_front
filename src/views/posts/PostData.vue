@@ -60,7 +60,7 @@ export default {
         this.loading.fetchPost = false
         this.posts = res.data.data
         this.posts_count = res.data.total
-        this.$nextTick(() => {})
+  
       })
     },
     getPostsResult(res) {

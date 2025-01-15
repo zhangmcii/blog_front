@@ -32,7 +32,8 @@ export default {
         followers_count: 0,
         followed_count: 0,
         is_followed_by_current_user: false,
-        is_following_current_user: false
+        is_following_current_user: false,
+        image:''
       },
       posts: {},
       currentPage: 1,
@@ -42,11 +43,8 @@ export default {
         userData: false
       },
       uploadData: upload,
-      drawer:false,
-      actions :[
-      { name: '查看图像' },
-      { name: '从本机选择图像',callback: this.jumpReplyPage },
-    ],
+      drawer: false,
+      // userImageList:['https://www.helloimg.com/i/2025/01/15/6787c53dddfc5.jpg']
     }
   },
   setup() {
@@ -86,10 +84,6 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.getUserData(this.userName)
-    })
-
     this.getPermission(1)
     // 页面刷新手动加载一次pinia
     this.currentUser.loadUserName()
@@ -98,6 +92,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userName = to.params.userName
+      vm.getUserData(vm.userName)
       // 持久化保存 防止用户刷新本页面导致传入的username丢失
       vm.otherUser.saveUserName(to.params.userName)
       vm.$nextTick(() => {})
@@ -118,8 +113,8 @@ export default {
         this.loading.userData = false
         this.user = res.data.data
         this.posts = res.data.posts
-        this.posts.forEach(item=>{
-            item.image = ''
+        this.posts.forEach((item) => {
+          item.image = ''
         })
         this.posts_count = res.data.total
       })
@@ -183,6 +178,7 @@ export default {
       image.saveImageUrl({ image: url }).then((res) => {
         if (res.data.msg == 'success') {
           emitter.emit('image', url)
+          this.user.image = url
           // 换图像成功后，更新本地image字段
           this.currentUser.saveImage(res.data.image)
           this.$message.success('图像上传成功')
@@ -194,11 +190,14 @@ export default {
     submitUpload() {
       this.$refs.uploadRef.submit()
     },
-    handlePreview(){
+    handlePreview() {
       return true
     },
-    showDrawer(){
+    showDrawer() {
       this.drawer = !this.drawer
+    },
+    preImage(){
+      this.$message.warning('查看失败')
     }
   }
 }
@@ -206,7 +205,7 @@ export default {
 
 <template>
   <PageHeadBack>
-    <el-avatar  size="large"  @click="showDrawer"/>
+    <el-avatar size="large" :src="user.image" @click="showDrawer" />
     <el-card class="user-info" shadow="never">
       <template #header>
         <div class="card-header">
@@ -275,23 +274,7 @@ export default {
       </el-row>
     </el-card>
 
-    <el-upload
-      ref="uploadRef"
-      action="https://www.helloimg.com/api/v1/upload"
-      :headers="uploadData.headers"
-      :data="uploadData.data"
-      :auto-upload="false"
-      :on-success="handleAvatarSuccess"
-      :before-upload="beforeAvatarUpload"
-      :on-preview="handlePreview"
-    >
-      <template #trigger>
-        <el-button class="select-image" type="primary">从本机选择图像</el-button>
-      </template>
-      <el-button class="upload-image" type="success" @click="submitUpload"> 上传图像 </el-button>
-    </el-upload>
-
-    <PostCard v-for="item in posts" :key="item" :post="item" />
+    <PostCard v-for="item in posts" :key="item" :post="item" :show-image="false"/>
 
     <el-pagination
       v-model:current-page="currentPage"
@@ -303,25 +286,24 @@ export default {
       :pager-count="5"
     />
   </PageHeadBack>
-  <van-action-sheet
-       v-model:show="drawer"
-      cancel-text="取消"
-      close-on-click-action
-    >
-  <el-button class="select-image" text>查看图像</el-button>
-    <el-upload
-      ref="uploadRef"
-      action="https://www.helloimg.com/api/v1/upload"
-      :headers="uploadData.headers"
-      :data="uploadData.data"
-      :on-success="handleAvatarSuccess"
-      :before-upload="beforeAvatarUpload"
-      :on-preview="handlePreview"
-    >
-      <template #trigger>
-        <el-button class="select-image" text >从本机选择图像</el-button>
-      </template>
-    </el-upload>
+  <van-action-sheet v-model:show="drawer" cancel-text="取消" close-on-click-action>
+    <el-button class="pre-image" text @click="preImage">查看图像</el-button>
+    <el-divider />
+    <div class="upload" v-if="isCurrentUser">
+      <el-upload
+        ref="uploadRef"
+        action="https://www.helloimg.com/api/v1/upload"
+        :headers="uploadData.headers"
+        :data="uploadData.data"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+        :on-preview="handlePreview"
+      >
+        <template #trigger>
+          <el-button class="select-image" text>从相册选择</el-button>
+        </template>
+      </el-upload>
+    </div>
   </van-action-sheet>
 </template>
 
@@ -347,9 +329,20 @@ export default {
 .el-pagination {
   float: right;
 }
-.select-image {
+.pre-image {
   width: 100%;
-  /* margin: 0px 10px 0px 20px; */
+  height: 40px;
+  font-size: 0.9rem;
 }
-
+.upload {
+  width: 100%;
+  text-align: center;
+  height: 33px;
+}
+.select-image {
+  font-size: 0.9rem;
+}
+.el-divider {
+  margin: 2px 0px 2px 0px;
+}
 </style>

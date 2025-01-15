@@ -42,6 +42,7 @@ import { useCurrentUserStore } from '@/stores/currentUser'
 import MarQuee from '@/utils/components/MarQuee.vue'
 import daysApi from '@/api/days/daysApi.js'
 import emitter from '@/utils/emitter.js'
+import imageCfg from '@/config/image.js'
 export default {
   name: 'BurgerMenu',
   components: {
@@ -110,8 +111,6 @@ export default {
     toggleMenu() {
       if (this.windowWidth < 500) {
         this.isActive = !this.isActive
-        // 添加或移除 .active 类
-        // this.$el.querySelector('.menu-toggle').classList.toggle('active')
       }
     },
     closeToggleMenu(){
@@ -163,14 +162,12 @@ export default {
       this.$router.push('/posts')
     },
     errorImage(){
-      this.photo.Avatar = this.photo.default
+      this.photo.Avatar = imageCfg.logOut
     },
     initImage(){
       this.currentUser.loadImage()
-      console.log('11')
       if(!this.currentUser.image){
-        console.log('22')
-        this.photo.Avatar = this.photo.default
+        this.photo.Avatar = imageCfg.logOut
         return 
       }
       this.photo.Avatar = this.currentUser.image
@@ -195,6 +192,9 @@ export default {
   color: #303133;
   white-space: nowrap;
   margin-right:3px;
+}
+.el-avatar {
+  margin-top:2px;
 }
 /* 菜单项容器样式 */
 .menu-container {
