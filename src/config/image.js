@@ -1,6 +1,5 @@
 import image_1 from '../asset/image_1.ico'
 import image_2 from '../asset/image_2.ico'
-import image_3 from '../asset/image_3.ico'
 import image_4 from '../asset/image_4.ico'
 import image_5 from '../asset/image_5.ico'
 import image_6 from '../asset/image_6.ico'
@@ -9,7 +8,7 @@ import image_8 from '../asset/image_8.ico'
 import logOut from '../asset/logOut.png'
 import cherry from '../asset/cherry5.jpg'
 
-const arr = [image_1, image_2, image_3, image_4, image_5, image_6, image_7, image_8]
+const arr = [image_1, image_2, image_4, image_5, image_6, image_7, image_8]
 function getRandomImage() {
   // 确保数组不为空
   if (arr && arr.length) {
