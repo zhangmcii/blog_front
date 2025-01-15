@@ -215,7 +215,7 @@ export default {
 
       <el-skeleton :rows="5" animated :loading="loading.userData">
         <template #default>
-          <el-row v-if="user.name">
+          <el-row>
             <el-col :xs="6" :xl="4">昵称</el-col>
             <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
           </el-row>
