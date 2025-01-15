@@ -42,6 +42,11 @@ export default {
         userData: false
       },
       uploadData: upload,
+      drawer:false,
+      actions :[
+      { name: '查看图像' },
+      { name: '从本机选择图像',callback: this.jumpReplyPage },
+    ],
     }
   },
   setup() {
@@ -113,6 +118,9 @@ export default {
         this.loading.userData = false
         this.user = res.data.data
         this.posts = res.data.posts
+        this.posts.forEach(item=>{
+            item.image = ''
+        })
         this.posts_count = res.data.total
       })
     },
@@ -188,6 +196,9 @@ export default {
     },
     handlePreview(){
       return true
+    },
+    showDrawer(){
+      this.drawer = !this.drawer
     }
   }
 }
@@ -195,6 +206,7 @@ export default {
 
 <template>
   <PageHeadBack>
+    <el-avatar  size="large"  @click="showDrawer"/>
     <el-card class="user-info" shadow="never">
       <template #header>
         <div class="card-header">
@@ -291,6 +303,26 @@ export default {
       :pager-count="5"
     />
   </PageHeadBack>
+  <van-action-sheet
+       v-model:show="drawer"
+      cancel-text="取消"
+      close-on-click-action
+    >
+  <el-button class="select-image" text>查看图像</el-button>
+    <el-upload
+      ref="uploadRef"
+      action="https://www.helloimg.com/api/v1/upload"
+      :headers="uploadData.headers"
+      :data="uploadData.data"
+      :on-success="handleAvatarSuccess"
+      :before-upload="beforeAvatarUpload"
+      :on-preview="handlePreview"
+    >
+      <template #trigger>
+        <el-button class="select-image" text >从本机选择图像</el-button>
+      </template>
+    </el-upload>
+  </van-action-sheet>
 </template>
 
 <style scoped>
@@ -316,6 +348,8 @@ export default {
   float: right;
 }
 .select-image {
-  margin: 0px 10px 10px 0px;
+  width: 100%;
+  /* margin: 0px 10px 0px 20px; */
 }
+
 </style>
