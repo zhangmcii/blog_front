@@ -1,9 +1,10 @@
 <script>
 import authApi from '@/api/auth/authApi.js'
 import EmailPage from './EmailPage.vue'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
   components: {
-    EmailPage
+    EmailPage,
   },
   data() {
     return {
@@ -28,10 +29,12 @@ export default {
 </script>
 
 <template>
+  <PageHeadBack>
   <EmailPage header-text="更换您的邮箱地址" :password="form.password" action="change">
     <el-form-item prop="password" label="密码">
       <el-input v-model="form.password" type="password" />
     </el-form-item>
   </EmailPage>
+</PageHeadBack>
 </template>
 <style scoped></style>

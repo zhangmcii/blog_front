@@ -1,50 +1,36 @@
 <template>
   <div class="burger-menu">
     <!-- "Home" 标签始终显示 -->
-    <a href="/posts" class="home">主页</a>
-    <!-- 汉堡按钮，只在屏幕尺寸小于500px时显示 -->
-    <button
-      class="menu-toggle"
-      v-if="windowWidth < 500"
-      :class="{ active: isActive }"
-      @click="toggleMenu"
-    >
-      <div class="line" v-for="line in 3" :key="line"></div>
-    </button>
+    <a @click="goHomePage" class="home">主页</a>
+    <MarQuee :text=daySentence :speed="0.7"/>
+
+    <el-avatar size="default" :src="photo.Avatar" @error="errorImage"   @click="toggleMenu"/>
+
     <!-- 菜单项容器 -->
     <div class="menu-container">
       <!-- 其他菜单项，响应式显示 -->
       <div class="menu" :class="{ 'is-active': isActive || windowWidth >= 500 }">
         <ul class="menu-list">
           <li v-show="login">
-            <a :href="`/user/${currentUser.username}`">个人资料</a>
+            <a @click="this.toggleMenu();this.$router.push(`/user/${currentUser.username}`)">个人资料</a>
           </li>
           <li v-if="isCommentManage">
-            <a href="/commentManagement">评论管理</a>
+            <a @click="this.toggleMenu();this.$router.push('/commentManagement')">评论管理</a>
           </li>
           <li v-if="!login" class="login-text"><a href="/login">登录</a></li>
           <li v-else>
-            <a href="#" @click.prevent="toggleContactDropdown"
+            <a  @click.prevent="toggleContactDropdown"
               >{{ accountLabel }}<el-icon><i-ep-CaretBottom /></el-icon
             ></a>
             <transition name="fade">
               <div class="contact-dropdown" v-if="isContactDropdownActive">
-                <a href="/changePassword">修改密码</a>
-                <a href="/changeEmail" v-if="isConfirmed">修改邮箱</a>
-                <a href="/bindEmail" v-else>绑定邮箱</a>
+                <a @click="this.toggleMenu();this.$router.push('/changePassword')">修改密码</a>
+                <a @click="this.toggleMenu();this.$router.push('/changeEmail')" v-if="isConfirmed">修改邮箱</a>
+                <a @click="this.toggleMenu();this.$router.push('/bindEmail')" v-else>绑定邮箱</a>
                 <a @click="log_out" href="/posts">退出</a>
               </div>
             </transition>
           </li>
-          <!-- <li>
-            <el-switch
-              v-model="isDark"
-              style="--el-switch-on-color: #303133; --el-switch-off-color: #c0c4cc"
-              :active-action-icon="_Moon"
-              :inactive-action-icon="_Sunny"
-              @change="toggleDark"
-            />
-          </li> -->
         </ul>
       </div>
     </div>
@@ -53,10 +39,15 @@
 
 <script>
 import { useCurrentUserStore } from '@/stores/currentUser'
-// import { useDark } from "@pureadmin/utils";
-// import { Sunny, Moon } from '@element-plus/icons-vue'
+import MarQuee from '@/utils/components/MarQuee.vue'
+import daysApi from '@/api/days/daysApi.js'
+import emitter from '@/utils/emitter.js'
+import imageCfg from '@/config/image.js'
 export default {
   name: 'BurgerMenu',
+  components: {
+    MarQuee
+  },
   data() {
     return {
       isActive: false,
@@ -67,13 +58,16 @@ export default {
         { label: 'Contact', href: '#' }
       ],
       isContactDropdownActive: false,
-      accountLabel: '账户'
+      accountLabel: '账户',
+      daySentence:'',
+      photo:{
+        Avatar:'',
+        default:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+      }
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
-    // const { isDark, toggleDark } = useDark();
-    // return { currentUser,isDark, toggleDark }
     return { currentUser }
   },
   computed: {
@@ -87,13 +81,10 @@ export default {
     isConfirmed() {
       return this.currentUser.isConfirmed == 'true'
     },
-    // _Moon(){
-    //   return Moon
-    // },
-    // _Sunny(){
-    //   return Sunny
-    // }
-  },
+    isHomePage(){
+      return this.$route.path === '/posts'
+    },
+},
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userName = to.params.userName
@@ -104,6 +95,11 @@ export default {
     this.currentUser.loadUserName()
     this.currentUser.loadRoleId()
     this.currentUser.loadConfirmed()
+    this.initImage()
+    this.daySentence = daysApi.fetchQuote()
+    emitter.on('image', (url) => {
+      this.photo.Avatar = url
+    })
   },
   created() {
     window.addEventListener('resize', this.updateWindowWidth)
@@ -115,12 +111,15 @@ export default {
     toggleMenu() {
       if (this.windowWidth < 500) {
         this.isActive = !this.isActive
-        // 添加或移除 .active 类
-        this.$el.querySelector('.menu-toggle').classList.toggle('active')
+      }
+    },
+    closeToggleMenu(){
+      if(this.isActive){
+        this.isActive = false
       }
     },
     updateWindowWidth() {
-      this.windowWidth = window.innerWidth
+        this.windowWidth = window.innerWidth
     },
     toggleContactDropdown() {
       this.isContactDropdownActive = !this.isContactDropdownActive
@@ -134,6 +133,7 @@ export default {
       localStorage.removeItem('userName')
       localStorage.removeItem('isConfirmed')
       localStorage.removeItem('currentComment')
+      localStorage.removeItem('image')
       // 更新pinia
       this.currentUser.loadUserName()
       // 退出后跳转到主页面 隐藏发布文章区域
@@ -150,7 +150,29 @@ export default {
       if (command == 'exit') {
         this.log_out()
       }
+    },
+    goHomePage(){
+      // 如果汉堡菜单展开，则关闭
+      if(this.isActive){
+        this.closeToggleMenu()
+      }
+      if(this.isHomePage){
+        return
+      }
+      this.$router.push('/posts')
+    },
+    errorImage(){
+      this.photo.Avatar = imageCfg.logOut
+    },
+    initImage(){
+      this.currentUser.loadImage()
+      if(!this.currentUser.image){
+        this.photo.Avatar = imageCfg.logOut
+        return 
+      }
+      this.photo.Avatar = this.currentUser.image
     }
+
   }
 }
 </script>
@@ -161,40 +183,6 @@ export default {
   height: 6vh;
   display: flex;
 }
-/* 汉堡按钮样式 */
-.menu-toggle {
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 10px;
-  display: none; /* 默认隐藏汉堡按钮，只有在屏幕小于500px时显示 */
-  margin-left: auto; /* 将汉堡按钮推到右边 */
-  margin-bottom: 10px;
-}
-
-.menu-toggle.active .line:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-
-.menu-toggle.active .line:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-toggle.active .line:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-}
-
-/* 汉堡按钮的线条样式 */
-.menu-toggle .line {
-  width: 20px;
-  height: 3px;
-  background-color: #606266;
-  margin: 5px 0;
-  transition: transform 0.2s ease-in-out;
-}
-.menu-toggle:hover .line {
-  background-color: #c0c4cc;
-}
 /* "Home" 标签样式 */
 .home {
   margin-right: auto; /* 将 "Home" 标签推到左边 */
@@ -202,9 +190,11 @@ export default {
   text-decoration: none;
   font-size: 1.1rem;
   color: #303133;
+  white-space: nowrap;
+  margin-right:3px;
 }
-.home:hover {
-  color: #c0c4cc;
+.el-avatar {
+  margin-top:2px;
 }
 /* 菜单项容器样式 */
 .menu-container {

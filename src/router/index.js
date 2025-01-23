@@ -82,6 +82,16 @@ const router = createRouter({
           path: '/reply',
           name: 'replyComment',
           component: () => import('../views/comment/CommentReply.vue')
+        },
+        {
+          path: '/networkError',
+          name: 'networkError',
+          component: () => import('../views/error/NetError.vue')
+        },
+        {
+          path: '/notFound',
+          name: 'notFound',
+          component: () => import('../views/error/NotFound404.vue')
         }
       ]
     },

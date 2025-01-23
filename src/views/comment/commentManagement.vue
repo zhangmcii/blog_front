@@ -2,9 +2,11 @@
 import commentApi from '@/api/comment/commentApi.js'
 import PostCard from '../posts/PostCard.vue'
 import { useCurrentUserStore } from '@/stores/currentUser'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
   components: {
-    PostCard
+    PostCard,
+    PageHeadBack
   },
   data() {
     return {
@@ -56,6 +58,7 @@ export default {
 </script>
 
 <template>
+  <PageHeadBack>
   <PostCard v-for="item in comments" :key="item" :post="item" :func-switch="false">
     <el-row v-if="isCommentManage">
       <el-button @click="enable(item)" v-if="item.disabled">开启</el-button>
@@ -71,5 +74,6 @@ export default {
     :hide-on-single-page="true"
     :pager-count="4"
   />
+</PageHeadBack>
 </template>
 <style scoped></style>

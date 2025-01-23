@@ -1,14 +1,21 @@
 <script>
 import userApi from '@/api/user/userApi.js'
 import authApi from '@/api/auth/authApi.js'
+import image from '@/api/user/image.js'
 import common from '@/utils/common.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { useOtherUserStore } from '@/stores/otherUser'
 import PostCard from '../posts/PostCard.vue'
 import dayjs from 'dayjs'
+import { areaList } from '@vant/area-data'
+import cityUtil from '@/utils/cityUtil.js'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import emitter from '@/utils/emitter.js'
+import upload from '@/config/postImageToken.js'
 export default {
   components: {
-    PostCard
+    PostCard,
+    PageHeadBack
   },
   data() {
     return {
@@ -25,22 +32,32 @@ export default {
         followers_count: 0,
         followed_count: 0,
         is_followed_by_current_user: false,
-        is_following_current_user: false
+        is_following_current_user: false,
+        image: ''
       },
       posts: {},
       currentPage: 1,
       posts_count: 0,
-      followPerm: false
+      followPerm: false,
+      loading: {
+        userData: false
+      },
+      uploadData: upload,
+      drawer: false,
+      imgList: []
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     const otherUser = useOtherUserStore()
-    return { currentUser, otherUser }
+    return { currentUser, otherUser, areaList }
   },
   computed: {
-    name_or_location() {
-      return this.user.name || this.user.location
+    location() {
+      if (this.user.location && !isNaN(this.user.location)) {
+        return cityUtil.getCodeToName(this.user.location, this.areaList)
+      }
+      return ''
     },
     member_since() {
       return dayjs(this.user.member_since).format('YYYY-MM-DD')
@@ -67,10 +84,6 @@ export default {
     }
   },
   mounted() {
-    this.$nextTick(()=>{
-      this.getUserData(this.userName)
-    })
-
     this.getPermission(1)
     // 页面刷新手动加载一次pinia
     this.currentUser.loadUserName()
@@ -79,6 +92,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userName = to.params.userName
+      vm.getUserData(vm.userName)
       // 持久化保存 防止用户刷新本页面导致传入的username丢失
       vm.otherUser.saveUserName(to.params.userName)
       vm.$nextTick(() => {})
@@ -86,6 +100,7 @@ export default {
   },
   methods: {
     getUserData(userName, page) {
+      this.loading.userData = true
       if (!userName) {
         this.otherUser.loadUserName()
         userName = this.otherUser.username
@@ -95,8 +110,13 @@ export default {
         return
       }
       userApi.get_user(userName, page).then((res) => {
+        this.loading.userData = false
         this.user = res.data.data
+        this.imgList.push(this.user.image)
         this.posts = res.data.posts
+        this.posts.forEach((item) => {
+          item.image = ''
+        })
         this.posts_count = res.data.total
       })
     },
@@ -146,91 +166,152 @@ export default {
     },
     handleCurrentChange() {
       this.getUserData(this.userName, this.currentPage)
-    }
+    },
+    beforeAvatarUpload(rawFile) {
+      if (rawFile.size / 1024 / 1024 > 1) {
+        this.$message.error('图像的大小不能超过1MB!')
+        return false
+      }
+      return true
+    },
+    handleAvatarSuccess(response) {
+      const url = response.data.links.url
+      image.saveImageUrl({ image: url }).then((res) => {
+        if (res.data.msg == 'success') {
+          emitter.emit('image', url)
+          this.user.image = url
+          this.imgList.push(this.user.image)
+          // 换图像成功后，更新本地image字段
+          this.currentUser.saveImage(res.data.image)
+          this.$message.success('图像上传成功')
+        } else {
+          this.$message.error('图像上传失败')
+        }
+      })
+    },
+    submitUpload() {
+      this.$refs.uploadRef.submit()
+    },
+    handlePreview() {
+      return true
+    },
+    showDrawer() {
+      this.drawer = !this.drawer
+    },
   }
 }
 </script>
 
 <template>
-  <el-card class="user-info" shadow="never">
-    <template #header>
-      <div class="card-header">
-        <span>个人信息</span>
-      </div>
-    </template>
+  <PageHeadBack>
+    <el-avatar size="large" :src="user.image" @click="showDrawer" />
+    <el-card class="user-info" shadow="never">
+      <template #header>
+        <div class="card-header">
+          <span>个人信息</span>
+        </div>
+      </template>
 
-    <el-row v-if="user.about_me">
-      <el-col :xs="6" :xl="4">签名</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ user.about_me }}</el-col>
-    </el-row>
+      <el-skeleton :rows="5" animated :loading="loading.userData">
+        <template #default>
+          <el-row v-if="user.name">
+            <el-col :xs="6" :xl="4">昵称</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="6" :xl="4">账号</el-col>
+            <el-col :xs="16" :xl="10" :offset="2">{{ user.username }}</el-col>
+          </el-row>
+          <el-row v-if="user.email">
+            <el-col :xs="6" :xl="4">电子邮件</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
+          </el-row>
+          <el-row v-if="user.location">
+            <el-col :xs="6" :xl="4">城市</el-col>
+            <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
+          </el-row>
+          <el-row v-if="user.about_me">
+            <el-col :xs="6" :xl="4">签名</el-col>
+            <el-col :xs="16" :xl="10" :offset="2">{{ user.about_me }}</el-col>
+          </el-row>
+          <el-row>
+            <el-col :xs="6" :xl="4">生日</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
+          </el-row>
 
-    <el-row v-if="user.name">
-      <el-col :xs="6" :xl="4">用户名</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
-    </el-row>
+          <el-row>
+            <el-col :xs="6" :xl="4">上线时间</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
+          </el-row>
+        </template>
+      </el-skeleton>
+    </el-card>
 
-    <el-row v-if="user.location">
-      <el-col :xs="6" :xl="4">城市</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ user.location }}</el-col>
-    </el-row>
+    <el-card shadow="never">
+      <el-row>
+        <el-col v-if="follow" :span="6">
+          <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
+            >取消关注</el-button
+          >
+          <el-button v-else @click="followUser">关注</el-button>
+        </el-col>
+        <el-col :span="4"> </el-col>
+        <el-col :span="6">
+          <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
+        </el-col>
+        <el-col :span="6">
+          <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
+        </el-col>
+        <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
+      </el-row>
+    </el-card>
 
-    <el-row v-if="user.email">
-      <el-col :xs="6" :xl="4">电子邮件</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
-    </el-row>
+    <el-card shadow="never" v-if="isCurrentUser || isAdmin">
+      <el-row justify="space-between">
+        <el-col v-if="isCurrentUser" :xs="9" :xl="6">
+          <el-button @click="editProfile">编辑资料</el-button>
+        </el-col>
+        <el-col v-if="isAdmin" :xs="12" :xl="12">
+          <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
+        </el-col>
+      </el-row>
+    </el-card>
 
-    <el-row>
-      <el-col :xs="6" :xl="4">生日</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
-    </el-row>
+    <PostCard v-for="item in posts" :key="item" :post="item" :show-image="false" @click="$router.push(`/share/${item.id}`)"/>
 
-    <el-row>
-      <el-col :xs="6" :xl="4">上线时间</el-col>
-      <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
-    </el-row>
-  </el-card>
-
-  <el-card shadow="never">
-    <el-row>
-      <el-col v-if="follow" :span="6">
-        <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
-          >取消关注</el-button
-        >
-        <el-button v-else @click="followUser">关注</el-button>
-      </el-col>
-      <el-col :span="4"> </el-col>
-      <el-col :span="6">
-        <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
-      </el-col>
-      <el-col :span="6">
-        <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
-      </el-col>
-      <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
-    </el-row>
-  </el-card>
-
-  <el-card shadow="never" v-if="isCurrentUser || isAdmin">
-    <el-row justify="space-between">
-      <el-col v-if="isCurrentUser" :xs="9" :xl="6">
-        <el-button @click="editProfile">编辑资料</el-button>
-      </el-col>
-      <el-col v-if="isAdmin" :xs="12" :xl="12">
-        <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
-      </el-col>
-    </el-row>
-  </el-card>
-
-  <PostCard v-for="item in posts" :key="item" :post="item" />
-
-  <el-pagination
-    v-model:current-page="currentPage"
-    :page-size="10"
-    layout="total, prev, pager, next"
-    :total="posts_count"
-    @current-change="handleCurrentChange"
-    :hide-on-single-page="true"
-    :pager-count="5"
-  />
+    <el-pagination
+      v-model:current-page="currentPage"
+      :page-size="10"
+      layout="total, prev, pager, next"
+      :total="posts_count"
+      @current-change="handleCurrentChange"
+      :hide-on-single-page="true"
+      :pager-count="5"
+    />
+  </PageHeadBack>
+  <van-action-sheet v-model:show="drawer" cancel-text="取消">
+    <photo-provider :photo-closable="true">
+      <photo-consumer v-for="(src, index) in imgList" :intro="src" :key="src" :src="src">
+        <el-button v-if="index === 0" text class="pre-image" @click="this.drawer=false">查看图像</el-button>
+      </photo-consumer>
+    </photo-provider>
+    <el-divider />
+    <div class="upload" v-if="isCurrentUser">
+      <el-upload
+        ref="uploadRef"
+        action="https://www.helloimg.com/api/v1/upload"
+        :headers="uploadData.headers"
+        :data="uploadData.data"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+        :on-preview="handlePreview"
+      >
+        <template #trigger>
+          <el-button class="select-image" text>从相册选择</el-button>
+        </template>
+      </el-upload>
+    </div>
+  </van-action-sheet>
 </template>
 
 <style scoped>
@@ -254,5 +335,28 @@ export default {
 }
 .el-pagination {
   float: right;
+}
+
+.PhotoConsumer {
+  width: 100%;
+}
+.pre-image {
+  width: 100%;
+  height: 40px;
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+.upload {
+  width: 100%;
+  text-align: center;
+  height: 33px;
+}
+
+.select-image {
+  width: 100%;
+  font-size: 0.9rem;
+}
+.el-divider {
+  margin: 2px 0px 2px 0px;
 }
 </style>

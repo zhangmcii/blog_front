@@ -1,4 +1,5 @@
 <template>
+  <PageHeadBack>
   <div style="text-align: center; height: 50px">注册</div>
   <el-form
     :model="ruleForm"
@@ -8,9 +9,6 @@
     label-width="100px"
     class="demo-ruleForm"
   >
-    <el-form-item label="电子邮件" prop="email">
-      <el-input type="text" v-model="ruleForm.email" autocomplete="off"></el-input>
-    </el-form-item>
     <el-form-item label="用户名" prop="user">
       <el-input type="text" v-model="ruleForm.user" autocomplete="off"></el-input>
     </el-form-item>
@@ -22,15 +20,22 @@
     </el-form-item>
 
     <el-form-item>
-      <el-button type="primary" :disabled="!isChange" @click="register">注册</el-button>
+      <el-button type="primary" :disabled="!isChange" :loading="loading" @click="register">注册</el-button>
     </el-form-item>
   </el-form>
+</PageHeadBack>
 </template>
 
 <script>
 import authApi from '@/api/auth/authApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
+import confetti from 'canvas-confetti'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import imageCfg from '@/config/image.js'
 export default {
+  components:{
+    PageHeadBack
+  },
   name: 'LoginPage',
   data() {
     var validatePass = (rule, value, callback) => {
@@ -65,11 +70,12 @@ export default {
         email: ''
       },
       rules: {
-        user: [{ validator: validatePass, trigger: 'blur' }],
-        password: [{ validator: validatePass2, trigger: 'blur' }],
-        confirmPass: [{ validator: validatePass3, trigger: 'blur' }]
+        user: [{ required: true, validator: validatePass, trigger: 'blur' }],
+        password: [{ required: true, validator: validatePass2, trigger: 'blur' }],
+        confirmPass: [{ required: true, validator: validatePass3, trigger: 'blur' }]
       },
-      isChange: false
+      isChange: false,
+      loading:false
     }
   },
   setup() {
@@ -86,20 +92,33 @@ export default {
   },
   methods: {
     register() {
+      this.loading = true
       authApi
         .register({
           email: this.ruleForm.email,
           username: this.ruleForm.user,
-          password: this.ruleForm.password
+          password: this.ruleForm.password,
+          image:imageCfg.random()
         })
         .then((res) => {
           if (res.data.msg == 'success') {
+            this.congratulation()
             this.$message.success('注册成功')
-            this.$router.push('/login')
+            setTimeout(() => {
+              this.loading = false
+              this.$router.push('/login')
+            }, 700)
           } else {
             this.$message.error(res.data.detail)
           }
         })
+    },
+    congratulation() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      })
     }
   }
 }

@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia'
 
 export const useCurrentUserStore = defineStore('currentUser', {
-  state: () => ({ token: '', username: '', isAdmin: false, roleId: 0, isConfirmed: false }),
+  state: () => ({
+    token: '',
+    username: '',
+    isAdmin: false,
+    roleId: 0,
+    isConfirmed: false,
+    image: ''
+  }),
   actions: {
     saveToken(token) {
       this.token = token
@@ -47,6 +54,13 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     loadConfirmed() {
       this.isConfirmed = localStorage.getItem('isConfirmed')
+    },
+    saveImage(image) {
+      this.image = image
+      localStorage.setItem('image', image)
+    },
+    loadImage() {
+      this.image = localStorage.getItem('image')
     }
   }
 })

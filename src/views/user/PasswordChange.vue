@@ -1,9 +1,12 @@
 <script>
 import authApi from '@/api/auth/authApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   components: {
-    ButtonClick
+    ButtonClick,
+    PageHeadBack
   },
   data() {
     var validatePass = (rule, value, callback) => {
@@ -26,6 +29,10 @@ export default {
       isChange: false
     }
   },
+  setup() {
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
+  },
   watch: {
     form: {
       deep: true,
@@ -42,17 +49,33 @@ export default {
         this.isChange = false
         if (res.data.msg == 'success') {
           this.$message.success('修改密码成功')
-          this.$router.push('/posts')
+          this.log_out()
         } else {
           this.$message.success(res.data.detail)
         }
       })
-    }
+    },
+    log_out() {
+      localStorage.removeItem('token')
+      localStorage.removeItem('currentUserName')
+      localStorage.removeItem('isAdmin')
+      localStorage.removeItem('roleId')
+      localStorage.removeItem('userName')
+      localStorage.removeItem('isConfirmed')
+      localStorage.removeItem('currentComment')
+      localStorage.removeItem('image')
+      // 更新pinia
+      this.currentUser.loadUserName()
+      // 退出后跳转到主页面 隐藏发布文章区域
+      this.currentUser.loadToken()
+      this.$router.push('/login')
+    },
   }
 }
 </script>
 
 <template>
+  <PageHeadBack>
   <h1>修改密码</h1>
   <el-form
     :model="form"
@@ -72,7 +95,6 @@ export default {
       <el-input v-model="form.confirmNewPassword" type="password" />
     </el-form-item>
     <el-form-item>
-      <!-- <el-button type="primary" @click="submitForm"> 提交 </el-button> -->
       <ButtonClick
         content="提交"
         type="primary"
@@ -82,5 +104,6 @@ export default {
       />
     </el-form-item>
   </el-form>
+</PageHeadBack>
 </template>
 <style scoped></style>

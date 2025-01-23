@@ -2,10 +2,12 @@
 import postApi from '@/api/posts/postApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 import RichText from '@/utils/components/RichText.vue'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
   components: {
     ButtonClick,
-    RichText
+    RichText,
+    PageHeadBack
   },
   data() {
     return {
@@ -81,25 +83,27 @@ export default {
 </script>
 
 <template>
-  <h1>编辑</h1>
-  <h4>你在想什么？</h4>
-  <Transition mode="out-in">
-    <RichText
-      ref="rickText"
-      v-if="activeRichEditor"
-      :bodyInit="post.body"
-      :bodyHtmlInit="post.body_html"
-      @content_change="(n) => (this.rich_content = n)"
-    />
-    <el-input
-      v-else
-      v-model="post.body"
-      :autosize="{ minRows: 2, maxRows: 4 }"
-      type="textarea"
-      placeholder="发你所想"
-    />
-  </Transition>
-  <ButtonClick content="修改" :loading="loading" @do-search="modify" />
+  <PageHeadBack>
+    <h1>编辑</h1>
+    <h4>你在想什么？</h4>
+    <Transition mode="out-in">
+      <RichText
+        ref="rickText"
+        v-if="activeRichEditor"
+        :bodyInit="post.body"
+        :bodyHtmlInit="post.body_html"
+        @content_change="(n) => (this.rich_content = n)"
+      />
+      <el-input
+        v-else
+        v-model="post.body"
+        :autosize="{ minRows: 2, maxRows: 4 }"
+        type="textarea"
+        placeholder="发你所想"
+      />
+    </Transition>
+    <ButtonClick content="修改" :loading="loading" @do-search="modify" />
+  </PageHeadBack>
 </template>
 <style scoped>
 .el-button {

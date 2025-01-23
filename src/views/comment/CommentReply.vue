@@ -1,6 +1,10 @@
 <script>
 import commentApi from '@/api/comment/commentApi.js'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
+  components: {
+    PageHeadBack
+  },
   data() {
     return {
       currentComment: {
@@ -21,48 +25,46 @@ export default {
   },
   methods: {
     // 回退页面
-    onBack() {
+    goBack() {
       this.$router.back()
     },
     publish() {
-      commentApi.submitComment(this.currentComment.postId, { body: this.replyData, parentCommentId: this.currentComment.id}).then((res) => {
-        if (res.data.msg == 'success') {
+      commentApi
+        .submitComment(this.currentComment.postId, {
+          body: this.replyData,
+          parentCommentId: this.currentComment.id
+        })
+        .then((res) => {
+          if (res.data.msg == 'success') {
             this.$message.success('发布成功')
             this.$router.back()
-        } else {
-          this.$message.error(res.data.detail)
-        }
-      })
+          } else {
+            this.$message.error(res.data.detail)
+          }
+        })
     }
   }
 }
 </script>
 
 <template>
-  <el-page-header @back="onBack" title="评论">
-    <template #extra>
-      <el-button text :disabled="!replyData" @click="publish">发布</el-button>
-    </template>
-  </el-page-header>
+  <PageHeadBack title="评论">
+    <el-text> {{ title }}</el-text>
+    <el-card class="comment">
+      {{ currentComment.body }}
+    </el-card>
 
-  <el-text> {{ title }}</el-text>
-  <el-card class="comment">
-    {{ currentComment.body }}
-  </el-card>
-
-  <el-input
-    v-model="replyData"
-    :rows="15"
-    type="textarea"
-    maxlength="250"
-    show-word-limit
-    :placeholder="title"
-  />
+    <el-input
+      v-model="replyData"
+      :rows="15"
+      type="textarea"
+      maxlength="250"
+      show-word-limit
+      :placeholder="title"
+    />
+  </PageHeadBack>
 </template>
 <style scoped>
-.el-page-header {
-  margin-bottom: 10px;
-}
 .el-text {
   color: #71717a;
 }

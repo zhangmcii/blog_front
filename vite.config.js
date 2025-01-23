@@ -10,6 +10,8 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import AppLoading from 'vite-plugin-app-loading'
+
+import { VantResolver } from '@vant/auto-import-resolver';
 export default defineConfig({
   plugins: [
     vue(),
@@ -18,7 +20,8 @@ export default defineConfig({
       resolvers: [
         ElementPlusResolver(),
         // 自动导入图标组件
-        IconsResolver()
+        IconsResolver(),
+        VantResolver(),
       ]
     }),
     Components({
@@ -28,7 +31,8 @@ export default defineConfig({
         // 自动注册图标组件
         IconsResolver({
           enabledCollections: ['ep']
-        })
+        }),
+        VantResolver(),
       ]
     }),
     Icons({

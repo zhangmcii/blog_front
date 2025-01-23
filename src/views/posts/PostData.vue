@@ -15,10 +15,23 @@ export default {
   data() {
     return {
       activeName: 'all',
-      posts: [],
-      posts_count: 0,
-      loading: false,
-      currentPage: 1
+      posts: [{}, {}],
+      posts_count: -1,
+      // loading: false,
+      currentPage: 1,
+      loading: {
+        publishPost: false,
+        fetchPost: false,
+        fetchPostDisabled: false
+      },
+      showShare: false,
+      shareOptions: [
+        { name: '微信', icon: 'wechat' },
+        { name: '朋友圈', icon: 'wechat-moments' },
+        { name: '微博', icon: 'weibo' },
+        { name: 'QQ', icon: 'qq' },
+        { name: '复制链接', icon: 'link' },
+      ]
     }
   },
   setup() {
@@ -34,55 +47,95 @@ export default {
   },
   methods: {
     changeTab(tabName) {
+      this.posts = [{}, {}]
       this.getPosts(this.currentPage, tabName)
     },
     handleCurrentChange() {
+      this.posts = [{}, {}]
       this.getPosts(this.currentPage, this.activeName)
     },
     getPosts(page, tabName) {
       postApi.getPosts(page, tabName).then((res) => {
+        this.loading.fetchPost = false
+        this.loading.fetchPost = false
         this.posts = res.data.data
         this.posts_count = res.data.total
-        this.$nextTick(() => {})
+  
       })
     },
     getPostsResult(res) {
       this.posts = res.data.data
       this.posts_count = res.data.total
-      this.loading = false
-    }
+      this.loading.publishPost = false
+    },
+    onRefresh() {
+      this.loading.fetchPost = true
+      this.getPosts(this.currentPage, this.activeName)
+    },
+    shareSelect(option) {
+      this.$message.info(option.name)
+      this.showShare = false
+      this.loading.publishPost = false
+    },
   }
 }
 </script>
 
 <template>
-  <h1>你好 {{ currentUser.username }}</h1>
-  <PostPublish
-    @loading-begin="(flag) => (loading = flag)"
-    @posts-result="getPostsResult"
-    v-if="currentUser.token != ''"
-  />
-  <Transition name="fade" mode="out-in">
-    <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
-      <el-tab-pane label="广场" name="all">
-        <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
-        <PostCard v-for="item in posts" :key="item.id" :post="item" />
-      </el-tab-pane>
-      <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
-        <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
-        <PostCard v-for="item in posts" :key="item.id" :post="item" />
-      </el-tab-pane>
-    </el-tabs>
-  </Transition>
-  <el-pagination
-    v-model:current-page="currentPage"
-    :page-size="10"
-    layout="total, prev, pager, next"
-    :total="posts_count"
-    @current-change="handleCurrentChange"
-    :hide-on-single-page="true"
-    :pager-count="5"
-  />
+  <van-pull-refresh
+    v-model="loading.fetchPost"
+    success-text="刷新成功"
+    @refresh="onRefresh"
+    :disabled="loading.fetchPostDisabled"
+  >
+    <h1 class="gradient-text">你好 {{ currentUser.username }}</h1>
+    <PostPublish
+      @loading-begin="(flag) => (loading.publishPost = flag)"
+      @posts-result="getPostsResult"
+      v-if="currentUser.token != ''"
+    />
+    <Transition name="fade" mode="out-in">
+      <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
+        <el-tab-pane label="广场" name="all">
+          <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
+          <PostCard
+            v-for="item in posts"
+            :key="item.id"
+            :post="item"
+            :loading="Object.keys(item).length === 0"
+            @click="$router.push(`/share/${item.id}`)"
+            @share="(flag) => (this.showShare = flag)"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
+          <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
+          <PostCard
+            v-for="item in posts"
+            :key="item.id"
+            :post="item"
+            :loading="Object.keys(item).length === 0"
+            @click="$router.push(`/share/${item.id}`)"
+            @share="(flag) => (this.showShare = flag)"
+          />
+        </el-tab-pane>
+      </el-tabs>
+    </Transition>
+    <el-pagination
+      v-model:current-page="currentPage"
+      :page-size="10"
+      layout="total, prev, pager, next"
+      :total="posts_count"
+      @current-change="handleCurrentChange"
+      :hide-on-single-page="true"
+      :pager-count="5"
+    />
+    <van-share-sheet
+      v-model:show="showShare"
+      title="立即分享给好友"
+      :options="shareOptions"
+      @select="shareSelect"
+    />
+  </van-pull-refresh>
 </template>
 <style scoped>
 .el-pagination {
