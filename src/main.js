@@ -18,6 +18,9 @@ import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { loadingFadeOut } from 'virtual:app-loading'
 loadingFadeOut()
 
+import vue3PhotoPreview from 'vue3-photo-preview';
+import 'vue3-photo-preview/dist/index.css';
+
 const app = createApp(App)
 const pinia = createPinia()
 
@@ -29,4 +32,5 @@ app.use(ElementPlus, {
 })
 app.use(router)
 app.use(pinia)
+app.use(vue3PhotoPreview);
 app.mount('#app')

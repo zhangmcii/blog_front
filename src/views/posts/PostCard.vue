@@ -69,6 +69,9 @@ export default {
         return imageCfg.random()
       }
       return this.post.image
+    },
+    isUserRoute(){
+      return this.$route.path.startsWith('/user') 
     }
   },
   mounted() {
@@ -95,7 +98,7 @@ export default {
       <template #default>
         <el-row>
           <el-col :span="4" v-if="showImage">
-            <el-avatar :src="image" @click="this.$router.push(`/user/${post.author}`)" />
+            <el-avatar :src="image" @click.stop="this.$router.push(`/user/${post.author}`)" />
           </el-col>
 
           <el-col :span="showImage ? 20 : 24">
@@ -104,7 +107,7 @@ export default {
                 <el-link
                   target="_blank"
                   type="primary"
-                  @click="this.$router.push(`/user/${post.author}`)"
+                  @click.stop="this.$router.push(`/user/${post.author}`)"
                   >{{ post.author }}</el-link
                 >
               </el-col>
@@ -127,7 +130,7 @@ export default {
                 :xl="2"
                 v-if="post.author == currentUser.username"
               >
-                <el-button type="info" size="small" @click="edit">编辑</el-button>
+                <el-button type="info" size="small" @click.stop="edit">编辑</el-button>
               </el-col>
               <el-col
                 :xs="7"
@@ -137,13 +140,13 @@ export default {
                 :xl="2"
                 v-else-if="currentUser.isAdmin == 'true'"
               >
-                <el-button type="danger" size="small" @click="edit">编辑[管理员] </el-button>
+                <el-button type="danger" size="small" @click.stop="edit">编辑[管理员] </el-button>
               </el-col>
-              <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2">
-                <el-button type="info" size="small" @click="this.$emit('share',true)">分享</el-button>
+              <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="!isUserRoute">
+                <el-button type="info" size="small" @click.stop="this.$emit('share',true)">分享</el-button>
               </el-col>
               <el-col :xs="6" :sm="6" :md="4" :lg="2" :xl="2">
-                <el-button type="primary" size="small" @click="comment"
+                <el-button type="primary" size="small" @click.stop="comment"
                   >{{ post.comment_count }} 评论</el-button
                 >
               </el-col>

@@ -33,7 +33,7 @@ export default {
         followed_count: 0,
         is_followed_by_current_user: false,
         is_following_current_user: false,
-        image:''
+        image: ''
       },
       posts: {},
       currentPage: 1,
@@ -44,7 +44,7 @@ export default {
       },
       uploadData: upload,
       drawer: false,
-      // userImageList:['https://www.helloimg.com/i/2025/01/15/6787c53dddfc5.jpg']
+      imgList: []
     }
   },
   setup() {
@@ -112,6 +112,7 @@ export default {
       userApi.get_user(userName, page).then((res) => {
         this.loading.userData = false
         this.user = res.data.data
+        this.imgList.push(this.user.image)
         this.posts = res.data.posts
         this.posts.forEach((item) => {
           item.image = ''
@@ -179,6 +180,7 @@ export default {
         if (res.data.msg == 'success') {
           emitter.emit('image', url)
           this.user.image = url
+          this.imgList.push(this.user.image)
           // 换图像成功后，更新本地image字段
           this.currentUser.saveImage(res.data.image)
           this.$message.success('图像上传成功')
@@ -196,9 +198,6 @@ export default {
     showDrawer() {
       this.drawer = !this.drawer
     },
-    preImage(){
-      this.$message.warning('查看失败')
-    }
   }
 }
 </script>
@@ -278,7 +277,7 @@ export default {
       </el-row>
     </el-card>
 
-    <PostCard v-for="item in posts" :key="item" :post="item" :show-image="false"/>
+    <PostCard v-for="item in posts" :key="item" :post="item" :show-image="false" @click="$router.push(`/share/${item.id}`)"/>
 
     <el-pagination
       v-model:current-page="currentPage"
@@ -290,8 +289,12 @@ export default {
       :pager-count="5"
     />
   </PageHeadBack>
-  <van-action-sheet v-model:show="drawer" cancel-text="取消" close-on-click-action>
-    <el-button class="pre-image" text @click="preImage">查看图像</el-button>
+  <van-action-sheet v-model:show="drawer" cancel-text="取消">
+    <photo-provider :photo-closable="true">
+      <photo-consumer v-for="(src, index) in imgList" :intro="src" :key="src" :src="src">
+        <el-button v-if="index === 0" text class="pre-image" @click="this.drawer=false">查看图像</el-button>
+      </photo-consumer>
+    </photo-provider>
     <el-divider />
     <div class="upload" v-if="isCurrentUser">
       <el-upload
@@ -333,17 +336,24 @@ export default {
 .el-pagination {
   float: right;
 }
+
+.PhotoConsumer {
+  width: 100%;
+}
 .pre-image {
   width: 100%;
   height: 40px;
   font-size: 0.9rem;
+  margin-top: 2px;
 }
 .upload {
   width: 100%;
   text-align: center;
   height: 33px;
 }
+
 .select-image {
+  width: 100%;
   font-size: 0.9rem;
 }
 .el-divider {

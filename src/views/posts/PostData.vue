@@ -103,6 +103,7 @@ export default {
             :key="item.id"
             :post="item"
             :loading="Object.keys(item).length === 0"
+            @click="$router.push(`/share/${item.id}`)"
             @share="(flag) => (this.showShare = flag)"
           />
         </el-tab-pane>
@@ -113,6 +114,7 @@ export default {
             :key="item.id"
             :post="item"
             :loading="Object.keys(item).length === 0"
+            @click="$router.push(`/share/${item.id}`)"
             @share="(flag) => (this.showShare = flag)"
           />
         </el-tab-pane>
@@ -136,13 +138,6 @@ export default {
   </van-pull-refresh>
 </template>
 <style scoped>
-/* .gradient-text {
-  background-image: -webkit-linear-gradient(left, #4c8bf5, #f953c6);
-  background-clip: text;
-  -webkit-text-fill-color: transparent; 
-  display: inline-block; 
-  margin:20px 0px 0px 0px;
-} */
 .el-pagination {
   float: right;
 }
@@ -163,7 +158,4 @@ export default {
 .fade-leave-to {
   opacity: 0;
 }
-/* .el-card :deep(.el-card__body ){
-  white-space: pre-wrap;
-} */
 </style>
