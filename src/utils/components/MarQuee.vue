@@ -50,6 +50,7 @@ const resumeAnimation = () => {
   overflow: hidden;
   white-space: nowrap;
   width: 80%;
+  height: 40px;
   position: relative;
   display: grid;
   align-content: center;
@@ -59,8 +60,7 @@ const resumeAnimation = () => {
   display: inline-block;
   white-space: nowrap;
   animation: scroll-left linear infinite;
-  /* 为了让动画顺畅，动画名称和关键帧名称需要保持一致 */
-  margin-top: 5px;
+  margin-top: 8px;
   margin-left: 5px;
   color: #303133;
   letter-spacing: 0.02rem;
