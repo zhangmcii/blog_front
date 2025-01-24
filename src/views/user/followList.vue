@@ -35,9 +35,6 @@ export default {
   methods: {
     getFan() {
       followApi.getFan(this.userName).then((res) => {
-        // if (res.data.msg == 'success') {
-        //   this.follows = res.data.data
-        // }
         if (res.data.msg == 'success') {
           res.data.data.map((item) => {
             this.follows.push(item)
@@ -48,6 +45,7 @@ export default {
       }).catch(() => {
         this.loading = false;
         this.error = true;
+        this.finished = true
       });
     },
     getFollowing() {

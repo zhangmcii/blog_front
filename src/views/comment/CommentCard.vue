@@ -31,7 +31,9 @@ export default {
 
       drawer: false,
       currentComment: '',
-      actions: [{ name: '回复', callback: this.jumpReplyPage }, { name: '复制' }]
+      actions: [{ name: '回复', callback: this.jumpReplyPage }, { name: '复制' }],
+      finished: true,
+      error: false
     }
   },
   setup() {
@@ -58,17 +60,27 @@ export default {
     },
     getComment() {
       this.loading = true
-      commentApi.getComment(this.postId, this.currentPage).then((res) => {
-        if (res.data.msg == 'success') {
-          this.loading = false
-          const d = res.data.data
-          if (d.length < this.pageSize) {
-            this.allLoaded = true // 如果返回的数据不足一页，标记为全部加载
+      commentApi
+        .getComment(this.postId, this.currentPage)
+        .then((res) => {
+          if (res.data.msg == 'success') {
+            res.data.data.map((item) => {
+              this.comments.push(item)
+            })
           }
-          this.comments = [...this.comments, ...d]
+          this.loading = false
           this.currentPage++
-        }
-      })
+          if (this.comments.length < res.data.total) {
+            this.finished = false
+          } else {
+            this.finished = true
+          }
+        })
+        .catch(() => {
+          this.loading = false
+          this.error = true
+          this.finished = true
+        })
     },
     showDrawer(commentData) {
       if (commentData.disabled || this.currentUser.token == '') {
@@ -89,7 +101,7 @@ export default {
 </script>
 
 <template>
-  <el-row >
+  <el-row>
     <el-col :span="24">
       <el-divider content-position="left">输入您的评论</el-divider>
       <div v-if="currentUser.token != ''">
@@ -111,28 +123,33 @@ export default {
   <el-row>
     <el-divider content-position="left" v-if="comments.length">全部评论</el-divider>
     <el-col :span="24">
-      <PostCard
-        v-for="item in comments"
-        :key="item"
-        :post="item"
-        :func-switch="false"
-        @click="showDrawer(item, $event)"
+      <van-list
+        v-model:loading="loading"
+        v-model:error="error"
+        :finished="finished"
+        finished-text="没有更多评论了"
+        error-text="请求失败，点击重新加载"
+        @load="getComment"
       >
-        <template #default>
-          <PostCard
-            v-if="item.parent_comment_id"
-            :post="comments.find((x) => x.id === item.parent_comment_id)"
-            :func-switch="false"
-            cardBgColor="rgb(243.9, 244.2, 244.8)"
-          >
-          </PostCard>
-        </template>
-      </PostCard>
+        <PostCard
+          v-for="item in comments"
+          :key="item"
+          :post="item"
+          :func-switch="false"
+          @click="showDrawer(item, $event)"
+        >
+          <template #default>
+            <PostCard
+              v-if="item.parent_comment_id"
+              :post="comments.find((x) => x.id === item.parent_comment_id)"
+              :func-switch="false"
+              cardBgColor="rgb(243.9, 244.2, 244.8)"
+            >
+            </PostCard>
+          </template>
+        </PostCard>
+      </van-list>
     </el-col>
-    <WaitData content="加载中..." :stop_loading="loading" />
-    <div class="no-more-comment">
-      <el-text v-if="currentUser.token != '' && allLoaded">没有更多内容了</el-text>
-    </div>
     <van-action-sheet
       v-model:show="drawer"
       :actions="actions"
