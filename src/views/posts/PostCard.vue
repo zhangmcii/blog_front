@@ -98,7 +98,7 @@ export default {
       <template #default>
         <el-row>
           <el-col :span="4" v-if="showImage">
-            <el-avatar :src="image" @click.stop="this.$router.push(`/user/${post.author}`)" />
+            <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
           </el-col>
 
           <el-col :span="showImage ? 20 : 24">
@@ -107,7 +107,7 @@ export default {
                 <el-link
                   target="_blank"
                   type="primary"
-                  @click.stop="this.$router.push(`/user/${post.author}`)"
+                  @click.stop="$router.push(`/user/${post.author}`)"
                   >{{ post.author }}</el-link
                 >
               </el-col>

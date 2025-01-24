@@ -152,7 +152,7 @@ export default {
     <el-col :span="4"><el-checkbox label="记住密码" v-model="isRemember"></el-checkbox></el-col>
     <el-col :span="6"
       ><div class="text">
-        <el-link class="forget-pass" @click="this.$router.push('/resetPassword')"
+        <el-link class="forget-pass" @click="$router.push('/resetPassword')"
           >忘记密码？</el-link
         >
       </div></el-col
@@ -166,7 +166,7 @@ export default {
   <!-- <el-divider> 其他登录方式 </el-divider> -->
   <div class="register-container">
     <el-text class="register-account">还没有账号?</el-text>
-    <el-link class="register" @click="this.$router.push('/register')">创建账号 </el-link>
+    <el-link class="register" @click="$router.push('/register')">创建账号 </el-link>
   </div>
 </template>
 <style scoped>

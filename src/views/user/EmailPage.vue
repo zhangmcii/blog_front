@@ -101,6 +101,7 @@ export default {
       authApi.resetPassword(this.form).then((res) => {
         if (res.data.msg == 'success') {
           this.$message.success('密码重置成功')
+          this.$router.push('/login')
         } else {
           this.$message.error(res.data.detail)
         }

@@ -12,10 +12,10 @@
       <div class="menu" :class="{ 'is-active': isActive || windowWidth >= 500 }">
         <ul class="menu-list">
           <li v-show="login">
-            <a @click="this.toggleMenu();this.$router.push(`/user/${currentUser.username}`)">个人资料</a>
+            <a @click="toggleMenu();$router.push(`/user/${currentUser.username}`)">个人资料</a>
           </li>
           <li v-if="isCommentManage">
-            <a @click="this.toggleMenu();this.$router.push('/commentManagement')">评论管理</a>
+            <a @click="toggleMenu();$router.push('/commentManagement')">评论管理</a>
           </li>
           <li v-if="!login" class="login-text"><a href="/login">登录</a></li>
           <li v-else>
@@ -24,9 +24,9 @@
             ></a>
             <transition name="fade">
               <div class="contact-dropdown" v-if="isContactDropdownActive">
-                <a @click="this.toggleMenu();this.$router.push('/changePassword')">修改密码</a>
-                <a @click="this.toggleMenu();this.$router.push('/changeEmail')" v-if="isConfirmed">修改邮箱</a>
-                <a @click="this.toggleMenu();this.$router.push('/bindEmail')" v-else>绑定邮箱</a>
+                <a @click="toggleMenu();$router.push('/changePassword')">修改密码</a>
+                <a @click="toggleMenu();$router.push('/changeEmail')" v-if="isConfirmed">修改邮箱</a>
+                <a @click="toggleMenu();$router.push('/bindEmail')" v-else>绑定邮箱</a>
                 <a @click="log_out" href="/posts">退出</a>
               </div>
             </transition>

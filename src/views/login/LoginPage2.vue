@@ -111,13 +111,13 @@ export default {
 
   <el-row
     >忘记密码？
-    <el-link type="primary" @click="this.$router.push('/resetPassword')"
+    <el-link type="primary" @click="$router.push('/resetPassword')"
       >点击重新设置密码</el-link
     ></el-row
   >
   <el-row
     >新用户？
-    <el-link type="primary" @click="this.$router.push('/register')">点击这里去注册</el-link></el-row
+    <el-link type="primary" @click="$router.push('/register')">点击这里去注册</el-link></el-row
   >
 </template>
 

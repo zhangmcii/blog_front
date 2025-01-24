@@ -2,7 +2,6 @@
 import { defineAsyncComponent } from 'vue'
 import commentApi from '@/api/comment/commentApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
-import WaitData from '@/utils/components/WaitData.vue'
 export default {
   props: {
     postId: {
@@ -13,8 +12,7 @@ export default {
     }
   },
   components: {
-    PostCard: defineAsyncComponent(() => import('../posts/PostCard.vue')),
-    WaitData
+    PostCard: defineAsyncComponent(() => import('../posts/PostCard.vue'))
   },
   data() {
     return {
@@ -26,13 +24,14 @@ export default {
 
       currentPage: 1,
       pageSize: 10,
-      loading: false,
       allLoaded: false,
 
       drawer: false,
       currentComment: '',
       actions: [{ name: '回复', callback: this.jumpReplyPage }, { name: '复制' }],
-      finished: true,
+      
+      loading: false,
+      finished: false,
       error: false
     }
   },
@@ -41,9 +40,9 @@ export default {
     return { currentUser }
   },
   mounted() {
-    this.$nextTick(() => {
-      this.getComment()
-    })
+    // this.$nextTick(() => {
+    //   this.getComment()
+    // })
     this.currentUser.loadToken()
   },
   methods: {
@@ -70,9 +69,7 @@ export default {
           }
           this.loading = false
           this.currentPage++
-          if (this.comments.length < res.data.total) {
-            this.finished = false
-          } else {
+          if (this.comments.length >= res.data.total) {
             this.finished = true
           }
         })
