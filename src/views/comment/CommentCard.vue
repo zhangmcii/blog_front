@@ -2,7 +2,6 @@
 import { defineAsyncComponent } from 'vue'
 import commentApi from '@/api/comment/commentApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
-import emitter from '@/utils/emitter.js'
 import WaitData from '@/utils/components/WaitData.vue'
 export default {
   props: {
@@ -44,11 +43,6 @@ export default {
       this.getComment()
     })
     this.currentUser.loadToken()
-    emitter.on('scroll', () => {
-      if (!this.loading && !this.allLoaded) {
-        this.getComment()
-      }
-    })
   },
   methods: {
     submit() {
