@@ -3,6 +3,8 @@ import { defineAsyncComponent, hydrateOnVisible } from 'vue'
 import PostCard from './PostCard.vue'
 import postApi from '@/api/posts/postApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
+import { GradientText } from 'vue-amazing-ui'
+import 'vue-amazing-ui/es/gradienttext/GradientText.css'
 
 export default {
   components: {
@@ -10,14 +12,14 @@ export default {
     PostPublish: defineAsyncComponent({
       loader: () => import('./PostPublish.vue'),
       hydrate: hydrateOnVisible()
-    })
+    }),
+    GradientText
   },
   data() {
     return {
       activeName: 'all',
       posts: [{}, {}],
       posts_count: -1,
-      // loading: false,
       currentPage: 1,
       loading: {
         publishPost: false,
@@ -88,7 +90,17 @@ export default {
     @refresh="onRefresh"
     :disabled="loading.fetchPostDisabled"
   >
-    <h1 class="gradient-text">你好 {{ currentUser.username }}</h1>
+    <GradientText
+      class="gradient-text"
+      :size="28"
+      :weight="500"
+      :gradient="{
+        deg: '90deg',
+        from: '#09c8ce',
+        to: '#eb2f96'
+      }"
+      >你好 {{ currentUser.username }}</GradientText
+    >
     <PostPublish
       @loading-begin="(flag) => (loading.publishPost = flag)"
       @posts-result="getPostsResult"
@@ -138,6 +150,9 @@ export default {
   </van-pull-refresh>
 </template>
 <style scoped>
+.gradient-text {
+  margin:20px 0px 0px 0px;
+}
 .el-pagination {
   float: right;
 }
