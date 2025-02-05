@@ -17,6 +17,8 @@ export default {
         body: '',
         bodyHtml: ''
       },
+      originalPost: '',
+      isChange:false,
       loading: false,
       activeRichEditor: false
     }
@@ -32,10 +34,19 @@ export default {
       this.getPostById(this.postId)
     }
   },
+  watch: {
+    'post.body'(newVal){
+        this.isChange = newVal !== this.originalPost
+    },
+    'rich_content.body'(newVal){
+        this.isChange = newVal !== this.originalPost
+    }
+  },
   methods: {
     getPostById(postId) {
       postApi.getPost(postId).then((res) => {
         if (res.data.msg == 'success') {
+          this.originalPost = res.data.data.body
           this.post = res.data.data
           if (this.post.body_html) {
             this.activeRichEditor = true
@@ -102,7 +113,7 @@ export default {
         placeholder="发你所想"
       />
     </Transition>
-    <ButtonClick content="修改" :loading="loading" @do-search="modify" />
+    <ButtonClick content="修改" :loading="loading" :disabled="!isChange" @do-search="modify" />
   </PageHeadBack>
 </template>
 <style scoped>
