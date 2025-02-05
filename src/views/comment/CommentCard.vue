@@ -118,7 +118,7 @@ export default {
     </el-col>
   </el-row>
   <el-row>
-    <el-divider content-position="left" v-if="comments.length">全部评论</el-divider>
+    <el-divider content-position="left">全部评论</el-divider>
     <el-col :span="24">
       <van-list
         v-model:loading="loading"
