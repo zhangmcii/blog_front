@@ -40,7 +40,9 @@ export default {
       posts_count: 0,
       followPerm: false,
       loading: {
-        userData: false
+        userData: false,
+        follow:false,
+        unFollow:false
       },
       uploadData: upload,
       drawer: false,
@@ -137,21 +139,27 @@ export default {
       })
     },
     followUser() {
+      this.loading.follow = true
       userApi.follow(this.user.username).then((res) => {
         if (res.data.msg == 'success') {
+          this.loading.follow = false
           this.$message.success('关注成功')
           this.user = res.data.data
         } else {
+          this.loading.follow = false
           this.$message.error(res.data.msg)
         }
       })
     },
     unFollowUser() {
+      this.loading.unFollow = true
       userApi.unFollow(this.user.username).then((res) => {
         if (res.data.msg == 'success') {
+          this.loading.unFollow = false
           this.$message.success('已取消关注')
           this.user = res.data.data
         } else {
+          this.loading.unFollow = false
           this.$message.error(res.data.msg)
         }
       })
@@ -250,10 +258,10 @@ export default {
     <el-card shadow="never">
       <el-row>
         <el-col v-if="follow" :span="6">
-          <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
+          <el-button v-if="user.is_followed_by_current_user" :loading="loading.unFollow" @click="unFollowUser"
             >取消关注</el-button
           >
-          <el-button v-else @click="followUser">关注</el-button>
+          <el-button v-else :loading="loading.follow" @click="followUser">关注</el-button>
         </el-col>
         <el-col :span="4"> </el-col>
         <el-col :span="6">

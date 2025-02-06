@@ -33,6 +33,10 @@ export default {
       return this.follows.length == 0 && this.action == 'followed'
     }
   },
+  mounted(){
+    // const r = this.$refs.list.check
+    // console.log('22', r)
+  },
   methods: {
     getFan() {
       followApi
@@ -79,6 +83,7 @@ export default {
     getFollowList() {
       this.loading = true
       if (this.refreshing) {
+        console.log('333',this.refreshing)
         this.refreshing = false
       }
       if (this.action == 'follower') {
@@ -88,9 +93,9 @@ export default {
       }
     },
     onRefresh() {
-      this.refreshing = true
       this.finished = false
       this.follows = []
+      this.currentPage = 1
       this.getFollowList()
     },
     onClickTab() {
@@ -108,6 +113,7 @@ export default {
       <van-tab title="粉丝"  name="follower">
         <van-pull-refresh v-model="refreshing" success-text="刷新成功" @refresh="onRefresh">
           <van-list
+            ref="list"
             v-model:loading="loading"
             v-model:error="error"
             :finished="finished"
@@ -163,7 +169,7 @@ export default {
   align-items: center;
   justify-content: flex-start;
   height: 50px;
-  margin: 10px;
+  padding: 10px;
 }
 .el-avatar {
   margin-right: 20px;
