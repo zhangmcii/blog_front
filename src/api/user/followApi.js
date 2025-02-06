@@ -1,9 +1,14 @@
 import { $http } from '@/api/index'
 export default {
-  getFan(userName) {
-    return $http.get(`/followers/${userName}`)
+  getFan(userName, page) {
+    let params = {}
+    params['page'] = page
+    return $http.get(`/followers/${userName}`, { params: params })
   },
-  getFollowing(userName) {
-    return $http.get(`/followed_by/${userName}`)
+  
+  getFollowing(userName,page) {
+    let params = {}
+    params['page'] = page
+    return $http.get(`/followed_by/${userName}`, { params: params })
   }
 }

@@ -8,24 +8,18 @@ export default {
   data() {
     return {
       userName: '',
-      // 0-展示粉丝, 1-展示关注
-      action: 0,
+      action: 'follower',
       follows: [],
       loading: false,
       finished: false,
       error: false,
-      refreshing: false
+      refreshing: false,
+      currentPage: 1,
     }
   },
-  //   action: 0  展示粉丝
-  //   action: 1  展示关注
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      if (to.params.action == 'follower') {
-        vm.action = 0
-      } else {
-        vm.action = 1
-      }
+      vm.action = to.params.action
       vm.userName = to.params.userName
       vm.getFollowList()
       vm.$nextTick(() => {})
@@ -33,16 +27,16 @@ export default {
   },
   computed: {
     followEmpty() {
-      return this.follows.length == 0 && this.action == 0
+      return this.follows.length == 0 && this.action == 'follower'
     },
     followedEmpty() {
-      return this.follows.length == 0 && this.action == 1
+      return this.follows.length == 0 && this.action == 'followed'
     }
   },
   methods: {
     getFan() {
       followApi
-        .getFan(this.userName)
+        .getFan(this.userName, this.currentPage)
         .then((res) => {
           if (res.data.msg == 'success') {
             res.data.data.map((item) => {
@@ -50,7 +44,10 @@ export default {
             })
           }
           this.loading = false
-          this.finished = true
+          this.currentPage++
+          if (this.follows.length >= res.data.total) {
+            this.finished = true
+          }
         })
         .catch(() => {
           this.loading = false
@@ -60,7 +57,7 @@ export default {
     },
     getFollowing() {
       followApi
-        .getFollowing(this.userName)
+        .getFollowing(this.userName,this.currentPage)
         .then((res) => {
           if (res.data.msg == 'success') {
             res.data.data.map((item) => {
@@ -68,7 +65,10 @@ export default {
             })
           }
           this.loading = false
-          this.finished = true
+          this.currentPage++
+          if (this.follows.length >= res.data.total) {
+            this.finished = true
+          }
         })
         .catch(() => {
           this.loading = false
@@ -81,21 +81,21 @@ export default {
       if (this.refreshing) {
         this.refreshing = false
       }
-      if (this.action == 0) {
+      if (this.action == 'follower') {
         this.getFan()
-      } else if (this.action == 1) {
+      } else if (this.action == 'followed') {
         this.getFollowing()
       }
     },
     onRefresh() {
       this.refreshing = true
       this.finished = false
-      this.loading = true
       this.follows = []
       this.getFollowList()
     },
     onClickTab() {
       this.follows = []
+      this.currentPage = 1
       this.getFollowList()
     }
   }
@@ -104,8 +104,8 @@ export default {
 
 <template>
   <PageHeadBack>
-    <van-tabs v-model:active="action" @click-tab="onClickTab" animated  title-active-color="rgb(51.2, 126.4, 204)">
-      <van-tab title="粉丝">
+    <van-tabs v-model:active="action" @click-tab="onClickTab" animated sticky :offset-top="50" title-active-color="rgb(51.2, 126.4, 204)">
+      <van-tab title="粉丝"  name="follower">
         <van-pull-refresh v-model="refreshing" success-text="刷新成功" @refresh="onRefresh">
           <van-list
             v-model:loading="loading"
@@ -129,7 +129,7 @@ export default {
           </van-list>
         </van-pull-refresh>
       </van-tab>
-      <van-tab title="关注">
+      <van-tab title="关注" name="followed">
         <van-pull-refresh v-model="refreshing" success-text="刷新成功" @refresh="onRefresh">
           <van-list
             v-model:loading="loading"
