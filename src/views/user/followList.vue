@@ -2,23 +2,30 @@
 import followApi from '@/api/user/followApi.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {
-  components:{
+  components: {
     PageHeadBack
   },
   data() {
     return {
       userName: '',
-      action: 'follower',
+      // 0-展示粉丝, 1-展示关注
+      action: 0,
       follows: [],
       loading: false,
       finished: false,
-      error:false,
-      refreshing:false
+      error: false,
+      refreshing: false
     }
   },
+  //   action: 0  展示粉丝
+  //   action: 1  展示关注
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.action = to.params.action
+      if (to.params.action == 'follower') {
+        vm.action = 0
+      } else {
+        vm.action = 1
+      }
       vm.userName = to.params.userName
       vm.getFollowList()
       vm.$nextTick(() => {})
@@ -26,58 +33,68 @@ export default {
   },
   computed: {
     followEmpty() {
-      return this.follows.length == 0 && this.action == 'follower'
+      return this.follows.length == 0 && this.action == 0
     },
     followedEmpty() {
-      return this.follows.length == 0 && this.action == 'followed'
+      return this.follows.length == 0 && this.action == 1
     }
   },
   methods: {
     getFan() {
-      followApi.getFan(this.userName).then((res) => {
-        if (res.data.msg == 'success') {
-          res.data.data.map((item) => {
-            this.follows.push(item)
-          })
-        }
-        this.loading = false
-        this.finished = true
-      }).catch(() => {
-        this.loading = false;
-        this.error = true;
-        this.finished = true
-      });
+      followApi
+        .getFan(this.userName)
+        .then((res) => {
+          if (res.data.msg == 'success') {
+            res.data.data.map((item) => {
+              this.follows.push(item)
+            })
+          }
+          this.loading = false
+          this.finished = true
+        })
+        .catch(() => {
+          this.loading = false
+          this.error = true
+          this.finished = true
+        })
     },
     getFollowing() {
-      followApi.getFollowing(this.userName).then((res) => {
-        if (res.data.msg == 'success') {
-          res.data.data.map((item) => {
-            this.follows.push(item)
-          })
-        }
-        this.loading = false
-        this.finished = true
-      }).catch(() => {
-        this.loading = false;
-        this.error = true;
-        this.finished = true
-      });
+      followApi
+        .getFollowing(this.userName)
+        .then((res) => {
+          if (res.data.msg == 'success') {
+            res.data.data.map((item) => {
+              this.follows.push(item)
+            })
+          }
+          this.loading = false
+          this.finished = true
+        })
+        .catch(() => {
+          this.loading = false
+          this.error = true
+          this.finished = true
+        })
     },
     getFollowList() {
       this.loading = true
-      if(this.refreshing){
+      if (this.refreshing) {
         this.refreshing = false
       }
-      if (this.action == 'follower') {
+      if (this.action == 0) {
         this.getFan()
-      } else if (this.action == 'followed') {
+      } else if (this.action == 1) {
         this.getFollowing()
       }
     },
-    onRefresh(){
+    onRefresh() {
       this.refreshing = true
       this.finished = false
-      this.loading = true;
+      this.loading = true
+      this.follows = []
+      this.getFollowList()
+    },
+    onClickTab() {
       this.follows = []
       this.getFollowList()
     }
@@ -87,37 +104,75 @@ export default {
 
 <template>
   <PageHeadBack>
-  <van-pull-refresh v-model="refreshing" success-text="刷新成功" @refresh="onRefresh">
-  <van-list
-    v-model:loading="loading"
-     v-model:error="error"
-    :finished="finished"
-    finished-text="没有更多了"
-    error-text="请求失败，点击重新加载"
-    @load="getFollowList"
-  >
-    <van-cell-group v-for="item in follows" :key="item"   >
-      <van-cell :title="item.username"  is-link :to="`/user/${item.username}`"/> 
-    </van-cell-group>
-  </van-list>
-  <!-- <ul>
-    <el-empty :image-size="200" description="还没有粉丝哦" v-if="followEmpty" />
-    <el-empty :image-size="200" description="还未关注他人呢" v-if="followedEmpty" />
-  </ul> -->
-</van-pull-refresh>
-
-</PageHeadBack>
+    <van-tabs v-model:active="action" @click-tab="onClickTab" animated  title-active-color="rgb(51.2, 126.4, 204)">
+      <van-tab title="粉丝">
+        <van-pull-refresh v-model="refreshing" success-text="刷新成功" @refresh="onRefresh">
+          <van-list
+            v-model:loading="loading"
+            v-model:error="error"
+            :finished="finished"
+            finished-text="没有更多了"
+            error-text="请求失败，点击重新加载"
+            @load="getFollowList"
+          >
+            <el-link
+              :underline="false"
+              v-for="i in follows"
+              :key="i"
+              class="infinite-list-item"
+              @click="this.$router.push(`/user/${i.username}`)"
+            >
+              <el-avatar :src="i.image" />
+              {{ i.username }}
+              </el-link
+            >
+          </van-list>
+        </van-pull-refresh>
+      </van-tab>
+      <van-tab title="关注">
+        <van-pull-refresh v-model="refreshing" success-text="刷新成功" @refresh="onRefresh">
+          <van-list
+            v-model:loading="loading"
+            v-model:error="error"
+            :finished="finished"
+            finished-text="没有更多了"
+            error-text="请求失败，点击重新加载"
+            @load="getFollowList"
+          >
+            <el-link
+              :underline="false"
+              v-for="i in follows"
+              :key="i"
+              class="infinite-list-item"
+              @click="this.$router.push(`/user/${i.username}`)"
+            >
+              <el-avatar :src="i.image" />
+              {{ i.username }}
+              <!-- <el-icon class="follow-icon"><i-ep-Plus /></el-icon> -->
+              </el-link
+            >
+          </van-list>
+        </van-pull-refresh>
+      </van-tab>
+    </van-tabs>
+  </PageHeadBack>
 </template>
 <style scoped>
-.van-cell{
+.el-link {
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  justify-content: flex-start;
   height: 50px;
   margin: 10px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
 }
-
+.el-avatar {
+  margin-right: 20px;
+}
+.el-link:active {
+  background: #f5f7fa;
+}
+/* .follow-icon {
+  color: white;
+  background-color: #CDD0D6;
+} */
 </style>
