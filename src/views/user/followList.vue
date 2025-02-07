@@ -1,41 +1,37 @@
 <script>
 import followApi from '@/api/user/followApi.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import FollowsList from '@/views/user/components/FollowsList.vue'
 export default {
   components: {
-    PageHeadBack
+    PageHeadBack,
+    FollowsList
   },
   data() {
     return {
       userName: '',
       action: 'follower',
-      follows: [],
+      follows: {
+        fan: [],
+        followed: []
+      },
+      fanTab: {
+        finished: false
+      },
+      followedTab: {
+        finished: false
+      },
       loading: false,
-      finished: false,
       error: false,
       refreshing: false,
-      currentPage: 1,
+      currentPage: 1
     }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.action = to.params.action
       vm.userName = to.params.userName
-      vm.getFollowList()
-      vm.$nextTick(() => {})
     })
-  },
-  computed: {
-    followEmpty() {
-      return this.follows.length == 0 && this.action == 'follower'
-    },
-    followedEmpty() {
-      return this.follows.length == 0 && this.action == 'followed'
-    }
-  },
-  mounted(){
-    // const r = this.$refs.list.check
-    // console.log('22', r)
   },
   methods: {
     getFan() {
@@ -44,46 +40,49 @@ export default {
         .then((res) => {
           if (res.data.msg == 'success') {
             res.data.data.map((item) => {
-              this.follows.push(item)
+              this.follows.fan.push(item)
             })
           }
           this.loading = false
           this.currentPage++
-          if (this.follows.length >= res.data.total) {
-            this.finished = true
+          if (this.follows.fan.length >= res.data.total) {
+            this.fanTab.finished = true
           }
         })
         .catch(() => {
           this.loading = false
           this.error = true
-          this.finished = true
+          this.fanTab.finished = true
         })
     },
     getFollowing() {
       followApi
-        .getFollowing(this.userName,this.currentPage)
+        .getFollowing(this.userName, this.currentPage)
         .then((res) => {
           if (res.data.msg == 'success') {
             res.data.data.map((item) => {
-              this.follows.push(item)
+              this.follows.followed.push(item)
             })
           }
           this.loading = false
           this.currentPage++
-          if (this.follows.length >= res.data.total) {
-            this.finished = true
+          if (this.follows.followed.length >= res.data.total) {
+            this.followedTab.finished = true
           }
         })
         .catch(() => {
           this.loading = false
           this.error = true
-          this.finished = true
+          this.followedTab.finished = true
         })
     },
     getFollowList() {
-      this.loading = true
       if (this.refreshing) {
-        console.log('333',this.refreshing)
+        if (this.action == 'follower') {
+          this.follows.fan = []
+        } else {
+          this.follows.followed = []
+        }
         this.refreshing = false
       }
       if (this.action == 'follower') {
@@ -93,15 +92,18 @@ export default {
       }
     },
     onRefresh() {
-      this.finished = false
-      this.follows = []
+      if (this.action == 'follower') {
+        this.fanTab.finished = false
+      } else if (this.action == 'followed') {
+        this.followedTab.finished = false
+      }
+      this.loading = true
+
       this.currentPage = 1
       this.getFollowList()
     },
     onClickTab() {
-      this.follows = []
       this.currentPage = 1
-      this.getFollowList()
     }
   }
 }
@@ -109,56 +111,55 @@ export default {
 
 <template>
   <PageHeadBack>
-    <van-tabs v-model:active="action" @click-tab="onClickTab" animated sticky :offset-top="50" title-active-color="rgb(51.2, 126.4, 204)">
-      <van-tab title="粉丝"  name="follower">
-        <van-pull-refresh v-model="refreshing" success-text="刷新成功" @refresh="onRefresh">
-          <van-list
-            ref="list"
-            v-model:loading="loading"
-            v-model:error="error"
-            :finished="finished"
-            finished-text="没有更多了"
-            error-text="请求失败，点击重新加载"
-            @load="getFollowList"
+    <van-tabs
+      v-model:active="action"
+      @click-tab="onClickTab"
+      animated
+      sticky
+      :offset-top="50"
+      title-active-color="rgb(51.2, 126.4, 204)"
+    >
+      <van-tab title="粉丝" name="follower">
+        <FollowsList
+          v-model:refreshing="refreshing"
+          v-model:loading="loading"
+          v-model:error="error"
+          v-model:finished="fanTab.finished"
+          @refresh="onRefresh"
+          @load="getFollowList"
+        >
+          <el-link
+            :underline="false"
+            v-for="i in follows.fan"
+            :key="i"
+            class="infinite-list-item"
+            @click="this.$router.push(`/user/${i.username}`)"
           >
-            <el-link
-              :underline="false"
-              v-for="i in follows"
-              :key="i"
-              class="infinite-list-item"
-              @click="this.$router.push(`/user/${i.username}`)"
-            >
-              <el-avatar :src="i.image" />
-              {{ i.username }}
-              </el-link
-            >
-          </van-list>
-        </van-pull-refresh>
+            <el-avatar :src="i.image" />
+            {{ i.username }}
+          </el-link>
+        </FollowsList>
       </van-tab>
       <van-tab title="关注" name="followed">
-        <van-pull-refresh v-model="refreshing" success-text="刷新成功" @refresh="onRefresh">
-          <van-list
-            v-model:loading="loading"
-            v-model:error="error"
-            :finished="finished"
-            finished-text="没有更多了"
-            error-text="请求失败，点击重新加载"
-            @load="getFollowList"
+        <FollowsList
+          v-model:refreshing="refreshing"
+          v-model:loading="loading"
+          v-model:error="error"
+          v-model:finished="followedTab.finished"
+          @refresh="onRefresh"
+          @load="getFollowList"
+        >
+          <el-link
+            :underline="false"
+            v-for="i in follows.followed"
+            :key="i"
+            class="infinite-list-item"
+            @click="this.$router.push(`/user/${i.username}`)"
           >
-            <el-link
-              :underline="false"
-              v-for="i in follows"
-              :key="i"
-              class="infinite-list-item"
-              @click="this.$router.push(`/user/${i.username}`)"
-            >
-              <el-avatar :src="i.image" />
-              {{ i.username }}
-              <!-- <el-icon class="follow-icon"><i-ep-Plus /></el-icon> -->
-              </el-link
-            >
-          </van-list>
-        </van-pull-refresh>
+            <el-avatar :src="i.image" />
+            {{ i.username }}
+          </el-link>
+        </FollowsList>
       </van-tab>
     </van-tabs>
   </PageHeadBack>
