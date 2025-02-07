@@ -1,5 +1,5 @@
 <template>
-  <van-search v-model="value" placeholder="搜索昵称或账号"  @search="onSearch"/>
+  <van-search v-model="value" placeholder="搜索昵称或账号" @search="onSearch" />
   <van-pull-refresh v-model="internalRefreshing" success-text="刷新成功" @refresh="onRefresh">
     <van-list
       v-model:loading="internalLoading"
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import followApi from '@/api/user/followApi.js'
 export default {
   props: {
     refreshing: {
@@ -32,58 +33,83 @@ export default {
     finished: {
       type: Boolean,
       default: false
+    },
+    action: {
+      type: String,
+      default: 'fan'
     }
   },
-  emits:['load','refresh','update:refreshing','update:loading','update:error','update:finished'],
+  emits: [
+    'load',
+    'refresh',
+    'update:refreshing',
+    'update:loading',
+    'update:error',
+    'update:finished',
+    'searchFollowed',
+    'searchFan'
+  ],
   data() {
-  return {
-    value: '',
-  }
-},
+    return {
+      value: ''
+    }
+  },
   computed: {
     internalRefreshing: {
       get() {
-        return this.refreshing;
+        return this.refreshing
       },
       set(value) {
-        this.$emit('update:refreshing', value);
+        this.$emit('update:refreshing', value)
       }
     },
     internalLoading: {
       get() {
-        return this.loading;
+        return this.loading
       },
       set(value) {
-        this.$emit('update:loading', value);
+        this.$emit('update:loading', value)
       }
     },
     internalError: {
       get() {
-        return this.error;
+        return this.error
       },
       set(value) {
-        this.$emit('update:error', value);
+        this.$emit('update:error', value)
       }
     },
     internalFinished: {
       get() {
-        return this.finished;
+        return this.finished
       },
       set(value) {
-        this.$emit('update:finished', value);
+        this.$emit('update:finished', value)
       }
     }
   },
   methods: {
     onRefresh() {
-      this.$emit('refresh');
+      this.$emit('refresh')
     },
     onLoad() {
-      this.$emit('load');
+      this.$emit('load')
     },
-    onSearch(){
-      this.$message.success('搜索')
+    onSearch() {
+      if (this.action == 'followed') {
+        followApi.searchFollowed(this.value).then((res) => {
+          if (res.data.msg == 'success') {
+            this.$emit('searchFollowed', res.data.data)
+          }
+        })
+      } else {
+        followApi.searchFan(this.value).then((res) => {
+          if (res.data.msg == 'success') {
+            this.$emit('searchFan', res.data.data)
+          }
+        })
+      }
+    }
   }
-  }
-};
+}
 </script>

@@ -103,7 +103,21 @@ export default {
       this.getFollowList()
     },
     onClickTab() {
+      if (this.action == 'follower' && this.follows.fan.length != 0) {
+        return
+      } else if (this.action == 'followed' && this.follows.followed.length != 0) {
+        return
+      }
       this.currentPage = 1
+    },
+    searchFan(x) {
+      this.follows.fan = x
+      this.fanTab.finished = true
+    },
+    searchFollowed(x) {
+      this.follows.followed = x
+      // 防止再次切换回来导致无限加载
+      this.followedTab.finished = true
     }
   }
 }
@@ -127,6 +141,7 @@ export default {
           v-model:finished="fanTab.finished"
           @refresh="onRefresh"
           @load="getFollowList"
+          @searchFan="searchFan"
         >
           <el-link
             :underline="false"
@@ -146,8 +161,10 @@ export default {
           v-model:loading="loading"
           v-model:error="error"
           v-model:finished="followedTab.finished"
+          action="followed"
           @refresh="onRefresh"
           @load="getFollowList"
+          @searchFollowed="searchFollowed"
         >
           <el-link
             :underline="false"
