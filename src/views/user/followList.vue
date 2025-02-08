@@ -4,6 +4,7 @@ import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import FollowsList from '@/views/user/components/FollowsList.vue'
 import FollowRow from '@/views/user/components/FollowRow.vue'
 import arrayUtil from '@/utils/arrayUtil.js'
+import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   components: {
     PageHeadBack,
@@ -30,11 +31,20 @@ export default {
       currentPage: 1
     }
   },
+  setup() {
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
+  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.action = to.params.action
       vm.userName = to.params.userName
     })
+  },
+  computed:{
+    isCurrentUser() {
+      return this.userName == this.currentUser.username
+    },
   },
   methods: {
     getFan() {
@@ -122,8 +132,12 @@ export default {
       // 防止再次切换回来导致无限加载
       this.followedTab.finished = true
     },
-    remove(x){
-      this.follows.followed = arrayUtil.removeObjectByFieldValue(this.follows.followed,'username',x)
+    remove(x) {
+      this.follows.followed = arrayUtil.removeObjectByFieldValue(
+        this.follows.followed,
+        'username',
+        x
+      )
     }
   }
 }
@@ -145,11 +159,12 @@ export default {
           v-model:loading="loading"
           v-model:error="error"
           v-model:finished="fanTab.finished"
+          :showSearch="isCurrentUser"
           @refresh="onRefresh"
           @load="getFollowList"
           @searchFan="searchFan"
         >
-          <FollowRow v-for="i in follows.fan" :key="i" :follows="i"></FollowRow>
+          <FollowRow v-for="i in follows.fan" :key="i" :follows="i" :showFollowButton="isCurrentUser" />
         </FollowsList>
       </van-tab>
       <van-tab title="关注" name="followed">
@@ -159,6 +174,7 @@ export default {
           v-model:error="error"
           v-model:finished="followedTab.finished"
           tabAction="followed"
+           :showSearch="isCurrentUser"
           @refresh="onRefresh"
           @load="getFollowList"
           @searchFollowed="searchFollowed"
@@ -168,8 +184,9 @@ export default {
             :key="i"
             :follows="i"
             tabAction="followed"
+            :showFollowButton="isCurrentUser"
             @remove="remove"
-          ></FollowRow>
+          />
         </FollowsList>
       </van-tab>
     </van-tabs>

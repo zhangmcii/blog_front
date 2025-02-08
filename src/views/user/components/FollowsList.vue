@@ -1,5 +1,5 @@
 <template>
-  <van-search v-model="value" placeholder="搜索昵称或账号" @search="onSearch" />
+  <van-search v-model="value" v-if="showSearch" placeholder="搜索昵称或账号" @search="onSearch" />
   <van-pull-refresh v-model="internalRefreshing" success-text="刷新成功" @refresh="onRefresh">
     <van-list
       v-model:loading="internalLoading"
@@ -37,6 +37,10 @@ export default {
     tabAction: {
       type: String,
       default: 'fan'
+    },
+    showSearch:{
+      type:Boolean,
+      default:true
     }
   },
   emits: [

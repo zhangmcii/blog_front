@@ -4,8 +4,6 @@
     互关是 灰底 双向箭头
 -->
 <template>
-  <div>isFollowed:{{ isFollowed }}</div>
-  <div>isMutualFollow:{{ isMutualFollow }}</div>
   <van-cell :to="`/user/${follows.username}`">
     <template #icon>
       <el-avatar :src="follows.image" />
@@ -13,7 +11,7 @@
     <template #title>
       <div class="title-text">{{ follows.username }}</div>
     </template>
-    <template #right-icon>
+    <template #right-icon v-if="showFollowButton">
       <van-icon
         class="icon"
         name="add"
@@ -60,6 +58,10 @@ export default {
     tabAction: {
       type: String,
       default: 'fan'
+    },
+    showFollowButton:{
+       type:Boolean,
+       default:true
     }
   },
   emits: ['remove'],
