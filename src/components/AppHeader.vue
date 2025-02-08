@@ -17,7 +17,10 @@
           <li v-if="isCommentManage">
             <a @click="toggleMenu();$router.push('/commentManagement')">评论管理</a>
           </li>
-          <li v-if="!login" class="login-text"><a href="/login">登录</a></li>
+          <div v-if="!login"> 
+          <li class="login-text"><a @click="$router.push('/login')">登录</a></li>
+          <li class="register-text"><a @click="toggleMenu();$router.push('/register')">注册</a></li>
+        </div>
           <li v-else>
             <a  @click.prevent="toggleContactDropdown"
               >{{ accountLabel }}<el-icon><i-ep-CaretBottom /></el-icon
@@ -286,7 +289,7 @@ export default {
     background-color: #a9a5a5;
     color: #606266;
   }
-  .login-text {
+  .login-text, .register-text {
     margin-right: 20px;
   }
 }

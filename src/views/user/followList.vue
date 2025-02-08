@@ -2,10 +2,14 @@
 import followApi from '@/api/user/followApi.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import FollowsList from '@/views/user/components/FollowsList.vue'
+import FollowRow from '@/views/user/components/FollowRow.vue'
+import arrayUtil from '@/utils/arrayUtil.js'
+import { useCurrentUserStore } from '@/stores/currentUser'
 export default {
   components: {
     PageHeadBack,
-    FollowsList
+    FollowsList,
+    FollowRow
   },
   data() {
     return {
@@ -27,11 +31,20 @@ export default {
       currentPage: 1
     }
   },
+  setup() {
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
+  },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.action = to.params.action
       vm.userName = to.params.userName
     })
+  },
+  computed:{
+    isCurrentUser() {
+      return this.userName == this.currentUser.username
+    },
   },
   methods: {
     getFan() {
@@ -118,6 +131,13 @@ export default {
       this.follows.followed = x
       // 防止再次切换回来导致无限加载
       this.followedTab.finished = true
+    },
+    remove(x) {
+      this.follows.followed = arrayUtil.removeObjectByFieldValue(
+        this.follows.followed,
+        'username',
+        x
+      )
     }
   }
 }
@@ -139,20 +159,12 @@ export default {
           v-model:loading="loading"
           v-model:error="error"
           v-model:finished="fanTab.finished"
+          :showSearch="isCurrentUser"
           @refresh="onRefresh"
           @load="getFollowList"
           @searchFan="searchFan"
         >
-          <el-link
-            :underline="false"
-            v-for="i in follows.fan"
-            :key="i"
-            class="infinite-list-item"
-            @click="this.$router.push(`/user/${i.username}`)"
-          >
-            <el-avatar :src="i.image" />
-            {{ i.username }}
-          </el-link>
+          <FollowRow v-for="i in follows.fan" :key="i" :follows="i" :showFollowButton="isCurrentUser" />
         </FollowsList>
       </van-tab>
       <van-tab title="关注" name="followed">
@@ -161,21 +173,20 @@ export default {
           v-model:loading="loading"
           v-model:error="error"
           v-model:finished="followedTab.finished"
-          action="followed"
+          tabAction="followed"
+           :showSearch="isCurrentUser"
           @refresh="onRefresh"
           @load="getFollowList"
           @searchFollowed="searchFollowed"
         >
-          <el-link
-            :underline="false"
+          <FollowRow
             v-for="i in follows.followed"
             :key="i"
-            class="infinite-list-item"
-            @click="this.$router.push(`/user/${i.username}`)"
-          >
-            <el-avatar :src="i.image" />
-            {{ i.username }}
-          </el-link>
+            :follows="i"
+            tabAction="followed"
+            :showFollowButton="isCurrentUser"
+            @remove="remove"
+          />
         </FollowsList>
       </van-tab>
     </van-tabs>
@@ -195,8 +206,9 @@ export default {
 .el-link:active {
   background: #f5f7fa;
 }
-/* .follow-icon {
+.follow-icon {
   color: white;
-  background-color: #CDD0D6;
-} */
+  background-color: #cdd0d6;
+  margin-right: auto;
+}
 </style>

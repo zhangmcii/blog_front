@@ -189,7 +189,7 @@ textarea {
 .el-button {
   width: 95%;
   letter-spacing: 2px;
-  margin-left: 5px;
+  margin-left: 9px;
 }
 :deep(.el-checkbox__input.is-checked + .el-checkbox__label) {
   color: #323639;
