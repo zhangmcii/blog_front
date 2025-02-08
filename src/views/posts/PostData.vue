@@ -59,7 +59,6 @@ export default {
     getPosts(page, tabName) {
       postApi.getPosts(page, tabName).then((res) => {
         this.loading.fetchPost = false
-        this.loading.fetchPost = false
         this.posts = res.data.data
         this.posts_count = res.data.total
   

@@ -1,5 +1,5 @@
 <template>
-  <van-cell :to="`/user/${follows.username}`">
+  <van-cell :border="false" :to="`/user/${follows.username}`">
     <template #icon>
       <el-avatar :src="follows.image" />
     </template>
