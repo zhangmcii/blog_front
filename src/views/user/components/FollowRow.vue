@@ -1,0 +1,121 @@
+<!-- 
+    关注是蓝底 ➕ 
+    已关注是 灰底 勾号
+    互关是 灰底 双向箭头
+-->
+<template>
+  <van-cell :to="`/user/${follows.username}`">
+    <template #icon>
+      <el-avatar :src="follows.image" />
+    </template>
+    <template #title>
+      <div class="title-text">{{ follows.username }}</div>
+    </template>
+    <template #right-icon>
+      <van-icon
+        class="icon"
+        name="add"
+        color="blue"
+        :size="30"
+        v-if="!isFollowed"
+        @click.stop="followUser"
+      />
+      <van-icon
+        class="icon"
+        name="checked"
+        color="gray"
+        :size="30"
+        v-if="isFollowed && !isMutualFollow"
+        @click.stop="unFollowUser"
+      />
+      <van-icon
+        class="icon"
+        name="sort"
+        color="gray"
+        :size="30"
+        v-if="isMutualFollow"
+        @click.stop="unFollowUser"
+      />
+    </template>
+  </van-cell>
+</template>
+
+<script>
+import userApi from '@/api/user/userApi.js'
+export default {
+  props: {
+    follows: {
+      type: Object,
+      default() {
+        return {
+          username: '123',
+          image: '/src/asset/image_7.ico',
+          is_following: false,
+          is_following_back: false
+        }
+      }
+    },
+    tabAction: {
+      type: String,
+      default: 'fan'
+    }
+  },
+  emits: ['remove'],
+  data() {
+    return {
+      isFollowed:
+        this.tabAction == 'fan' ? this.follows.is_following : this.follows.is_following_back,
+      isMutualFollow: false
+    }
+  },
+  mounted() {
+    // 初始状态 是否互关
+    if (this.tabAction == 'fan' && this.follows.is_following) {
+      this.isMutualFollow = true
+    } else if (this.tabAction == 'followed' && this.follows.is_following_back) {
+      this.isMutualFollow = true
+    } else {
+      this.isMutualFollow = false
+    }
+  },
+  methods: {
+    followUser() {
+      userApi.follow(this.follows.username).then((res) => {
+        if (res.data.msg == 'success') {
+          this.isFollowed = true
+          this.isMutualFollow = true
+          this.$message.success('关注成功')
+        } else {
+          this.$message.error(res.data.msg)
+        }
+      })
+    },
+    unFollowUser() {
+      userApi.unFollow(this.follows.username).then((res) => {
+        if (res.data.msg == 'success') {
+          this.isFollowed = false
+          this.isMutualFollow = false
+          this.$message.success('已取消关注')
+          if (this.tabAction == 'followed') {
+            this.$emit('remove', this.follows.username)
+          }
+        } else {
+          this.$message.error(res.data.msg)
+        }
+      })
+    }
+  }
+}
+</script>
+<style scoped>
+.van-cell:active {
+  background: #f5f7fa;
+}
+.title-text {
+  line-height: 40px;
+  margin-left: 20px;
+}
+.icon {
+  line-height: 40px;
+}
+</style>

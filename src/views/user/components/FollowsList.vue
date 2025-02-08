@@ -34,7 +34,7 @@ export default {
       type: Boolean,
       default: false
     },
-    action: {
+    tabAction: {
       type: String,
       default: 'fan'
     }
@@ -96,7 +96,7 @@ export default {
       this.$emit('load')
     },
     onSearch() {
-      if (this.action == 'followed') {
+      if (this.tabAction == 'followed') {
         followApi.searchFollowed(this.value).then((res) => {
           if (res.data.msg == 'success') {
             this.$emit('searchFollowed', res.data.data)
