@@ -1,8 +1,3 @@
-<!-- 
-    关注是蓝底 ➕ 
-    已关注是 灰底 勾号
-    互关是 灰底 双向箭头
--->
 <template>
   <van-cell :to="`/user/${follows.username}`">
     <template #icon>
@@ -16,7 +11,7 @@
         class="icon"
         name="add"
         color="blue"
-        :size="30"
+        :size="25"
         v-if="!isFollowed"
         @click.stop="followUser"
       />
@@ -24,7 +19,7 @@
         class="icon"
         name="checked"
         color="gray"
-        :size="30"
+        :size="25"
         v-if="isFollowed && !isMutualFollow"
         @click.stop="unFollowUser"
       />
@@ -32,7 +27,7 @@
         class="icon"
         name="sort"
         color="gray"
-        :size="30"
+        :size="25"
         v-if="isMutualFollow"
         @click.stop="unFollowUser"
       />

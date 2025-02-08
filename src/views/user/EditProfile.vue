@@ -54,9 +54,7 @@ export default {
           }
           this.originalForm = JSON.stringify(res.data.data)
           this.formLabelAlign = res.data.data
-          setTimeout(() => {
-            this.isLoading = false
-          }, 2000)
+          this.isLoading = false
         }
       })
     },
@@ -76,17 +74,14 @@ export default {
     setCity() {
       this.cityShow = false
       this.cityName = cityUtil.getCodeToName(this.formLabelAlign.location, this.areaList)
-    },
+    }
   }
 }
 </script>
 
 <template>
   <PageHeadBack>
-    <el-skeleton
-      :loading="isLoading"
-      animated
-    >
+    <el-skeleton :loading="isLoading" animated>
       <template #template>
         <el-skeleton-item variant="h3" style="width: 20%" />
         <el-skeleton-item style="width: 100%; height: 25px" class="form-name" />
@@ -96,9 +91,9 @@ export default {
         <el-skeleton-item style="width: 100%; height: 25px" class="form-city" />
 
         <el-skeleton-item variant="h3" style="width: 20%" />
-        <el-skeleton-item style="width: 100%; height: 25px" class="form-about"/>
+        <el-skeleton-item style="width: 100%; height: 25px" class="form-about" />
 
-        <el-skeleton-item variant="button" style=" height: 30px" />
+        <el-skeleton-item variant="button" style="height: 30px" />
       </template>
 
       <template #default>
