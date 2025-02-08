@@ -41,8 +41,7 @@ export default {
       followPerm: false,
       loading: {
         userData: false,
-        follow:false,
-        unFollow:false
+        follow: false,
       },
       uploadData: upload,
       drawer: false,
@@ -152,17 +151,27 @@ export default {
       })
     },
     unFollowUser() {
-      this.loading.unFollow = true
-      userApi.unFollow(this.user.username).then((res) => {
-        if (res.data.msg == 'success') {
-          this.loading.unFollow = false
-          this.$message.success('已取消关注')
-          this.user = res.data.data
-        } else {
-          this.loading.unFollow = false
-          this.$message.error(res.data.msg)
-        }
+      showConfirmDialog({
+        title: '取消对该用户的关注',
+        width: 230,
+        beforeClose: this.beforeClose
       })
+    },
+
+    beforeClose(action) {
+      if (action !== 'confirm') {
+        return Promise.resolve(true)
+      } else {
+        return userApi.unFollow(this.user.username).then((res) => {
+          if (res.data.msg == 'success') {
+            this.$message.success('已取消关注')
+            this.user = res.data.data
+          } else {
+            this.$message.error(res.data.msg)
+          }
+          return res
+        })
+      }
     },
     followerDetail() {
       const f = 'follower'
@@ -205,7 +214,7 @@ export default {
     },
     showDrawer() {
       this.drawer = !this.drawer
-    },
+    }
   }
 }
 </script>
@@ -258,7 +267,9 @@ export default {
     <el-card shadow="never">
       <el-row>
         <el-col v-if="follow" :span="6">
-          <el-button v-if="user.is_followed_by_current_user" :loading="loading.unFollow" @click="unFollowUser"
+          <el-button
+            v-if="user.is_followed_by_current_user"
+            @click="unFollowUser"
             >取消关注</el-button
           >
           <el-button v-else :loading="loading.follow" @click="followUser">关注</el-button>
@@ -285,7 +296,13 @@ export default {
       </el-row>
     </el-card>
 
-    <PostCard v-for="item in posts" :key="item" :post="item" :show-image="false" @click="$router.push(`/share/${item.id}`)"/>
+    <PostCard
+      v-for="item in posts"
+      :key="item"
+      :post="item"
+      :show-image="false"
+      @click="$router.push(`/share/${item.id}`)"
+    />
 
     <el-pagination
       v-model:current-page="currentPage"
@@ -300,7 +317,9 @@ export default {
   <van-action-sheet v-model:show="drawer" cancel-text="取消">
     <photo-provider :photo-closable="true">
       <photo-consumer v-for="(src, index) in imgList" :intro="src" :key="src" :src="src">
-        <el-button v-if="index === 0" text class="pre-image" @click="this.drawer=false">查看图像</el-button>
+        <el-button v-if="index === 0" text class="pre-image" @click="this.drawer = false"
+          >查看图像</el-button
+        >
       </photo-consumer>
     </photo-provider>
     <el-divider />

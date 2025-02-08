@@ -4,6 +4,8 @@
     互关是 灰底 双向箭头
 -->
 <template>
+  <div>isFollowed:{{ isFollowed }}</div>
+  <div>isMutualFollow:{{ isMutualFollow }}</div>
   <van-cell :to="`/user/${follows.username}`">
     <template #icon>
       <el-avatar :src="follows.image" />
@@ -64,7 +66,7 @@ export default {
   data() {
     return {
       isFollowed:
-        this.tabAction == 'fan' ? this.follows.is_following : this.follows.is_following_back,
+        this.tabAction == 'fan' ? this.follows.is_following : true,
       isMutualFollow: false
     }
   },
@@ -91,19 +93,33 @@ export default {
       })
     },
     unFollowUser() {
-      userApi.unFollow(this.follows.username).then((res) => {
-        if (res.data.msg == 'success') {
-          this.isFollowed = false
-          this.isMutualFollow = false
-          this.$message.success('已取消关注')
-          if (this.tabAction == 'followed') {
-            this.$emit('remove', this.follows.username)
-          }
-        } else {
-          this.$message.error(res.data.msg)
-        }
+      showConfirmDialog({
+        title: '取消对该用户的关注',
+        width: 230,
+        beforeClose: this.beforeClose
       })
-    }
+    },
+    beforeClose(action) {
+      if (action !== 'confirm') {
+        return Promise.resolve(true)
+      } else {
+        return userApi.unFollow(this.follows.username).then((res) => {
+          if (res.data.msg == 'success') {
+            this.$message.success('已取消关注')
+            if (this.tabAction == 'followed') {
+              this.$emit('remove', this.follows.username)
+            }else{
+              this.isFollowed = false
+              this.isMutualFollow = false
+            }
+            
+          } else {
+            this.$message.error(res.data.msg)
+          }
+          return res
+        })
+      }
+    },
   }
 }
 </script>
@@ -118,4 +134,5 @@ export default {
 .icon {
   line-height: 40px;
 }
+
 </style>
