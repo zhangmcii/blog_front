@@ -64,6 +64,7 @@ export default {
             this.hasRemember()
             this.currentUser.saveToken(res.data.token)
             this.currentUser.saveUserName(res.data.username)
+            this.currentUser.saveName(res.data.name)
             this.currentUser.saveAdmin(res.data.admin)
             this.currentUser.saveRoleId(res.data.roleId)
             this.currentUser.saveConfirmed(res.data.isConfirmed)

@@ -3,40 +3,27 @@
     <!-- "Home" 标签始终显示 -->
     <a @click="goHomePage" class="home">主页</a>
     <MarQuee :text=daySentence :speed="0.7"/>
-
-    <el-avatar size="default" :src="photo.Avatar" @error="errorImage"   @click="toggleMenu"/>
-
-    <!-- 菜单项容器 -->
-    <div class="menu-container">
-      <!-- 其他菜单项，响应式显示 -->
-      <div class="menu" :class="{ 'is-active': isActive || windowWidth >= 500 }">
-        <ul class="menu-list">
-          <li v-show="login">
-            <a @click="toggleMenu();$router.push(`/user/${currentUser.username}`)">个人资料</a>
-          </li>
-          <li v-if="isCommentManage">
-            <a @click="toggleMenu();$router.push('/commentManagement')">评论管理</a>
-          </li>
-          <div v-if="!login"> 
-          <li class="login-text"><a @click="$router.push('/login')">登录</a></li>
-          <li class="register-text"><a @click="toggleMenu();$router.push('/register')">注册</a></li>
+    <van-popover v-model:show="showPopover" :show-arrow=false placement="bottom-end" :offset="[12,8]"  :actions="actions" @select="onSelect">
+      <template #reference>
+      <el-avatar class="user-image" size="default" :src="photo.Avatar" @error="errorImage"   />
+      </template>
+      <template #default v-if="login">
+        <van-cell :title="currentUser.name?currentUser.name:'(未设置昵称)'" :label="currentUser.username"  title-style="margin-left:10px">
+          <template #icon>
+            <el-avatar :src="photo.Avatar" :size="47"/>
+          </template>
+        </van-cell>
+        <van-cell title="个人资料" icon="manager-o" clickable @click="toggleMenu();$router.push(`/user/${currentUser.username}`)"/>
+        <van-cell :title="accountLabel" :icon="accountLabel=='账户'?'notes-o':''" is-link arrow-direction="down" @click.prevent="toggleContactDropdown"/>
+        <div  v-if="isContactDropdownActive">
+          <van-cell title="修改密码" title-style="margin-left:10px" clickable @click="toggleMenu();$router.push('/changePassword')"></van-cell>
+          <van-cell title="修改邮箱" title-style="margin-left:10px" clickable @click="toggleMenu();$router.push('/changeEmail')" v-if="isConfirmed"></van-cell>
+          <van-cell title="绑定邮箱" title-style="margin-left:10px" clickable @click="toggleMenu();$router.push('/bindEmail')" v-else></van-cell>
         </div>
-          <li v-else>
-            <a  @click.prevent="toggleContactDropdown"
-              >{{ accountLabel }}<el-icon><i-ep-CaretBottom /></el-icon
-            ></a>
-            <transition name="fade">
-              <div class="contact-dropdown" v-if="isContactDropdownActive">
-                <a @click="toggleMenu();$router.push('/changePassword')">修改密码</a>
-                <a @click="toggleMenu();$router.push('/changeEmail')" v-if="isConfirmed">修改邮箱</a>
-                <a @click="toggleMenu();$router.push('/bindEmail')" v-else>绑定邮箱</a>
-                <a @click="log_out" href="/posts">退出</a>
-              </div>
-            </transition>
-          </li>
-        </ul>
-      </div>
-    </div>
+        <van-cell title="退出登录" icon="peer-pay" clickable @click="log_out" href="/posts"></van-cell>
+      </template>
+    
+    </van-popover>
   </div>
 </template>
 
@@ -53,7 +40,6 @@ export default {
   },
   data() {
     return {
-      isActive: false,
       windowWidth: window.innerWidth,
       menuItems: [
         { label: 'About', href: '#' },
@@ -66,7 +52,12 @@ export default {
       photo:{
         Avatar:'',
         default:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
-      }
+      },
+      showPopover:false,
+      actions : [
+          { text: '登录',icon:'user-o' },
+          { text: '注册',icon:'add-o' },
+      ],
     }
   },
   setup() {
@@ -96,6 +87,7 @@ export default {
   },
   mounted() {
     this.currentUser.loadUserName()
+    this.currentUser.loadName()
     this.currentUser.loadRoleId()
     this.currentUser.loadConfirmed()
     this.initImage()
@@ -113,12 +105,12 @@ export default {
   methods: {
     toggleMenu() {
       if (this.windowWidth < 500) {
-        this.isActive = !this.isActive
+        this.showPopover = !this.showPopover
       }
     },
     closeToggleMenu(){
-      if(this.isActive){
-        this.isActive = false
+      if(this.showPopover){
+        this.showPopover = false
       }
     },
     updateWindowWidth() {
@@ -129,11 +121,12 @@ export default {
       this.accountLabel = this.isContactDropdownActive ? '关闭' : '账户'
     },
     log_out() {
+      this.toggleMenu();
       localStorage.removeItem('token')
       localStorage.removeItem('currentUserName')
+      localStorage.removeItem('currentName')
       localStorage.removeItem('isAdmin')
       localStorage.removeItem('roleId')
-      localStorage.removeItem('userName')
       localStorage.removeItem('isConfirmed')
       localStorage.removeItem('currentComment')
       localStorage.removeItem('image')
@@ -156,7 +149,7 @@ export default {
     },
     goHomePage(){
       // 如果汉堡菜单展开，则关闭
-      if(this.isActive){
+      if(this.showPopover){
         this.closeToggleMenu()
       }
       if(this.isHomePage){
@@ -174,6 +167,13 @@ export default {
         return 
       }
       this.photo.Avatar = this.currentUser.image
+    },
+    onSelect(action){
+      if(action.text=='登录'){
+        this.$router.push('/login')
+      }else if(action.text=='注册'){
+        this.$router.push('/register')
+      }
     }
 
   }
@@ -186,7 +186,6 @@ export default {
   height: 6vh;
   display: flex;
 }
-/* "Home" 标签样式 */
 .home {
   margin-right: auto; /* 将 "Home" 标签推到左边 */
   margin-top: 13px;
@@ -196,118 +195,13 @@ export default {
   white-space: nowrap;
   margin-right:3px;
 }
-.el-avatar {
+.user-image {
   margin-top:2px;
 }
-/* 菜单项容器样式 */
-.menu-container {
-  display: flex;
-  align-items: center;
+.van-cell  {
+  width: 200px;
 }
-
-/* 其他菜单项的样式 */
-.menu-list {
-  display: flex;
-  flex-wrap: nowrap;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.menu-list li {
-  white-space: nowrap;
-  margin-left: 20px; /* 为其他菜单项添加一些间距 */
-}
-
-.menu-list a {
-  text-decoration: none;
-  font-size: 1rem;
-  color: #303133;
-  padding: 10px 15px;
-  display: block; /* 使点击区域包括整个<a>标签 */
-}
-
-.menu-list a:hover {
-  color: #c0c4cc;
-}
-
-/* 其他菜单项在屏幕宽度小于500px时，被汉堡按钮控制 */
-.menu {
-  display: none;
-}
-
-.menu.is-active {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  width: 100%;
-}
-
-/* 下拉框样式 */
-.contact-dropdown {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 300px;
-}
-.contact-dropdown a {
-  border-bottom: 2px solid rgb(240, 238, 238);
-}
-/* 下拉框的过渡效果 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* 媒体查询，小于500px时的样式 */
-@media (max-width: 499px) {
-  .menu-toggle {
-    display: block; /* 显示汉堡按钮 */
-  }
-  .menu {
-    position: absolute;
-    top: 50px;
-    left: 0;
-    z-index: 15;
-  }
-  .menu-list {
-    flex-direction: column;
-  }
-  .menu-list li {
-    border-bottom: 2px solid rgb(240, 238, 238);
-  }
-  .menu-list a {
-    font-size: 0.8rem;
-    color: #3c3c43;
-  }
-  .menu-list a:hover {
-    background-color: #a9a5a5;
-    color: #606266;
-  }
-  .login-text, .register-text {
-    margin-right: 20px;
-  }
-}
-
-/* 媒体查询，大于等于500px时的样式 */
-@media (min-width: 500px) {
-  .menu {
-    display: flex; /* 菜单项始终显示 */
-  }
-  .menu-toggle {
-    display: none; /* 隐藏汉堡按钮 */
-  }
-  .contact-dropdown {
-    position: absolute;
-    z-index: 5;
-  }
-  .contact-dropdown a:hover {
-    color: black;
-  }
+.van-divider {
+  margin: 10px 0px 0px 0px;
 }
 </style>

@@ -4,6 +4,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
   state: () => ({
     token: '',
     username: '',
+    name:'',
     isAdmin: false,
     roleId: 0,
     isConfirmed: false,
@@ -32,6 +33,18 @@ export const useCurrentUserStore = defineStore('currentUser', {
         this.username = data
       } else {
         this.username = ''
+      }
+    },
+    saveName(data) {
+      this.name = data
+      localStorage.setItem('currentName', data)
+    },
+    loadName() {
+      const data = localStorage.getItem('currentName')
+      if (data) {
+        this.name = data
+      } else {
+        this.name = ''
       }
     },
     saveAdmin(isAdmin) {
