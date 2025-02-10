@@ -29,10 +29,10 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     loadUserName() {
       const data = localStorage.getItem('currentUserName')
-      if (data) {
-        this.username = data
-      } else {
+      if(!data || data == 'null'){
         this.username = ''
+      }else{
+        this.username = data
       }
     },
     saveName(data) {
@@ -41,10 +41,10 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     loadName() {
       const data = localStorage.getItem('currentName')
-      if (data) {
-        this.name = data
-      } else {
+      if(!data || data == 'null'){
         this.name = ''
+      }else{
+        this.name = data
       }
     },
     saveAdmin(isAdmin) {
