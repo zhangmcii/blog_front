@@ -8,6 +8,7 @@
     <van-popover v-model:show="showPopover" :show-arrow=false placement="bottom-end" :offset="[12,8]"  :actions="actions" @select="onSelect">
       <template #reference>
       <el-avatar class="user-image" size="default" :src="photo.Avatar" @error="errorImage"   />
+      <!-- <span class="dot"> </span> -->
       </template>
       <template #default v-if="login">
         <van-cell :title="currentUser.name?currentUser.name:'(未设置昵称)'" :label="currentUser.username"  title-style="margin-left:10px">
@@ -196,4 +197,14 @@ export default {
 .van-divider {
   margin: 10px 0px 0px 0px;
 }
+/* .dot {
+  position: absolute;
+  top: 25px;
+  right: 22px;
+  width: 0.55rem;
+  height: 0.55rem; 
+  border-radius: 50%;
+  border: 2px solid;
+  background-color: #4ade80;
+} */
 </style>
