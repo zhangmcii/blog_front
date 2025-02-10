@@ -33,5 +33,9 @@ export default {
   },
   resetPassword(params) {
     return $http.post(`${url_prefix}/resetPassword`, params)
+  },
+  helpChangePassword(params){
+    return $http.post(`${url_prefix}/helpChangePassword`, params)
   }
+
 }
