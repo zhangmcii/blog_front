@@ -139,13 +139,8 @@ export default {
         type: 'success',
         duration: 1700
       })
-
       this.$router.push('/posts')
-    },
-    handleCommand(command) {
-      if (command == 'exit') {
-        this.log_out()
-      }
+      this.initImage()
     },
     goHomePage(){
       // 如果汉堡菜单展开，则关闭
