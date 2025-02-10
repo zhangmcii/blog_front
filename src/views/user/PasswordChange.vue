@@ -51,7 +51,7 @@ export default {
           this.$message.success('修改密码成功')
           this.log_out()
         } else {
-          this.$message.success(res.data.detail)
+          this.$message.error(res.data.detail)
         }
       })
     },
@@ -86,13 +86,13 @@ export default {
     style="max-width: 600px"
   >
     <el-form-item prop="oldPassword" label="原密码">
-      <el-input v-model="form.oldPassword" type="password" />
+      <el-input v-model="form.oldPassword" type="password" show-password/>
     </el-form-item>
     <el-form-item prop="newPassword" label="新密码">
-      <el-input v-model="form.newPassword" type="password" />
+      <el-input v-model="form.newPassword" type="password" show-password/>
     </el-form-item>
     <el-form-item prop="confirmNewPassword" label="确认新密码">
-      <el-input v-model="form.confirmNewPassword" type="password" />
+      <el-input v-model="form.confirmNewPassword" type="password" show-password/>
     </el-form-item>
     <el-form-item>
       <ButtonClick
