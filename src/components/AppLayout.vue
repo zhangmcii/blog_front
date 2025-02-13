@@ -9,30 +9,18 @@ import 'vue-amazing-ui/es/scrollbar/Scrollbar.css'
 const route = useRoute()
 const transitionName = ref('go')
 watch(
-  () => route.path,
+  () => route.meta.index,
   (to, from) => {
-    //底部tab的按钮，跳转是不需要用动画的
-    let noAnimation = [
-      '/',
-      '/home',
-      '/slide',
-      '/me',
-      '/shop',
-      '/message',
-      '/publish',
-      '/home/live',
-      'slide',
-      '/test'
-    ]
+    let noAnimation = [1,5,7,9,10,11,12]
 
     // 如果路由的from和to在noAnimation中，那么返回 transitionName设置为''
     if (noAnimation.indexOf(from) !== -1 && noAnimation.indexOf(to) !== -1) {
       return (transitionName.value = '')
     }
-    const toDepth = routes[0].children.findIndex((v) => v.path === to)
-    const fromDepth = routes[0].children.findIndex((v) => v.path === from)
+    const toDepth = routes[0].children.findIndex((v) => v.meta.index === to)
+    const fromDepth = routes[0].children.findIndex((v) => v.meta.index === from)
     // go对应左移，from对应右移
-    transitionName.value = toDepth > fromDepth ? 'back' : 'go'
+    transitionName.value = toDepth > fromDepth ? 'go' : 'back'
   }
 )
 </script>
