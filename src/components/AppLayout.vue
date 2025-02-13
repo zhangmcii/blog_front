@@ -9,16 +9,26 @@ import 'vue-amazing-ui/es/scrollbar/Scrollbar.css'
 const route = useRoute()
 const transitionName = ref('go')
 watch(
-  () => route.meta.index,
+  () => route.name,
   (to, from) => {
-    let noAnimation = [1,5,7,9,10,11,12]
-
+    //与主页交互无关的，跳转是不需要用动画
+    let noAnimation = [
+      'user',
+      'share',
+      'follow',
+      'editPost',
+      'bindEmail',
+      'changeEmail',
+      'changePassword',
+      'commentManagement',
+      'PasswordChangeAdmin',
+    ]
     // 如果路由的from和to在noAnimation中，那么返回 transitionName设置为''
     if (noAnimation.indexOf(from) !== -1 && noAnimation.indexOf(to) !== -1) {
       return (transitionName.value = '')
     }
-    const toDepth = routes[0].children.findIndex((v) => v.meta.index === to)
-    const fromDepth = routes[0].children.findIndex((v) => v.meta.index === from)
+    const toDepth = routes[0].children.findIndex((v) => v.name === to)
+    const fromDepth = routes[0].children.findIndex((v) => v.name === from)
     // go对应左移，from对应右移
     transitionName.value = toDepth > fromDepth ? 'go' : 'back'
   }
