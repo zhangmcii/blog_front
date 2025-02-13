@@ -49,17 +49,22 @@ export default {
   },
   methods: {
     changeTab(tabName) {
-      this.posts = [{}, {}]
+      // this.posts = [{}, {}]
       this.getPosts(this.currentPage, tabName)
     },
     handleCurrentChange() {
-      this.posts = [{}, {}]
+      // this.posts = [{}, {}]
       this.getPosts(this.currentPage, this.activeName)
     },
     getPosts(page, tabName) {
       postApi.getPosts(page, tabName).then((res) => {
         this.loading.fetchPost = false
-        this.posts = res.data.data
+        while(this.posts.length > 0){
+          this.posts.pop()
+        }
+        res.data.data.map(item=>{
+          this.posts.push(item)
+        })
         this.posts_count = res.data.total
   
       })
@@ -105,10 +110,11 @@ export default {
       @posts-result="getPostsResult"
       v-if="currentUser.token != ''"
     />
-    <Transition name="fade" mode="out-in">
+    
       <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
         <el-tab-pane label="广场" name="all">
           <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
+          <TransitionGroup name="post" tag="div">
           <PostCard
             v-for="item in posts"
             :key="item.id"
@@ -117,6 +123,7 @@ export default {
             @click="$router.push(`/share/${item.id}`)"
             @share="(flag) => (this.showShare = flag)"
           />
+        </TransitionGroup>
         </el-tab-pane>
         <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
           <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
@@ -130,7 +137,6 @@ export default {
           />
         </el-tab-pane>
       </el-tabs>
-    </Transition>
     <el-pagination
       v-model:current-page="currentPage"
       :page-size="10"
@@ -163,13 +169,31 @@ export default {
   font-weight: 600;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
+
+.post-enter-active {
+  transition: all 0.5s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.post-move,
+.post-leave-active {
+  transition: all 0.2s ease;
 }
+
+.post-enter-from {
+  padding-left: 100%;
+}
+.post-enter-to {
+  padding-left: 0%;
+}
+
+ .post-leave-from {
+  padding-left: 0%;
+}
+.post-leave-to {
+  padding-right: 100%;
+}
+.post-leave-active {
+  position: absolute;
+} 
 </style>
+
