@@ -147,16 +147,11 @@ export default {
     <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
       <el-tab-pane label="广场" name="all">
         <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
-        <!-- 加载状态指示 -->
-        <div v-if="transitionActive && !pendingPosts" class="transition-loading">
-          <van-skeleton title avatar :row="3" />
-        </div>
         <TransitionGroup name="post" tag="div" class="post-container" >
           <PostCard
             v-for="item in posts"
             :key="item.id"
             :post="item"
-            :loading="Object.keys(item).length === 0"
             @click="$router.push(`/share/${item.id}`)"
             @share="(flag) => (this.showShare = flag)"
             :class="{ 'pending-item': pendingPosts?.includes(item) }"
@@ -165,15 +160,11 @@ export default {
       </el-tab-pane>
       <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
         <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
-        <div v-if="transitionActive && !pendingPosts" class="transition-loading">
-          <van-skeleton title avatar :row="3" />
-        </div>
         <TransitionGroup name="post" tag="div" class="post-container" >
           <PostCard
             v-for="item in posts"
             :key="item.id"
             :post="item"
-            :loading="Object.keys(item).length === 0"
             @click="$router.push(`/share/${item.id}`)"
             @share="(flag) => (this.showShare = flag)"
             :class="{ 'pending-item': pendingPosts?.includes(item) }"
@@ -237,12 +228,6 @@ export default {
 .post-enter-active,
 .post-leave-active {
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* 过渡状态样式 */
-.transition-loading {
-  position: absolute;
-  width: 100%;
 }
 
 /* 禁用交互状态 */
