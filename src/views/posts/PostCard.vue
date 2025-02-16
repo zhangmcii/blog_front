@@ -2,6 +2,7 @@
 import { useCurrentUserStore } from '@/stores/currentUser'
 import common from '@/utils/common.js'
 import imageCfg from '@/config/image.js'
+import praise from '@/api/praise/praiseApi.js'
 export default {
   props: {
     post: {
@@ -15,7 +16,9 @@ export default {
           author: '张三',
           commentCount: 20,
           disabled: false,
-          image: ''
+          image: '',
+          praise_num:0,
+          has_praised:false
         }
       }
     },
@@ -44,7 +47,10 @@ export default {
   },
   emits: ['share'],
   data() {
-    return {}
+    return {
+      praiseNum:this.post.praise_num,
+      hasPraised:this.post.has_praised
+    }
   },
   setup() {
     const currentUser = useCurrentUserStore()
@@ -72,7 +78,7 @@ export default {
     },
     isUserRoute() {
       return this.$route.path.startsWith('/user')
-    }
+    },
   },
   mounted() {
     this.currentUser.loadAdmin()
@@ -87,6 +93,17 @@ export default {
     },
     comment() {
       this.$router.push(`/share/${this.post.id}`)
+    },
+    praise(){
+      praise.submitPraise(this.post.id).then((res) => {
+        if (res.data.msg == 'success') {
+          this.praiseNum = res.data.praise_total
+          this.hasPraised = res.data.has_praised
+          this.$message.success('点赞成功')
+        } else {
+          this.$message.error(res.data.detail)
+        }
+      })
     }
   }
 }
@@ -140,6 +157,9 @@ export default {
             >
               <el-button type="danger" size="small" @click.stop="edit">编辑[管理员] </el-button>
             </el-col>
+            <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2">
+              <el-button type="primary" size="small" :disabled="hasPraised"  @click.stop="praise">点赞({{ praiseNum }})</el-button>
+               </el-col>
             <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="!isUserRoute">
               <el-button type="info" size="small" @click.stop="this.$emit('share', true)"
                 >分享</el-button
