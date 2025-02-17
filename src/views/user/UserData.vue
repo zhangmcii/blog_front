@@ -300,7 +300,7 @@ export default {
       v-for="item in posts"
       :key="item"
       :post="item"
-      :show-image="false"
+      :showImage="false"
       @click="$router.push(`/share/${item.id}`)"
     />
 
