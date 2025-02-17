@@ -132,7 +132,10 @@ export default {
           v-for="item in comments"
           :key="item"
           :post="item"
-          :func-switch="false"
+          :showEdit="false"
+          :showShare="false"
+          :showComment="false"
+          :showPraise="false"
           @click="showDrawer(item, $event)"
         >
           <template #default>

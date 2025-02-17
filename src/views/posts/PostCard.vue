@@ -17,17 +17,9 @@ export default {
           commentCount: 20,
           disabled: false,
           image: '',
-          praise_num:0,
-          has_praised:false
+          praise_num: 0,
+          has_praised: false
         }
-      }
-    },
-    funcSwitch: {
-      // true 代表post展示
-      // false 代表comment展示
-      type: Boolean,
-      default() {
-        return true
       }
     },
     loading: {
@@ -43,18 +35,49 @@ export default {
     showImage: {
       type: Boolean,
       default: true
+    },
+    showEdit: {
+      type: Boolean,
+      default: true
+    },
+    showShare: {
+      type: Boolean,
+      default: true
+    },
+    showComment: {
+      type: Boolean,
+      default: true
+    },
+    showPraise: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['share'],
   data() {
     return {
-      praiseNum:this.post.praise_num,
-      hasPraised:this.post.has_praised
+      praiseNum: 0,
+      hasPraised: false,
+      iconSize: 15
     }
   },
   setup() {
     const currentUser = useCurrentUserStore()
     return { currentUser }
+  },
+  watch: {
+    'post.praise_num': {
+      handler(newValue) {
+        this.praiseNum = newValue
+      },
+      immediate: true
+    },
+    'post.has_praised': {
+      handler(newValue) {
+        this.hasPraised = newValue
+      },
+      immediate: true
+    }
   },
   computed: {
     from_now() {
@@ -79,6 +102,10 @@ export default {
     isUserRoute() {
       return this.$route.path.startsWith('/user')
     },
+    login() {
+      this.currentUser.loadUserName()
+      return this.currentUser.username != ''
+    }
   },
   mounted() {
     this.currentUser.loadAdmin()
@@ -94,7 +121,11 @@ export default {
     comment() {
       this.$router.push(`/share/${this.post.id}`)
     },
-    praise(){
+    praise() {
+      if (!this.login) {
+        this.$message.info('请先登录')
+        return
+      }
       praise.submitPraise(this.post.id).then((res) => {
         if (res.data.msg == 'success') {
           this.praiseNum = res.data.praise_total
@@ -136,39 +167,48 @@ export default {
           <el-row><div v-if="post.body_html && show_body" v-html="post.body_html"></div></el-row>
           <el-row v-if="!post.body_html && show_body">{{ post.body }}</el-row>
 
-          <el-row :gutter="35" justify="end" v-if="funcSwitch">
+          <el-row :gutter="35" justify="end" class="icon-event">
             <el-col
               :xs="4"
               :sm="4"
               :md="2"
               :lg="2"
               :xl="2"
-              v-if="post.author == currentUser.username"
+              v-if="showEdit && post.author == currentUser.username"
             >
-              <el-button type="info" size="small" @click.stop="edit">编辑</el-button>
+              <van-icon name="edit" @click.stop="edit" :size="iconSize" />
             </el-col>
             <el-col
-              :xs="7"
+              :xs="4"
               :sm="4"
               :md="2"
               :lg="2"
               :xl="2"
-              v-else-if="currentUser.isAdmin == 'true'"
+              v-else-if="showEdit && currentUser.isAdmin == 'true'"
             >
-              <el-button type="danger" size="small" @click.stop="edit">编辑[管理员] </el-button>
+              <van-icon name="edit" @click.stop="edit" :size="iconSize" color="red" />
             </el-col>
-            <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2">
-              <el-button type="primary" size="small" :disabled="hasPraised"  @click.stop="praise">点赞({{ praiseNum }})</el-button>
-               </el-col>
-            <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="!isUserRoute">
-              <el-button type="info" size="small" @click.stop="this.$emit('share', true)"
-                >分享</el-button
-              >
+
+            <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="showShare && !isUserRoute">
+              <van-icon name="share-o" @click.stop="this.$emit('share', true)" :size="iconSize" />
             </el-col>
-            <el-col :xs="6" :sm="6" :md="4" :lg="2" :xl="2">
-              <el-button type="primary" size="small" @click.stop="comment"
-                >{{ post.comment_count }} 评论</el-button
-              >
+
+            <el-col :xs="4" :sm="6" :md="4" :lg="2" :xl="2" v-if="showComment">
+              <el-space :size="3">
+                <van-icon name="notes-o" @click.stop="comment" :size="iconSize" />
+                <el-text class="mx-1">{{ post.comment_count }}</el-text>
+              </el-space>
+            </el-col>
+
+            <el-col :xs="5" :sm="5" :md="2" :lg="2" :xl="2" v-if="showPraise">
+              <el-space :size="3" v-if="hasPraised" @click.stop="">
+                <van-icon name="good-job" :size="iconSize" />
+                <el-text class="mx-1">{{ praiseNum }}</el-text>
+              </el-space>
+              <el-space :size="3" v-else>
+                <van-icon name="good-job-o" @click.stop="praise" :size="iconSize" />
+                <el-text class="mx-1">{{ praiseNum }}</el-text>
+              </el-space>
             </el-col>
           </el-row>
         </el-col>
@@ -194,5 +234,8 @@ export default {
 }
 .van-skeleton {
   padding: 0px;
+}
+.icon-event {
+  /* margin-top:10px */
 }
 </style>

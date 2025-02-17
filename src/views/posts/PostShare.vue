@@ -26,12 +26,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.postId = Number(to.params.id)
-      vm.$nextTick(() => {
-        vm.getPostById(vm.postId)
-      })
-      vm.$nextTick(() => {
-        vm.getPostById(vm.postId)
-      })
+      vm.getPostById(vm.postId)
     })
   },
   methods: {

@@ -114,6 +114,8 @@ export default {
             :key="item.id"
             :post="item"
             :loading="Object.keys(item).length === 0"
+            :showEdit="false"
+            :showShare="false"
             @click="$router.push(`/share/${item.id}`)"
             @share="(flag) => (this.showShare = flag)"
           />
@@ -125,6 +127,8 @@ export default {
             :key="item.id"
             :post="item"
             :loading="Object.keys(item).length === 0"
+            :showEdit="false"
+            :showShare="false"
             @click="$router.push(`/share/${item.id}`)"
             @share="(flag) => (this.showShare = flag)"
           />
