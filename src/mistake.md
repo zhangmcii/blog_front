@@ -27,3 +27,88 @@
           v-model:finished="followedTab.finished">
      </van-tab>
 ～～～
+
+
+在 data 中直接使用 props 会导致数据的重复和不一致。
+背景：父组件A挂载完成对请求回的数据传递值给子组件B，B在路由进入前发送请求，把请求欧的数据给子组件C
+问题现象:C在data中把props赋值给变量，props的post.praise更新了，但C模版表达式值未同步变化
+~~~
+ props: {
+    post: {
+      type: Object,
+      default() {
+        return {
+          id: 1,
+          body: '文章',
+          body_html: null,
+          timestamp: '2024-9-20 12:14:00',
+          author: '张三',
+          commentCount: 20,
+          disabled: false,
+          image: '',
+          praise_num: 0,
+          has_praised: false
+        }
+      }
+    },
+ }
+  data() {
+    return {
+      praiseNum: this.post.praise_num,
+      hasPraised: this.post.has_praised
+    }
+  }
+  
+  <el-text class="mx-1">{{ praiseNum }}</el-text>
+~~~
+解决：在子组件创建一个局部状态来存储props值，使用watch监听props，同时更新局部状态
+结论：不要在data中使用props,这个props并不因此具有响应性
+参考：https://www.51cto.com/article/801688.html
+
+
+
+
+子组件初始化watch监听不到props值：
+背景：父组件A挂载完成对请求回的数据传递值给子组件B
+现象：父组件A传递值给子组件B，子组件第一次展示模版监听值不发生变化
+～～～
+props: {
+    post: {
+      type: Object,
+      default() {
+        return {
+          id: 1,
+          body: '文章',
+          body_html: null,
+          timestamp: '2024-9-20 12:14:00',
+          author: '张三',
+          commentCount: 20,
+          disabled: false,
+          image: '',
+          praise_num: 0,
+          has_praised: false
+        }
+      }
+    },
+ }
+
+watch:{
+   'post.has_praised'(newValue) {
+      console.log('22', newValue)
+      this.hasPraised = newValue
+    },
+}
+～～～
+
+解决：设置immediate：true 在创建侦听器时立刻执行一次回调
+～～～
+ 'post.has_praised':{
+      handler(newValue){
+        this.hasPraised = newValue
+      },
+      immediate:true
+    }
+～～～
+
+结论：1.父组件A传递值给子组件B，子组件模版监听值不发生变化
+     2.watch可以监听到网络请求后值的变化
