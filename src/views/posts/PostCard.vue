@@ -148,7 +148,7 @@ export default {
           <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
         </el-col>
         <el-col :span="showImage ? 20 : 24">
-          <el-row justify="space-between">
+          <el-row justify="space-between" class="content">
             <el-col :xs="18" :sm="18" :md="10" :lg="10" :xl="10">
               <el-link
                 target="_blank"
@@ -218,9 +218,8 @@ export default {
   </el-card>
 </template>
 <style scoped>
-.el-card,
-.el-row {
-  margin-bottom: 10px;
+.content {
+  min-height: 60px;
 }
 
 .el-button {
@@ -235,7 +234,5 @@ export default {
 .van-skeleton {
   padding: 0px;
 }
-.icon-event {
-  /* margin-top:10px */
-}
+
 </style>

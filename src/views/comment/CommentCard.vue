@@ -135,7 +135,7 @@ export default {
           :showEdit="false"
           :showShare="false"
           :showComment="false"
-          :showPraise="false"
+          :showraise="false"
           @click="showDrawer(item, $event)"
         >
           <template #default>
@@ -161,6 +161,9 @@ export default {
 <style scoped>
 .el-row {
   margin: 10px 0px;
+}
+.el-card {
+  margin-bottom: 10px;
 }
 .el-pagination {
   float: right;

@@ -156,6 +156,9 @@ export default {
 .gradient-text {
   margin:20px 0px 0px 0px;
 }
+.el-card {
+  margin-bottom: 10px;
+}
 .el-pagination {
   float: right;
 }
