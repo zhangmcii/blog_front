@@ -114,4 +114,13 @@ body {
 .fade-leave-to {
   opacity: 0;
 }
+
+/* 后退时，当前页需要设置为绝对布局，防止主页从下面出现 */
+.back-enter-from ,
+.back-leave-active {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
 </style>
