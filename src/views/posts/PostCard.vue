@@ -37,6 +37,10 @@ export default {
       type: Boolean,
       default: true
     },
+    showDelete: {
+      type: Boolean,
+      default: true
+    },
     showEdit: {
       type: Boolean,
       default: true
@@ -59,7 +63,7 @@ export default {
     return {
       praiseNum: 0,
       hasPraised: false,
-      iconSize: 15,
+      iconSize: 15
     }
   },
   setup() {
@@ -131,11 +135,24 @@ export default {
         if (res.data.msg == 'success') {
           this.praiseNum = res.data.praise_total
           this.hasPraised = res.data.has_praised
-          this.$message.success('点赞成功')
         } else {
           this.$message.error(res.data.detail)
         }
       })
+    },
+    del() {
+      showConfirmDialog({
+        title: '删除该文章',
+        width: 230,
+        beforeClose: this.beforeClose
+      })
+    },
+    beforeClose(action) {
+      if (action !== 'confirm') {
+        return Promise.resolve(true)
+      } else {
+        return '已删除'
+      }
     }
   }
 }
@@ -176,6 +193,16 @@ export default {
               :md="2"
               :lg="2"
               :xl="2"
+              v-if="showDelete && post.author == currentUser.username"
+            >
+              <van-icon name="delete-o" @click.stop="del" :size="iconSize" />
+            </el-col>
+            <el-col
+              :xs="4"
+              :sm="4"
+              :md="2"
+              :lg="2"
+              :xl="2"
               v-if="showEdit && post.author == currentUser.username"
             >
               <van-icon name="edit" @click.stop="edit" :size="iconSize" />
@@ -203,12 +230,23 @@ export default {
             </el-col>
 
             <el-col :xs="5" :sm="5" :md="2" :lg="2" :xl="2" v-if="showPraise">
-              <el-space :size="3" v-if="hasPraised" @click.stop="">
-                <van-icon name="good-job" :size="iconSize" />
-                <el-text class="mx-1">{{ praiseNum }}</el-text>
-              </el-space>
-              <el-space :size="3" v-else>
-                <van-icon name="good-job-o" @click.stop="praise" :size="iconSize" />
+              <el-space :size="3">
+                <transition :name="hasPraised ? 'praise' : ''" mode="out-in">
+                  <van-icon
+                    name="good-job"
+                    @click.stop=""
+                    :size="iconSize"
+                    v-if="hasPraised"
+                    key="praised"
+                  />
+                  <van-icon
+                    name="good-job-o"
+                    @click.stop="praise"
+                    :size="iconSize"
+                    v-else
+                    key="unPraise"
+                  />
+                </transition>
                 <el-text class="mx-1">{{ praiseNum }}</el-text>
               </el-space>
             </el-col>
@@ -238,5 +276,17 @@ export default {
 }
 .icon-event {
   height: 22px;
+}
+.praise-enter-active,
+.praise-leave-active {
+  transition: all 0.15s cubic-bezier(0.42, 0, 0.34, 1.55);
+}
+.praise-enter-from,
+.praise-leave-to {
+  transform: scale(0);
+}
+.praise-enter-to,
+.praise-leave-from {
+  transform: scale(1);
 }
 </style>

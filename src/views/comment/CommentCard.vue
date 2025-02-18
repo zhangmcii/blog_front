@@ -131,6 +131,7 @@ export default {
           v-for="item in comments"
           :key="item"
           :post="item"
+          :showDelete="false"
           :showEdit="false"
           :showShare="false"
           :showComment="false"
@@ -141,6 +142,7 @@ export default {
             <PostCard
               v-if="item.parent_comment_id"
               :post="comments.find((x) => x.id === item.parent_comment_id)"
+              :showDelete="false"
               :showEdit="false"
               :showShare="false"
               :showComment="false"
