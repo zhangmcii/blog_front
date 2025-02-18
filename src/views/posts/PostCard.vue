@@ -131,7 +131,6 @@ export default {
         if (res.data.msg == 'success') {
           this.praiseNum = res.data.praise_total
           this.hasPraised = res.data.has_praised
-          this.$message.success('点赞成功')
         } else {
           this.$message.error(res.data.detail)
         }
@@ -203,15 +202,27 @@ export default {
             </el-col>
 
             <el-col :xs="5" :sm="5" :md="2" :lg="2" :xl="2" v-if="showPraise">
-              <el-space :size="3" v-if="hasPraised" @click.stop="">
-                <van-icon name="good-job" :size="iconSize" />
-                <el-text class="mx-1">{{ praiseNum }}</el-text>
-              </el-space>
-              <el-space :size="3" v-else>
-                <van-icon name="good-job-o" @click.stop="praise" :size="iconSize" />
+              <el-space :size="3">
+                <transition :name="hasPraised ? 'praise' : ''" mode="out-in">
+                  <van-icon
+                    name="good-job"
+                    @click.stop=""
+                    :size="iconSize"
+                    v-if="hasPraised"
+                    key="praised"
+                  />
+                  <van-icon
+                    name="good-job-o"
+                    @click.stop="praise"
+                    :size="iconSize"
+                    v-else
+                    key="unPraise"
+                  />
+                </transition>
                 <el-text class="mx-1">{{ praiseNum }}</el-text>
               </el-space>
             </el-col>
+
           </el-row>
         </el-col>
       </el-row>
@@ -238,5 +249,17 @@ export default {
 }
 .icon-event {
   height: 22px;
+}
+.praise-enter-active,
+.praise-leave-active {
+  transition: all 0.15s cubic-bezier(0.42, 0, 0.34, 1.55);
+}
+.praise-enter-from,
+.praise-leave-to {
+  transform: scale(0);
+}
+.praise-enter-to,
+.praise-leave-from {
+  transform: scale(1);
 }
 </style>
