@@ -14,6 +14,7 @@ export default {
           body_html: null,
           timestamp: '2024-9-20 12:14:00',
           author: '张三',
+          nick_name: '',
           commentCount: 20,
           disabled: false,
           image: '',
@@ -58,7 +59,7 @@ export default {
     return {
       praiseNum: 0,
       hasPraised: false,
-      iconSize: 15
+      iconSize: 15,
     }
   },
   setup() {
@@ -154,8 +155,9 @@ export default {
                 target="_blank"
                 type="primary"
                 @click.stop="$router.push(`/user/${post.author}`)"
-                >{{ post.author }}</el-link
               >
+                {{ post.nick_name ? post.nick_name : post.author }}
+              </el-link>
             </el-col>
             <el-col :xs="6" :sm="3" :md="2" :lg="3" :xl="3" :push="2">
               <el-text class="mx-1" size="small">{{ from_now }}</el-text>
@@ -234,5 +236,7 @@ export default {
 .van-skeleton {
   padding: 0px;
 }
-
+.icon-event {
+  height: 22px;
+}
 </style>

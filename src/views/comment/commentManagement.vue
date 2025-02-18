@@ -59,21 +59,29 @@ export default {
 
 <template>
   <PageHeadBack>
-  <PostCard v-for="item in comments" :key="item" :post="item" :func-switch="false">
-    <el-row v-if="isCommentManage">
-      <el-button @click="enable(item)" v-if="item.disabled">开启</el-button>
-      <el-button type="danger" @click="disabled(item)" v-else>禁用</el-button>
-    </el-row>
-  </PostCard>
-  <el-pagination
-    v-model:current-page="currentPage"
-    :page-size="10"
-    layout="total, prev, pager, next"
-    :total="comments_count"
-    @current-change="handleCurrentChange"
-    :hide-on-single-page="true"
-    :pager-count="4"
-  />
-</PageHeadBack>
+    <PostCard
+      v-for="item in comments"
+      :key="item"
+      :post="item"
+      :showEdit="false"
+      :showShare="false"
+      :showComment="false"
+      :showPraise="false"
+    >
+      <el-row v-if="isCommentManage">
+        <el-button @click="enable(item)" v-if="item.disabled">开启</el-button>
+        <el-button type="danger" @click="disabled(item)" v-else>禁用</el-button>
+      </el-row>
+    </PostCard>
+    <el-pagination
+      v-model:current-page="currentPage"
+      :page-size="10"
+      layout="total, prev, pager, next"
+      :total="comments_count"
+      @current-change="handleCurrentChange"
+      :hide-on-single-page="true"
+      :pager-count="4"
+    />
+  </PageHeadBack>
 </template>
 <style scoped></style>

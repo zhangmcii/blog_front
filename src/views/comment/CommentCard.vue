@@ -21,7 +21,7 @@ export default {
         body: ''
       },
       comments: [],
-
+      total:0,
       currentPage: 1,
       pageSize: 10,
       allLoaded: false,
@@ -40,15 +40,13 @@ export default {
     return { currentUser }
   },
   mounted() {
-    // this.$nextTick(() => {
-    //   this.getComment()
-    // })
     this.currentUser.loadToken()
   },
   methods: {
     submit() {
       commentApi.submitComment(this.postId, { body: this.submitComment.body }).then((res) => {
         if (res.data.msg == 'success') {
+          this.total = res.data.total
           this.comments.push(res.data.data.at(-1))
           this.submitComment.body = ''
           this.$message.success('评论成功')
@@ -63,6 +61,7 @@ export default {
         .getComment(this.postId, this.currentPage)
         .then((res) => {
           if (res.data.msg == 'success') {
+            this.total = res.data.total
             res.data.data.map((item) => {
               this.comments.push(item)
             })
@@ -118,7 +117,7 @@ export default {
     </el-col>
   </el-row>
   <el-row>
-    <el-divider content-position="left">全部评论</el-divider>
+    <el-divider content-position="left">全部评论({{ total }})</el-divider>
     <el-col :span="24">
       <van-list
         v-model:loading="loading"
@@ -135,14 +134,17 @@ export default {
           :showEdit="false"
           :showShare="false"
           :showComment="false"
-          :showraise="false"
+          :showPraise="false"
           @click="showDrawer(item, $event)"
         >
           <template #default>
             <PostCard
               v-if="item.parent_comment_id"
               :post="comments.find((x) => x.id === item.parent_comment_id)"
-              :func-switch="false"
+              :showEdit="false"
+              :showShare="false"
+              :showComment="false"
+              :showPraise="false"
               cardBgColor="rgb(243.9, 244.2, 244.8)"
             >
             </PostCard>
