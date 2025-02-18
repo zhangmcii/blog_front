@@ -37,6 +37,10 @@ export default {
       type: Boolean,
       default: true
     },
+    showDelete: {
+      type: Boolean,
+      default: true
+    },
     showEdit: {
       type: Boolean,
       default: true
@@ -59,7 +63,7 @@ export default {
     return {
       praiseNum: 0,
       hasPraised: false,
-      iconSize: 15,
+      iconSize: 15
     }
   },
   setup() {
@@ -135,6 +139,20 @@ export default {
           this.$message.error(res.data.detail)
         }
       })
+    },
+    del() {
+      showConfirmDialog({
+        title: '删除该文章',
+        width: 230,
+        beforeClose: this.beforeClose
+      })
+    },
+    beforeClose(action) {
+      if (action !== 'confirm') {
+        return Promise.resolve(true)
+      } else {
+        return '已删除'
+      }
     }
   }
 }
@@ -169,6 +187,16 @@ export default {
           <el-row v-if="!post.body_html && show_body">{{ post.body }}</el-row>
 
           <el-row :gutter="35" justify="end" class="icon-event">
+            <el-col
+              :xs="4"
+              :sm="4"
+              :md="2"
+              :lg="2"
+              :xl="2"
+              v-if="showDelete && post.author == currentUser.username"
+            >
+              <van-icon name="delete-o" @click.stop="del" :size="iconSize" />
+            </el-col>
             <el-col
               :xs="4"
               :sm="4"
@@ -222,7 +250,6 @@ export default {
                 <el-text class="mx-1">{{ praiseNum }}</el-text>
               </el-space>
             </el-col>
-
           </el-row>
         </el-col>
       </el-row>
