@@ -76,40 +76,61 @@ function setInterceptors(...instance) {
           console.log('==>请求结束')
         }
 
-        if (error.message == 'Network Error') {
+        if (error.response === undefined) {
           ElMessage({
-            message: '网络连接不可用，请检查网络设置',
-            type: 'error'
+            message:'服务器响应超时',
+            type:'error'
           })
+          return Promise.reject(error)
+        }
+        if (error.response.status >= 500) {
+          // ElMessage({
+          //   message:'服务器出现错误',
+          //   type:'error'
+          // })
           router.push('/networkError')
           return Promise.reject(error)
         }
-        if (error.response) {
-          // 请求已发出，但服务器响应的状态码不在 2xx 范围内
-          const status = error.response.status
-          if (status === 404) {
-            // 处理404错误
+        if (error.response.status === 404) {
+          // ElMessage({
+          //   message:'接口不存在',
+          //   type:'error'
+          // })
+          router.push('/notFound')
+          return Promise.reject(error)
+        }
+        if (error.response.status === 400) {
+          ElMessage({
+            message:'接口报错',
+            type:'error'
+          })
+          return Promise.reject(error)
+        }
+        if (error.response.status === 401) {
+          ElMessage({
+            message:'您的操作未授权',
+            type:'error'
+          })
+          return Promise.reject(error)
+        } else {
+          const data = error.response.data
+          if (data === null || data === undefined) {
             ElMessage({
-              message: '页面未找到',
-              type: 'error'
+              message:'请求失败，请稍后重试！',
+              type:'error'
             })
-            router.push('/notFound')
             return Promise.reject(error)
           } else {
-            // 处理其他错误
-            ElMessage({
-              message: error.response.data.message || '发生错误',
-              type: 'error'
-            })
+            const resCode = data.code
+            if (resCode && typeof resCode == 'number' && resCode !== 200) {
+              ElMessage({
+                message:'请求失败，请稍后重试！',
+                type:'error'
+              })
+            } 
             return Promise.reject(error)
           }
-        } else {
-          ElMessage({
-            message: error,
-            type: 'error'
-          })
         }
-        return Promise.reject(error)
       }
     )
   })
