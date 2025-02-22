@@ -52,6 +52,14 @@ export default {
     showPraise: {
       type: Boolean,
       default: true
+    },
+    avatar:{
+      type: Boolean,
+      default: true
+    },
+    row:{
+      type:Number,
+      default:4
     }
   },
   emits: ['share'],
@@ -142,7 +150,7 @@ export default {
 
 <template>
   <el-card shadow="hover">
-    <van-skeleton title avatar :avatar-size="40" :row="4" :loading="loading">
+    <van-skeleton title :avatar="avatar" :avatar-size="40" :row="row" :loading="loading">
       <el-row>
         <el-col :span="4" v-if="showImage">
           <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
