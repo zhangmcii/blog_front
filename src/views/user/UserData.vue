@@ -229,7 +229,7 @@ export default {
         </div>
       </template>
 
-      <el-skeleton :rows="4" animated :loading="loading.userData">
+      <el-skeleton :rows="4" animated :loading="loading.userData"  :throttle="{ leading: 500, trailing: 500, initVal: true }">
         <template #default>
           <el-row v-if="user.name">
             <el-col :xs="6" :xl="4">昵称</el-col>
@@ -265,18 +265,12 @@ export default {
     </el-card>
 
     <el-card shadow="never">
-      <el-skeleton animated :loading="loading.userData">
+      <el-skeleton animated :loading="loading.userData" :throttle="{ leading: 500, trailing: 500, initVal: true }">
         <template #template>
-          <div style="display: flex; justify-items: space-between">
+          <div style="display: flex; justify-items: space-between;gap:15px;">
             <el-skeleton-item variant="button" style="width: 20%; height: 30px; margin-top: 5px" />
-            <div class="item">
-              <span>粉丝</span>
-              <el-skeleton-item variant="text" style="width: 60%" />
-            </div>
-            <div class="item">
-              <span>关注</span>
-              <el-skeleton-item variant="text" style="width: 60%" />
-            </div>
+            <el-skeleton-item variant="text" class="item"/>
+            <el-skeleton-item variant="text" class="item"/>
           </div>
         </template>
         <template #default>
@@ -301,7 +295,7 @@ export default {
     </el-card>
 
     <el-card shadow="never" v-if="isCurrentUser || isAdmin">
-      <el-skeleton animated :loading="loading.userData">
+      <el-skeleton animated :loading="loading.userData" :throttle="{ leading: 500, trailing: 500, initVal: true }">
         <template #template>
           <el-skeleton-item variant="button" style="width: 30%; height: 30px" />
         </template>
@@ -413,11 +407,6 @@ export default {
 }
 .item {
   width: 20%;
-  margin-left: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+  margin-top:20px;
 }
 </style>

@@ -150,7 +150,7 @@ export default {
 
 <template>
   <el-card shadow="hover">
-    <van-skeleton title :avatar="avatar" :avatar-size="40" :row="row" :loading="loading">
+    <van-skeleton title :avatar="avatar" :avatar-size="40" :row="row" :loading="loading"  :throttle="{ leading: 500, trailing: 500, initVal: true }">
       <el-row>
         <el-col :span="4" v-if="showImage">
           <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
