@@ -229,7 +229,7 @@ export default {
         </div>
       </template>
 
-      <el-skeleton :rows="4" animated :loading="loading.userData"  :throttle="{ leading: 500, trailing: 500, initVal: true }">
+      <el-skeleton :rows="4" animated :loading="loading.userData"  :throttle="{ leading: 300, trailing: 300, initVal: true }">
         <template #default>
           <el-row v-if="user.name">
             <el-col :xs="6" :xl="4">昵称</el-col>
@@ -265,7 +265,7 @@ export default {
     </el-card>
 
     <el-card shadow="never">
-      <el-skeleton animated :loading="loading.userData" :throttle="{ leading: 500, trailing: 500, initVal: true }">
+      <el-skeleton animated :loading="loading.userData" :throttle="{ leading: 300, trailing: 300, initVal: true }">
         <template #template>
           <div style="display: flex; justify-items: space-between;gap:15px;">
             <el-skeleton-item variant="button" style="width: 20%; height: 30px; margin-top: 5px" />
@@ -295,7 +295,7 @@ export default {
     </el-card>
 
     <el-card shadow="never" v-if="isCurrentUser || isAdmin">
-      <el-skeleton animated :loading="loading.userData" :throttle="{ leading: 500, trailing: 500, initVal: true }">
+      <el-skeleton animated :loading="loading.userData" :throttle="{ leading: 300, trailing: 300, initVal: true }">
         <template #template>
           <el-skeleton-item variant="button" style="width: 30%; height: 30px" />
         </template>
