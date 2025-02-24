@@ -229,7 +229,7 @@ export default {
         </div>
       </template>
 
-      <el-skeleton :rows="4" animated :loading="loading.userData"  :throttle="{ leading: 300, trailing: 300, initVal: true }">
+      <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="{ leading: 300, trailing: 300, initVal: true }">
         <template #default>
           <el-row v-if="user.name">
             <el-col :xs="6" :xl="4">昵称</el-col>
@@ -267,7 +267,7 @@ export default {
     <el-card shadow="never">
       <el-skeleton animated :loading="loading.userData" :throttle="{ leading: 300, trailing: 300, initVal: true }">
         <template #template>
-          <div style="display: flex; justify-items: space-between;gap:15px;">
+          <div style="display: flex; justify-items: space-between;gap:15px;height: 47px;">
             <el-skeleton-item variant="button" style="width: 20%; height: 30px; margin-top: 5px" />
             <el-skeleton-item variant="text" class="item"/>
             <el-skeleton-item variant="text" class="item"/>
@@ -318,7 +318,7 @@ export default {
       :post="item"
       :showImage="false"
       :avatar="false"
-      :row="3"
+      :row="5"
       :loading="Object.keys(item).length === 0"
       @click="$router.push(`/share/${item.id}`)"
     />
