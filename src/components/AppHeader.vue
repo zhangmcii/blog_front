@@ -86,12 +86,6 @@ export default {
       return this.$route.path === '/posts'
     },
 },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.userName = to.params.userName
-      vm.$nextTick(() => {})
-    })
-  },
   mounted() {
     this.currentUser.loadUserName()
     this.currentUser.loadName()
