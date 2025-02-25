@@ -160,7 +160,7 @@ export default {
     <el-skeleton
       animated
       :loading="loading"
-      :throttle="isThrottle?{ leading: 300, trailing: 300, initVal: true }:''"
+      :throttle="isThrottle?{ leading: 300, trailing: 300, initVal: true }:{ leading: 0, trailing: 0, initVal: false }"
     >
       <template #template>
         <div class="skeleton-container">
