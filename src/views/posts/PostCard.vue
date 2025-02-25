@@ -52,6 +52,18 @@ export default {
     showPraise: {
       type: Boolean,
       default: true
+    },
+    avatar: {
+      type: Boolean,
+      default: true
+    },
+    row: {
+      type: Number,
+      default: 4
+    },
+    isThrottle:{
+      type: Boolean,
+      default: true
     }
   },
   emits: ['share'],
@@ -106,6 +118,9 @@ export default {
     login() {
       this.currentUser.loadUserName()
       return this.currentUser.username != ''
+    },
+    skeletonItemWidth() {
+      return this.avatar ? '80%' : ' 100%'
     }
   },
   mounted() {
@@ -135,98 +150,118 @@ export default {
           this.$message.error(res.data.detail)
         }
       })
-    },
+    }
   }
 }
 </script>
 
 <template>
   <el-card shadow="hover">
-    <van-skeleton title avatar :avatar-size="40" :row="4" :loading="loading">
-      <el-row>
-        <el-col :span="4" v-if="showImage">
-          <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
-        </el-col>
-        <el-col :span="showImage ? 20 : 24">
-          <el-row justify="space-between" class="content">
-            <el-col :xs="18" :sm="18" :md="10" :lg="10" :xl="10">
-              <el-link
-                target="_blank"
-                type="primary"
-                @click.stop="$router.push(`/user/${post.author}`)"
+    <el-skeleton
+      animated
+      :loading="loading"
+      :throttle="isThrottle?{ leading: 300, trailing: 300, initVal: true }:{ leading: 0, trailing: 0, initVal: false }"
+    >
+      <template #template>
+        <div class="skeleton-container">
+          <el-skeleton-item
+            variant="circle"
+            style="--el-skeleton-circle-size: 40px"
+            v-if="avatar"
+          />
+          <div class="item">
+            <el-skeleton-item variant="text" style="width: 40%" />
+            <el-skeleton-item variant="text" v-for="item in row - 2" :key="item" />
+            <el-skeleton-item variant="text" style="width: 60%" />
+          </div>
+        </div>
+      </template>
+      <template #default>
+        <el-row>
+          <el-col :span="4" v-if="showImage">
+            <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
+          </el-col>
+          <el-col :span="showImage ? 20 : 24">
+            <el-row justify="space-between" class="content">
+              <el-col :xs="18" :sm="18" :md="10" :lg="10" :xl="10">
+                <el-link
+                  target="_blank"
+                  type="primary"
+                  @click.stop="$router.push(`/user/${post.author}`)"
+                >
+                  {{ post.nick_name ? post.nick_name : post.author }}
+                </el-link>
+              </el-col>
+              <el-col :xs="6" :sm="3" :md="2" :lg="3" :xl="3" :push="2">
+                <el-text class="mx-1" size="small">{{ from_now }}</el-text>
+              </el-col>
+            </el-row>
+            <el-row v-if="post.disabled">
+              <p><i>此评论已被版主禁用</i></p>
+            </el-row>
+            <el-row><div v-if="post.body_html && show_body" v-html="post.body_html"></div></el-row>
+            <el-row v-if="!post.body_html && show_body">{{ post.body }}</el-row>
+
+            <el-row :gutter="35" justify="end" class="icon-event">
+              <el-col
+                :xs="4"
+                :sm="4"
+                :md="2"
+                :lg="2"
+                :xl="2"
+                v-if="showEdit && post.author == currentUser.username"
               >
-                {{ post.nick_name ? post.nick_name : post.author }}
-              </el-link>
-            </el-col>
-            <el-col :xs="6" :sm="3" :md="2" :lg="3" :xl="3" :push="2">
-              <el-text class="mx-1" size="small">{{ from_now }}</el-text>
-            </el-col>
-          </el-row>
-          <el-row v-if="post.disabled">
-            <p><i>此评论已被版主禁用</i></p>
-          </el-row>
-          <el-row><div v-if="post.body_html && show_body" v-html="post.body_html"></div></el-row>
-          <el-row v-if="!post.body_html && show_body">{{ post.body }}</el-row>
+                <van-icon name="edit" @click.stop="edit" :size="iconSize" />
+              </el-col>
+              <el-col
+                :xs="4"
+                :sm="4"
+                :md="2"
+                :lg="2"
+                :xl="2"
+                v-else-if="showEdit && currentUser.isAdmin == 'true'"
+              >
+                <van-icon name="edit" @click.stop="edit" :size="iconSize" color="red" />
+              </el-col>
 
-          <el-row :gutter="35" justify="end" class="icon-event">
-            <el-col
-              :xs="4"
-              :sm="4"
-              :md="2"
-              :lg="2"
-              :xl="2"
-              v-if="showEdit && post.author == currentUser.username"
-            >
-              <van-icon name="edit" @click.stop="edit" :size="iconSize" />
-            </el-col>
-            <el-col
-              :xs="4"
-              :sm="4"
-              :md="2"
-              :lg="2"
-              :xl="2"
-              v-else-if="showEdit && currentUser.isAdmin == 'true'"
-            >
-              <van-icon name="edit" @click.stop="edit" :size="iconSize" color="red" />
-            </el-col>
+              <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="showShare && !isUserRoute">
+                <van-icon name="share-o" @click.stop="this.$emit('share', true)" :size="iconSize" />
+              </el-col>
 
-            <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="showShare && !isUserRoute">
-              <van-icon name="share-o" @click.stop="this.$emit('share', true)" :size="iconSize" />
-            </el-col>
+              <el-col :xs="4" :sm="6" :md="4" :lg="2" :xl="2" v-if="showComment">
+                <el-space :size="3">
+                  <van-icon name="notes-o" @click.stop="comment" :size="iconSize" />
+                  <el-text class="mx-1">{{ post.comment_count }}</el-text>
+                </el-space>
+              </el-col>
 
-            <el-col :xs="4" :sm="6" :md="4" :lg="2" :xl="2" v-if="showComment">
-              <el-space :size="3">
-                <van-icon name="notes-o" @click.stop="comment" :size="iconSize" />
-                <el-text class="mx-1">{{ post.comment_count }}</el-text>
-              </el-space>
-            </el-col>
-
-            <el-col :xs="5" :sm="5" :md="2" :lg="2" :xl="2" v-if="showPraise">
-              <el-space :size="3">
-                <transition :name="hasPraised ? 'praise' : ''" mode="out-in">
-                  <van-icon
-                    name="good-job"
-                    @click.stop=""
-                    :size="iconSize"
-                    v-if="hasPraised"
-                    key="praised"
-                  />
-                  <van-icon
-                    name="good-job-o"
-                    @click.stop="praise"
-                    :size="iconSize"
-                    v-else
-                    key="unPraise"
-                  />
-                </transition>
-                <el-text class="mx-1">{{ praiseNum }}</el-text>
-              </el-space>
-            </el-col>
-          </el-row>
-        </el-col>
-      </el-row>
-      <slot></slot>
-    </van-skeleton>
+              <el-col :xs="5" :sm="5" :md="2" :lg="2" :xl="2" v-if="showPraise">
+                <el-space :size="3">
+                  <transition :name="hasPraised ? 'praise' : ''" mode="out-in">
+                    <van-icon
+                      name="good-job"
+                      @click.stop=""
+                      :size="iconSize"
+                      v-if="hasPraised"
+                      key="praised"
+                    />
+                    <van-icon
+                      name="good-job-o"
+                      @click.stop="praise"
+                      :size="iconSize"
+                      v-else
+                      key="unPraise"
+                    />
+                  </transition>
+                  <el-text class="mx-1">{{ praiseNum }}</el-text>
+                </el-space>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+        <slot></slot>
+      </template>
+    </el-skeleton>
   </el-card>
 </template>
 <style scoped>
@@ -260,5 +295,16 @@ export default {
 .praise-enter-to,
 .praise-leave-from {
   transform: scale(1);
+}
+.skeleton-container {
+  display: flex;
+  gap: 10px;
+}
+.item {
+  /* width: 80%; */
+  width: v-bind(skeletonItemWidth);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>

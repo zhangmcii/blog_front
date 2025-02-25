@@ -133,7 +133,7 @@ export default {
   </el-row>
 
   <el-row>
-    <el-skeleton :rows="12" animated :loading="loading">
+    <el-skeleton :rows="12" animated :loading="loading" :throttle="{ leading: 500, trailing: 500, initVal: true }">
       <el-table :data="tableData" style="width: 100%" :height="tableHeight">
         <el-table-column fixed prop="date" label="Date" width="80" />
         <el-table-column prop="name" label="Name" width="120" />

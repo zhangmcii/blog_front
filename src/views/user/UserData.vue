@@ -35,13 +35,13 @@ export default {
         is_following_current_user: false,
         image: ''
       },
-      posts: {},
+      posts: [{}],
       currentPage: 1,
       posts_count: 0,
       followPerm: false,
       loading: {
         userData: false,
-        follow: false,
+        follow: false
       },
       uploadData: upload,
       drawer: false,
@@ -229,7 +229,12 @@ export default {
         </div>
       </template>
 
-      <el-skeleton :rows="5" animated :loading="loading.userData">
+      <el-skeleton
+        :rows="5"
+        animated
+        :loading="loading.userData"
+        :throttle="{ leading: 300, trailing: 300, initVal: true }"
+      >
         <template #default>
           <el-row v-if="user.name">
             <el-col :xs="6" :xl="4">昵称</el-col>
@@ -265,42 +270,71 @@ export default {
     </el-card>
 
     <el-card shadow="never">
-      <el-row>
-        <el-col v-if="follow" :span="6">
-          <el-button
-            v-if="user.is_followed_by_current_user"
-            @click="unFollowUser"
-            >取消关注</el-button
-          >
-          <el-button v-else :loading="loading.follow" @click="followUser">关注</el-button>
-        </el-col>
-        <el-col :span="4"> </el-col>
-        <el-col :span="6">
-          <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
-        </el-col>
-        <el-col :span="6">
-          <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
-        </el-col>
-        <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
-      </el-row>
+      <el-skeleton
+        animated
+        :loading="loading.userData"
+        :throttle="{ leading: 300, trailing: 300, initVal: true }"
+      >
+        <template #template>
+          <div style="display: flex; justify-items: space-between; gap: 15px; height: 47px">
+            <el-skeleton-item variant="button" style="width: 20%; height: 30px; margin-top: 5px" />
+            <el-skeleton-item variant="text" class="item" />
+            <el-skeleton-item variant="text" class="item" />
+          </div>
+        </template>
+        <template #default>
+          <el-row>
+            <el-col v-if="follow" :span="6">
+              <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
+                >取消关注</el-button
+              >
+              <el-button v-else :loading="loading.follow" @click="followUser">关注</el-button>
+            </el-col>
+            <el-col :span="4"> </el-col>
+            <el-col :span="6">
+              <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
+            </el-col>
+            <el-col :span="6">
+              <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
+            </el-col>
+            <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
+          </el-row>
+        </template>
+      </el-skeleton>
     </el-card>
 
-    <el-card shadow="never" v-if="isCurrentUser || isAdmin">
-      <el-row justify="space-between">
-        <el-col v-if="isCurrentUser" :xs="9" :xl="6">
-          <el-button @click="editProfile">编辑资料</el-button>
-        </el-col>
-        <el-col v-if="isAdmin" :xs="12" :xl="12">
-          <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
-        </el-col>
-      </el-row>
-    </el-card>
+    <el-skeleton
+      animated
+      :loading="loading.userData"
+      :throttle="{ leading: 300, trailing: 300, initVal: true }"
+    >
+      <template #template>
+        <el-card shadow="never">
+          <el-skeleton-item variant="button" style="width: 30%; height: 30px" />
+        </el-card>
+      </template>
+      <template #default>
+        <el-card shadow="never" v-if="isCurrentUser || isAdmin">
+          <el-row justify="space-between">
+            <el-col v-if="isCurrentUser" :xs="9" :xl="6">
+              <el-button @click="editProfile">编辑资料</el-button>
+            </el-col>
+            <el-col v-if="isAdmin" :xs="12" :xl="12">
+              <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
+            </el-col>
+          </el-row>
+        </el-card>
+      </template>
+    </el-skeleton>
 
     <PostCard
       v-for="item in posts"
       :key="item"
       :post="item"
       :showImage="false"
+      :avatar="false"
+      :row="5"
+      :loading="Object.keys(item).length === 0"
       @click="$router.push(`/share/${item.id}`)"
     />
 
@@ -385,5 +419,9 @@ export default {
 }
 .el-divider {
   margin: 2px 0px 2px 0px;
+}
+.item {
+  width: 20%;
+  margin-top: 20px;
 }
 </style>

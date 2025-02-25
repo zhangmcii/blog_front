@@ -18,7 +18,7 @@ export default {
   data() {
     return {
       activeName: 'all',
-      posts: [{}, {}],
+      posts: [],
       posts_count: -1,
       currentPage: 1,
       loading: {
@@ -49,14 +49,13 @@ export default {
   },
   methods: {
     changeTab(tabName) {
-      this.posts = [{}, {}]
       this.getPosts(this.currentPage, tabName)
     },
     handleCurrentChange() {
-      this.posts = [{}, {}]
       this.getPosts(this.currentPage, this.activeName)
     },
     getPosts(page, tabName) {
+      this.posts = [{}, {}]
       postApi.getPosts(page, tabName).then((res) => {
         this.loading.fetchPost = false
         this.posts = res.data.data
@@ -114,6 +113,7 @@ export default {
             :key="item.id"
             :post="item"
             :loading="Object.keys(item).length === 0"
+            :isThrottle="false"
             :showEdit="false"
             :showShare="false"
             @click="$router.push(`/share/${item.id}`)"
@@ -127,6 +127,7 @@ export default {
             :key="item.id"
             :post="item"
             :loading="Object.keys(item).length === 0"
+            :isThrottle="false"
             :showEdit="false"
             :showShare="false"
             @click="$router.push(`/share/${item.id}`)"

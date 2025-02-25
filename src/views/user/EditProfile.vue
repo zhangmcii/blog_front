@@ -81,7 +81,7 @@ export default {
 
 <template>
   <PageHeadBack>
-    <el-skeleton :loading="isLoading" animated>
+    <el-skeleton :loading="isLoading" animated :throttle="{ leading: 300, trailing: 300, initVal: true }">
       <template #template>
         <el-skeleton-item variant="h3" style="width: 20%" />
         <el-skeleton-item style="width: 100%; height: 25px" class="form-name" />

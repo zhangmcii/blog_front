@@ -38,7 +38,7 @@ export default defineConfig({
     Icons({
       autoInstall: true
     }),
-    AppLoading()
+    AppLoading('loading.html')
   ],
   resolve: {
     alias: {
