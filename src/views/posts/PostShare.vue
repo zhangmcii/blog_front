@@ -47,7 +47,7 @@ export default {
 
 <template>
   <PageHeadBack>
-  <PostCard :post="post" @share="(flag) => (this.showShare = flag)" :loading="Object.keys(post).length === 0"/>
+  <PostCard :post="post" @share="(flag) => (showShare = flag)" :loading="Object.keys(post).length === 0"/>
   <CommentCard :post-id="postId" />
   <van-share-sheet
       v-model:show="showShare"

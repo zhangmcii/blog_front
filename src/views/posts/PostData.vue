@@ -5,6 +5,7 @@ import postApi from '@/api/posts/postApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { GradientText } from 'vue-amazing-ui'
 import 'vue-amazing-ui/es/gradienttext/GradientText.css'
+import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 
 export default {
   components: {
@@ -13,7 +14,8 @@ export default {
       loader: () => import('./PostPublish.vue'),
       hydrate: hydrateOnVisible()
     }),
-    GradientText
+    GradientText,
+    SkeletonUtil
   },
   data() {
     return {
@@ -24,16 +26,9 @@ export default {
       loading: {
         publishPost: false,
         fetchPost: false,
-        fetchPostDisabled: false
-      },
-      showShare: false,
-      shareOptions: [
-        { name: '微信', icon: 'wechat' },
-        { name: '朋友圈', icon: 'wechat-moments' },
-        { name: '微博', icon: 'weibo' },
-        { name: 'QQ', icon: 'qq' },
-        { name: '复制链接', icon: 'link' },
-      ]
+        fetchPostDisabled: false,
+        card: false
+      }
     }
   },
   setup() {
@@ -55,12 +50,12 @@ export default {
       this.getPosts(this.currentPage, this.activeName)
     },
     getPosts(page, tabName) {
-      this.posts = [{}, {}]
+      this.loading.card = true
       postApi.getPosts(page, tabName).then((res) => {
         this.loading.fetchPost = false
+        this.loading.card = false
         this.posts = res.data.data
         this.posts_count = res.data.total
-  
       })
     },
     getPostsResult(res) {
@@ -71,12 +66,7 @@ export default {
     onRefresh() {
       this.loading.fetchPost = true
       this.getPosts(this.currentPage, this.activeName)
-    },
-    shareSelect(option) {
-      this.$message.info(option.name)
-      this.showShare = false
-      this.loading.publishPost = false
-    },
+    }
   }
 }
 </script>
@@ -108,31 +98,39 @@ export default {
       <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
         <el-tab-pane label="广场" name="all">
           <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
-          <PostCard
-            v-for="item in posts"
-            :key="item.id"
-            :post="item"
-            :loading="Object.keys(item).length === 0"
-            :isThrottle="false"
-            :showEdit="false"
-            :showShare="false"
-            @click="$router.push(`/share/${item.id}`)"
-            @share="(flag) => (this.showShare = flag)"
-          />
+          <SkeletonUtil
+            :loading="loading.card"
+            :row="5"
+            :throttle="{}"
+            :cardStyle="{ marginBottom: '10px' }"
+          >
+            <PostCard
+              v-for="item in posts"
+              :key="item.id"
+              :post="item"
+              :showEdit="false"
+              :showShare="false"
+              @click="$router.push(`/share/${item.id}`)"
+            />
+          </SkeletonUtil>
         </el-tab-pane>
         <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
           <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
-          <PostCard
-            v-for="item in posts"
-            :key="item.id"
-            :post="item"
-            :loading="Object.keys(item).length === 0"
-            :isThrottle="false"
-            :showEdit="false"
-            :showShare="false"
-            @click="$router.push(`/share/${item.id}`)"
-            @share="(flag) => (this.showShare = flag)"
-          />
+          <SkeletonUtil
+            :loading="loading.card"
+            :row="5"
+            :throttle="{}"
+            :cardStyle="{ marginBottom: '10px' }"
+          >
+            <PostCard
+              v-for="item in posts"
+              :key="item.id"
+              :post="item"
+              :showEdit="false"
+              :showShare="false"
+              @click="$router.push(`/share/${item.id}`)"
+            />
+          </SkeletonUtil>
         </el-tab-pane>
       </el-tabs>
     </Transition>
@@ -145,17 +143,11 @@ export default {
       :hide-on-single-page="true"
       :pager-count="5"
     />
-    <van-share-sheet
-      v-model:show="showShare"
-      title="立即分享给好友"
-      :options="shareOptions"
-      @select="shareSelect"
-    />
   </van-pull-refresh>
 </template>
 <style scoped>
 .gradient-text {
-  margin:20px 0px 0px 0px;
+  margin: 20px 0px 0px 0px;
 }
 .el-card {
   margin-bottom: 10px;
@@ -179,5 +171,16 @@ export default {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.skeleton-container {
+  display: flex;
+  gap: 10px;
+}
+.item {
+  width: v-bind(skeletonItemWidth);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>
