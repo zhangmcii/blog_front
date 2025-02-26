@@ -14,5 +14,4 @@ export default {
   toDateStr(date){
     return dayjs(date).tz('UTC').format('YYYY-MM-DD HH:mm:ss')
   }
-
 }
