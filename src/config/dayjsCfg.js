@@ -8,6 +8,12 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 // 引入RelativeTime插件
 dayjs.extend(relativeTime)
 
+// 设置时区
+import utc  from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone' 
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
 import updateLocale from 'dayjs/plugin/updateLocale'
 dayjs.extend(updateLocale)
 

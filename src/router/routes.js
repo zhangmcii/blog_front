@@ -50,6 +50,11 @@ const routes = [
         component: () => import('../views/comment/commentManagement.vue')
       },
       {
+        path: '/operateLog',
+        name: 'operateLog',
+        component: () => import('../views/data_manage/OperateLog.vue')
+      },
+      {
         path: '/register',
         name: 'register',
         component: () => import('../views/login/RegisterPage.vue')

@@ -19,6 +19,7 @@
         <van-cell title="个人资料" icon="manager-o" clickable @click="toggleMenu();$router.push(`/user/${currentUser.username}`)"/>
         <div v-if="isCommentManage">
           <van-cell title="评论管理" icon="chat-o" clickable @click="toggleMenu();$router.push('/commentManagement')" />
+          <van-cell title="操作日志" icon="shield-o" clickable @click="toggleMenu();$router.push('/operateLog')" />
           <van-cell title="找回其他用户密码" icon="warning-o" clickable @click="toggleMenu();$router.push('/PasswordChangeAdmin')" ></van-cell>
         </div>
         <van-cell :title="accountLabel" :icon="accountLabel=='账户'?'notes-o':''" is-link arrow-direction="down" @click.prevent="toggleContactDropdown"/>

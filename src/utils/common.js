@@ -10,5 +10,9 @@ export default {
     const diff = today.diff(inputDate, 'day')
     // 如果差值为 -1，则说明 inputDate 是昨天
     return diff === 1
+  },
+  toDateStr(date){
+    return dayjs(date).tz('UTC').format('YYYY-MM-DD HH:mm:ss')
   }
+
 }
