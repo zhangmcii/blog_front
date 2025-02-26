@@ -12,10 +12,12 @@ import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import emitter from '@/utils/emitter.js'
 import upload from '@/config/postImageToken.js'
+import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 export default {
   components: {
     PostCard,
-    PageHeadBack
+    PageHeadBack,
+    SkeletonUtil
   },
   data() {
     return {
@@ -45,7 +47,12 @@ export default {
       },
       uploadData: upload,
       drawer: false,
-      imgList: []
+      imgList: [],
+      skeletonThrottle: {
+        leading: 300,
+        trailing: 300,
+        initVal: true
+      }
     }
   },
   setup() {
@@ -195,11 +202,13 @@ export default {
       const url = response.data.links.url
       image.saveImageUrl({ image: url }).then((res) => {
         if (res.data.msg == 'success') {
-          emitter.emit('image', url)
           this.user.image = url
+          console.log('111', url)
           this.imgList.push(this.user.image)
+          console.log('222', res.data.image)
           // 换图像成功后，更新本地image字段
           this.currentUser.saveImage(res.data.image)
+          emitter.emit('image', url)
           this.$message.success('图像上传成功')
         } else {
           this.$message.error('图像上传失败')
@@ -229,12 +238,7 @@ export default {
         </div>
       </template>
 
-      <el-skeleton
-        :rows="5"
-        animated
-        :loading="loading.userData"
-        :throttle="{ leading: 300, trailing: 300, initVal: true }"
-      >
+      <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="skeletonThrottle">
         <template #default>
           <el-row v-if="user.name">
             <el-col :xs="6" :xl="4">昵称</el-col>
@@ -270,11 +274,7 @@ export default {
     </el-card>
 
     <el-card shadow="never">
-      <el-skeleton
-        animated
-        :loading="loading.userData"
-        :throttle="{ leading: 300, trailing: 300, initVal: true }"
-      >
+      <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
         <template #template>
           <div style="display: flex; justify-items: space-between; gap: 15px; height: 47px">
             <el-skeleton-item variant="button" style="width: 20%; height: 30px; margin-top: 5px" />
@@ -303,11 +303,7 @@ export default {
       </el-skeleton>
     </el-card>
 
-    <el-skeleton
-      animated
-      :loading="loading.userData"
-      :throttle="{ leading: 300, trailing: 300, initVal: true }"
-    >
+    <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
       <template #template>
         <el-card shadow="never">
           <el-skeleton-item variant="button" style="width: 30%; height: 30px" />
@@ -327,26 +323,25 @@ export default {
       </template>
     </el-skeleton>
 
-    <PostCard
-      v-for="item in posts"
-      :key="item"
-      :post="item"
-      :showImage="false"
-      :avatar="false"
-      :row="5"
-      :loading="Object.keys(item).length === 0"
-      @click="$router.push(`/share/${item.id}`)"
-    />
+    <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
+      <PostCard
+        v-for="item in posts"
+        :key="item"
+        :post="item"
+        :showImage="false"
+        @click="$router.push(`/share/${item.id}`)"
+      />
 
-    <el-pagination
-      v-model:current-page="currentPage"
-      :page-size="10"
-      layout="total, prev, pager, next"
-      :total="posts_count"
-      @current-change="handleCurrentChange"
-      :hide-on-single-page="true"
-      :pager-count="5"
-    />
+      <el-pagination
+        v-model:current-page="currentPage"
+        :page-size="10"
+        layout="total, prev, pager, next"
+        :total="posts_count"
+        @current-change="handleCurrentChange"
+        :hide-on-single-page="true"
+        :pager-count="5"
+      />
+    </SkeletonUtil>
   </PageHeadBack>
   <van-action-sheet v-model:show="drawer" cancel-text="取消">
     <photo-provider :photo-closable="true">
@@ -423,5 +418,12 @@ export default {
 .item {
   width: 20%;
   margin-top: 20px;
+}
+
+.skeleton-item {
+  width: v-bind(skeletonItemWidth);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>
