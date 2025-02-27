@@ -8,17 +8,14 @@ export default {
     dragVerifyImgRotate
   },
   data() {
-    var validatePass = (rule, value, callback) => {
+    var validateUser = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入账户'))
       } else {
-        if (this.ruleForm.pass !== '') {
-          this.$refs.ruleForm.validateField('pass')
-        }
         callback()
       }
     }
-    var validatePass2 = (rule, value, callback) => {
+    var validatePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
@@ -32,8 +29,8 @@ export default {
         isPassing2: false
       },
       rules: {
-        user: [{ validator: validatePass, trigger: 'blur' }],
-        pass: [{ validator: validatePass2, trigger: 'blur' }]
+        user: [{ validator: validateUser, trigger: 'blur' }],
+        pass: [{ validator: validatePass, trigger: 'blur' }]
       },
       // 是否记住账号密码
       isRemember: false,
@@ -47,7 +44,7 @@ export default {
   },
   computed: {
     formHasValue() {
-      return this.ruleForm.user != '' || this.ruleForm.pass != ''
+      return this.ruleForm.user !== '' && this.ruleForm.pass !== ''
     }
   },
   mounted() {
@@ -55,38 +52,44 @@ export default {
   },
   methods: {
     login() {
-      if (this.ruleForm.isPassing2) {
-        this.loading = true
-        authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
-          if (res.data.msg == '登录成功') {
-            this.loading = false
-            // 判断是否勾选记住密码
-            this.hasRemember()
-            this.currentUser.saveToken(res.data.token)
-            this.currentUser.saveUserName(res.data.username)
-            this.currentUser.saveName(res.data.name)
-            this.currentUser.saveAdmin(res.data.admin)
-            this.currentUser.saveRoleId(res.data.roleId)
-            this.currentUser.saveConfirmed(res.data.isConfirmed)
-            this.currentUser.saveImage(res.data.image)
-            this.$message({
-              message: res.data.msg,
-              type: 'success',
-              duration: 1700
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          if (this.ruleForm.isPassing2) {
+            this.loading = true
+            authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
+              if (res.data.msg == '登录成功') {
+                this.loading = false
+                // 判断是否勾选记住密码
+                this.hasRemember()
+                this.currentUser.saveToken(res.data.token)
+                this.currentUser.saveUserName(res.data.username)
+                this.currentUser.saveName(res.data.name)
+                this.currentUser.saveAdmin(res.data.admin)
+                this.currentUser.saveRoleId(res.data.roleId)
+                this.currentUser.saveConfirmed(res.data.isConfirmed)
+                this.currentUser.saveImage(res.data.image)
+                this.$message({
+                  message: res.data.msg,
+                  type: 'success',
+                  duration: 1700
+                })
+                this.$router.push({ path: '/posts' })
+                return
+              }
+              this.loading = false
+              this.$message({
+                message: '账号或密码错误',
+                type: 'error',
+                duration: 1700
+              })
             })
-            this.$router.push({ path: '/posts' })
-            return
+          } else {
+            this.$message('请先完成验证')
           }
-          this.loading = false
-          this.$message({
-            message: '账号或密码错误',
-            type: 'error',
-            duration: 1700
-          })
-        })
-      } else {
-        this.$message('请先完成验证')
-      }
+        } else {
+          this.$message.error('请修正表单中的错误')
+        }
+      })
     },
     //  检查本地存储是否有记住的账号密码，如果有则填充到输入框中
     getAccount() {
@@ -153,9 +156,7 @@ export default {
     <el-col :span="4"><el-checkbox label="记住密码" v-model="isRemember"></el-checkbox></el-col>
     <el-col :span="6"
       ><div class="text">
-        <el-link class="forget-pass" @click="$router.push('/resetPassword')"
-          >忘记密码？</el-link
-        >
+        <el-link class="forget-pass" @click="$router.push('/resetPassword')">忘记密码？</el-link>
       </div></el-col
     >
   </el-row>
@@ -170,6 +171,7 @@ export default {
     <el-link class="register" @click="$router.push('/register')">创建账号 </el-link>
   </div>
 </template>
+
 <style scoped>
 * {
   font-family: -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue', arial,

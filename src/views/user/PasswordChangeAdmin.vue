@@ -10,7 +10,16 @@ export default {
   },
   data() {
     var validatePass = (rule, value, callback) => {
-      if (value != this.form.newPassword) {
+      if (value === '') {
+        callback(new Error('请输入新密码'))
+      } else if (value.length < 3) {
+        callback(new Error('新密码长度不能少于3个字符'))
+      } else {
+        callback()
+      }
+    }
+    var validateConfirmPass = (rule, value, callback) => {
+      if (value !== this.form.newPassword) {
         callback(new Error('两次密码不一致'))
       } else {
         callback()
@@ -23,7 +32,9 @@ export default {
         confirmNewPassword: ''
       },
       rules: {
-        confirmNewPassword: [{ validator: validatePass, trigger: 'blur' }]
+        username: [{ required: true, message: '请输入用户账号', trigger: 'blur' }],
+        newPassword: [{ required: true, validator: validatePass, trigger: 'blur' }],
+        confirmNewPassword: [{ required: true, validator: validateConfirmPass, trigger: 'blur' }]
       },
       loading: false,
       isChange: false
@@ -43,11 +54,17 @@ export default {
   },
   methods: {
     submitForm() {
-      showConfirmDialog({
-        title: '修改用户的密码？',
-        width: 230,
-        confirmButtonColor:'red',
-        beforeClose: this.beforeClose
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          showConfirmDialog({
+            title: '修改用户的密码？',
+            width: 230,
+            confirmButtonColor: 'red',
+            beforeClose: this.beforeClose
+          })
+        } else {
+          this.$message.error('请修正表单中的错误')
+        }
       })
     },
     beforeClose(action) {
@@ -81,13 +98,13 @@ export default {
       style="max-width: 600px"
     >
       <el-form-item prop="username" label="用户账号">
-        <el-input v-model="form.username"  />
+        <el-input v-model="form.username" />
       </el-form-item>
       <el-form-item prop="newPassword" label="新密码">
-        <el-input v-model="form.newPassword" type="password" show-password/>
+        <el-input v-model="form.newPassword" type="password" show-password />
       </el-form-item>
       <el-form-item prop="confirmNewPassword" label="确认新密码">
-        <el-input v-model="form.confirmNewPassword" type="password" show-password/>
+        <el-input v-model="form.confirmNewPassword" type="password" show-password />
       </el-form-item>
       <el-form-item>
         <ButtonClick
