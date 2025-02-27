@@ -126,3 +126,19 @@ git reset --mixed HEAD^
 即将出现的对应enter动画
 
 所以： 未点赞组件对应leave ，已点赞组件对应enter
+
+ element-plus表格设置表头行或者单元格样式
+ 解决：样式需要加 :deep(), 即影响到子组件
+ ～～～
+<el-table
+    :header-cell-class-name="tableHeadStyleName"
+  />
+
+ tableHeadStyleName({ row, column, rowIndex, columnIndex }){
+      return 'table-header'
+  }
+
+# 重点
+:deep(.table-header) {
+  color: #333333;
+}
