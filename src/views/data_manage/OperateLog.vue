@@ -2,15 +2,18 @@
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 import common from '@/utils/common.js'
 import logApi from '@/api/log/logApi.js'
-
+import ButtonReload from '@/utils/components/ButtonReload.vue'
 export default {
   components: {
-    ButtonClick
+    ButtonClick,
+    ButtonReload
   },
   data() {
     return {
       input3: '',
       filter: false,
+      // 帮我写个函数
+      
       table: {
         tableData: [],
         multipleSelection: [],
@@ -20,12 +23,13 @@ export default {
       },
       loading: {
         search: false,
-        table: false
+        table: false,
+        isRotating:false
       },
       currentRow: {
         index: 0,
         row: {}
-      }
+      },
     }
   },
   mounted() {
@@ -39,7 +43,7 @@ export default {
       const h2 = this.$refs.h2.$el.offsetHeight
       // 其中一个40是盒子的总外边距
       // 6vh 是el-header高度
-      this.table.tableHeight = `calc(100vh - ${h1}px - ${h2}px - 100px - 16px - 2px - var(--el-main-padding) * 2 - 6vh - 5px`
+      this.table.tableHeight = `calc(100vh - ${h1}px - ${h2}px - 120px - 16px - 2px - var(--el-main-padding) * 2 - 6vh - 5px`
     },
     doSearch() {
       this.loading.search = true
@@ -55,11 +59,13 @@ export default {
       }
     },
     getLogs(page) {
-      this.table.tableData = []
       this.loading.table = true
       logApi.getLogs(page).then((res) => {
         if (res.data.msg == 'success') {
           this.loading.table = false
+          if(this.loading.isRotating){
+            this.loading.isRotating = false
+          }
           this.table.log_count = res.data.total
           this.table.tableData = res.data.data
           this.table.tableData.map((item) => {
@@ -141,6 +147,10 @@ export default {
     },
     tableHeadStyleName({ row, column, rowIndex, columnIndex }){
       return 'table-header'
+    },
+    reload(){
+      this.loading.isRotating = true
+      this.getLogs(this.table.currentPage)
     }
   }
 }
@@ -178,12 +188,15 @@ export default {
       </el-card>
     </Transition>
   </el-row>
+
   <el-skeleton
     :rows="12"
     animated
     :loading="loading.search"
     :throttle="{ leading: 500, trailing: 500 }"
   >
+
+  <ButtonReload v-model:stop="isRotating" @click="reload" class="button-reload"/>
     <el-table
       ref="table"
       :data="table.tableData"
@@ -324,5 +337,9 @@ export default {
     transform: scale(1);
     left: 60%;
   }
+}
+.button-reload {
+  float: right;
+  margin: 10px 5px 5px 5px;
 }
 </style>
