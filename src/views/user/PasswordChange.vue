@@ -43,9 +43,9 @@ export default {
         confirmNewPassword: ''
       },
       rules: {
-        oldPassword: [{ validator: validateOldPassword, trigger: 'blur' }],
-        newPassword: [{ validator: validateNewPassword, trigger: 'blur' }],
-        confirmNewPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }]
+        oldPassword: [{required: true, validator: validateOldPassword, trigger: 'blur' }],
+        newPassword: [{required: true, validator: validateNewPassword, trigger: 'blur' }],
+        confirmNewPassword: [{required: true, validator: validateConfirmPassword, trigger: 'blur' }]
       },
       loading: false,
       isChange: false

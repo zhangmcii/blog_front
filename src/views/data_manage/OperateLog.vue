@@ -15,7 +15,7 @@ export default {
         tableData: [],
         multipleSelection: [],
         currentPage: 1,
-        posts_count: 0,
+        log_count: 0,
         tableHeight: '600'
       },
       loading: {
@@ -60,7 +60,7 @@ export default {
       logApi.getLogs(page).then((res) => {
         if (res.data.msg == 'success') {
           this.loading.table = false
-          this.table.posts_count = res.data.total
+          this.table.log_count = res.data.total
           this.table.tableData = res.data.data
           this.table.tableData.map((item) => {
             item.operateTime = common.toDateStr(item.operateTime)
@@ -72,11 +72,12 @@ export default {
       if (action !== 'confirm') {
         return Promise.resolve(true)
       } else {
-        return logApi.deleteLog({ ids: [this.currentRow.id] }).then((res) => {
+        return logApi.deleteLog({ ids: [this.currentRow.row.id] }).then((res) => {
           if (res.data.msg == 'success') {
             this.$message.success('删除成功')
             // 移除表格的第index行
             this.table.tableData.splice(this.currentRow.index, 1)
+            this.table.log_count --
           } else {
             this.$message.error(res.data.msg)
           }
@@ -99,6 +100,7 @@ export default {
             this.table.tableData = this.table.tableData.filter((item) => {
               return !this.table.multipleSelection.includes(item)
             })
+            this.table.log_count -= this.table.multipleSelection.length
             this.table.multipleSelection = []
           } else {
             this.$message.error(res.data.msg)
@@ -232,7 +234,7 @@ export default {
       v-model:current-page="table.currentPage"
       :page-size="15"
       layout="total, prev, pager, next"
-      :total="table.posts_count"
+      :total="table.log_count"
       @current-change="handleCurrentChange"
       :pager-count="5"
     />
