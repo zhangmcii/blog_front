@@ -1,29 +1,41 @@
 <template>
   <PageHeadBack>
-  <div style="text-align: center; height: 50px">注册</div>
-  <el-form
-    :model="ruleForm"
-    status-icon
-    :rules="rules"
-    ref="ruleForm"
-    label-width="100px"
-    class="demo-ruleForm"
-  >
-    <el-form-item label="用户名" prop="user">
-      <el-input type="text" v-model="ruleForm.user" autocomplete="off"></el-input>
-    </el-form-item>
-    <el-form-item label="密码" prop="password">
-      <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
-    </el-form-item>
-    <el-form-item label="确认密码" prop="confirmPass">
-      <el-input type="password" v-model="ruleForm.confirmPass" autocomplete="off"></el-input>
-    </el-form-item>
+    <div style="text-align: center; height: 50px">注册</div>
+    <el-form
+      :model="ruleForm"
+      status-icon
+      :rules="rules"
+      ref="ruleForm"
+      label-width="100px"
+      class="demo-ruleForm"
+    >
+      <el-form-item label="用户名" prop="user">
+        <el-input type="text" v-model="ruleForm.user" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="password">
+        <el-input
+          type="password"
+          v-model="ruleForm.password"
+          autocomplete="off"
+          show-password
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="确认密码" prop="confirmPass">
+        <el-input
+          type="password"
+          v-model="ruleForm.confirmPass"
+          autocomplete="off"
+          show-password
+        ></el-input>
+      </el-form-item>
 
-    <el-form-item>
-      <el-button type="primary" :disabled="!isChange" :loading="loading" @click="register">注册</el-button>
-    </el-form-item>
-  </el-form>
-</PageHeadBack>
+      <el-form-item>
+        <el-button type="primary" :disabled="!isChange" :loading="loading" @click="register"
+          >注册</el-button
+        >
+      </el-form-item>
+    </el-form>
+  </PageHeadBack>
 </template>
 
 <script>
@@ -32,31 +44,31 @@ import { useCurrentUserStore } from '@/stores/currentUser'
 import confetti from 'canvas-confetti'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import imageCfg from '@/config/image.js'
+
 export default {
-  components:{
+  components: {
     PageHeadBack
   },
-  name: 'LoginPage',
+  name: 'RegisterPage',
   data() {
+    var validateUser = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入用户名'))
+      } else {
+        callback()
+      }
+    }
     var validatePass = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入账户'))
-      } else {
-        if (this.ruleForm.password !== '') {
-          this.$refs.ruleForm.validateField('password')
-        }
-        callback()
-      }
-    }
-    var validatePass2 = (rule, value, callback) => {
-      if (value === '') {
         callback(new Error('请输入密码'))
+      } else if (value.length < 3) {
+        callback(new Error('密码长度不能少于3个字符'))
       } else {
         callback()
       }
     }
-    var validatePass3 = (rule, value, callback) => {
-      if (value != this.ruleForm.password) {
+    var validateConfirmPass = (rule, value, callback) => {
+      if (value !== this.ruleForm.password) {
         callback(new Error('两次密码不一致'))
       } else {
         callback()
@@ -70,12 +82,12 @@ export default {
         email: ''
       },
       rules: {
-        user: [{ required: true, validator: validatePass, trigger: 'blur' }],
-        password: [{ required: true, validator: validatePass2, trigger: 'blur' }],
-        confirmPass: [{ required: true, validator: validatePass3, trigger: 'blur' }]
+        user: [{ required: true, validator: validateUser, trigger: 'blur' }],
+        password: [{ required: true, validator: validatePass, trigger: 'blur' }],
+        confirmPass: [{ required: true, validator: validateConfirmPass, trigger: 'blur' }]
       },
       isChange: false,
-      loading:false
+      loading: false
     }
   },
   setup() {
@@ -92,26 +104,32 @@ export default {
   },
   methods: {
     register() {
-      this.loading = true
-      authApi
-        .register({
-          email: this.ruleForm.email,
-          username: this.ruleForm.user,
-          password: this.ruleForm.password,
-          image:imageCfg.random()
-        })
-        .then((res) => {
-          if (res.data.msg == 'success') {
-            this.congratulation()
-            this.$message.success('注册成功')
-            setTimeout(() => {
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          this.loading = true
+          authApi
+            .register({
+              email: this.ruleForm.email,
+              username: this.ruleForm.user,
+              password: this.ruleForm.password,
+              image: imageCfg.random()
+            })
+            .then((res) => {
               this.loading = false
-              this.$router.push('/login')
-            }, 700)
-          } else {
-            this.$message.error(res.data.detail)
-          }
-        })
+              if (res.data.msg == 'success') {
+                this.congratulation()
+                this.$message.success('注册成功')
+                setTimeout(() => {
+                  this.$router.push('/login')
+                }, 700)
+              } else {
+                this.$message.error(res.data.detail)
+              }
+            })
+        } else {
+          this.$message.error('请修正表单中的错误')
+        }
+      })
     },
     congratulation() {
       confetti({

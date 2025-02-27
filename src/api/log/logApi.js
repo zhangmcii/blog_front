@@ -5,4 +5,7 @@ export default {
         params['page'] = page
         return $http.get('/logs', { params: params })
       },
+      deleteLog(ids){
+        return $http.post('/deleteLog', ids)
+      }
   }

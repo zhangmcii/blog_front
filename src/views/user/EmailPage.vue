@@ -8,33 +8,12 @@ export default {
     ButtonClick,
     PageHeadBack
   },
-  props: {
-    headerText: {
-      type: String,
-      default() {
-        return '请输入您的邮箱'
-      }
-    },
-    password: {
-      type: String,
-      default() {
-        return ''
-      }
-    },
-    action: {
-      type: String,
-      default() {
-        return 'confirm'
-      }
-    }
-  },
   data() {
     return {
       form: {
         email: '',
         code: '',
         password: '',
-        action: 'bind'
       },
       rules: {
         email: [
@@ -44,7 +23,8 @@ export default {
             message: '请输入正确的邮箱地址',
             trigger: ['blur', 'change']
           }
-        ]
+        ],
+        code: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
       },
       isEmailValid: false,
       value: '',
@@ -57,15 +37,14 @@ export default {
     const currentUser = useCurrentUserStore()
     return { currentUser }
   },
-  computed:{
-    isSubmit(){
+  computed: {
+    isSubmit() {
       return !(this.isEmailValid && this.form.code)
     }
   },
   mounted() {},
   methods: {
     applyCode() {
-      this.form.action = this.action
       this.value = Date.now() + 1000 * 60
       this.showButton = !this.showButton
       authApi.applyCode(this.form).then((res) => {
@@ -88,36 +67,9 @@ export default {
         }
       })
     },
-    changeEmail() {
-      authApi.changeEmail(this.form).then((res) => {
-        if (res.data.msg == 'success') {
-          this.$message.success('邮箱更新成功')
-        } else {
-          this.$message.error(res.data.detail)
-        }
-      })
-    },
-    resetPassword() {
-      authApi.resetPassword(this.form).then((res) => {
-        if (res.data.msg == 'success') {
-          this.$message.success('密码重置成功')
-          this.$router.push('/login')
-        } else {
-          this.$message.error(res.data.detail)
-        }
-      })
-    },
     submitForm() {
       this.loading = true
-      if (this.action == 'confirm') {
-        this.bindEmail()
-      } else if (this.action == 'change') {
-        this.form.password = this.password
-        this.changeEmail()
-      } else if (this.action == 'reset') {
-        this.form.password = this.password
-        this.resetPassword()
-      }
+      this.bindEmail()
       this.loading = false
       this.isChange = false
     },
@@ -137,7 +89,7 @@ export default {
 
 <template>
   <PageHeadBack>
-    <h1>{{ headerText }}</h1>
+    <h1>请输入您的邮箱</h1>
     <el-form
       label-position="top"
       label-width="auto"
@@ -146,7 +98,7 @@ export default {
       ref="formRef"
       style="max-width: 600px"
     >
-      <el-form-item prop="email" label="邮件">
+      <el-form-item prop="email" label="邮箱">
         <el-input v-model="form.email" style="width: 65%" @blur="validateEmail" />
         <el-button @click="applyCode" type="primary" :disabled="!isEmailValid" v-if="showButton">
           发送验证码
@@ -156,7 +108,6 @@ export default {
       <el-form-item prop="code" label="验证码">
         <el-input v-model="form.code" style="width: 40%" />
       </el-form-item>
-      <slot></slot>
       <el-form-item>
         <ButtonClick
           content="提交"
@@ -170,7 +121,6 @@ export default {
   </PageHeadBack>
 </template>
 <style scoped>
-/* font-size: 16px; */
 :deep(.el-statistic__content) {
   font-size: 0.8rem;
   color: #9d9d9d;
