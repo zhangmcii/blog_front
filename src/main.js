@@ -4,15 +4,20 @@ import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
 import dayjs from './config/dayjsCfg'
-// 引入css样式
-import 'element-plus/dist/index.css'
+
 import 'element-plus/theme-chalk/dark/css-vars.css'
 // element plus配置为中文
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { ElMessage } from 'element-plus'
 
-import '@wangeditor/editor/dist/css/style.css' // 引入 css
+
+import '@wangeditor/editor/dist/css/style.css'
+
+// 引入css样式
+import 'element-plus/dist/index.css'
+// 引入vant组件样式
+import 'vant/lib/index.css';
 
 // 全局loading
 import { loadingFadeOut } from 'virtual:app-loading'

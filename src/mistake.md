@@ -164,3 +164,20 @@ brotli： Brotli 通过变种的 LZ77 算法、Huffman 编码以及二阶文本�
 
 参考：https://juejin.cn/post/6844903887871148046
 
+
+
+# 开发模式下 页面打开时出现重新加载并强制刷新页面的情况
+现象:
+~~~
+1.new dependencies optimized: element-plus/es/components/loading/style/css, element-plus/es/components/table/style/css, element-plus/es/components/table-column/style/css
+
+2.new dependencies optimized: vant/es/share-sheet/style/index, vant/es/list/style/index
+17:37:30 [vite] ✨ optimized dependencies changed. reloading
+
+原因:未能有效完成vite预构建
+解决：
+    1.在main.js中引入vant样式
+    ～～～
+    import 'vant/lib/index.css';
+    2.element-plus的自动引入不稳定。改为手动全局引入。
+
