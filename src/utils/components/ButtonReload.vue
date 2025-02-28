@@ -11,7 +11,7 @@ export default {
       default: false
     }
   },
-  emit: ['update:stop'],
+  emits: ['update:stop'],
   data() {
     return {}
   },
