@@ -13,7 +13,7 @@ export default {
       input3: '',
       filter: false,
       // 帮我写个函数
-      
+
       table: {
         tableData: [],
         multipleSelection: [],
@@ -24,12 +24,12 @@ export default {
       loading: {
         search: false,
         table: false,
-        isRotating:false
+        isRotating: false
       },
       currentRow: {
         index: 0,
         row: {}
-      },
+      }
     }
   },
   mounted() {
@@ -63,11 +63,11 @@ export default {
       logApi.getLogs(page).then((res) => {
         if (res.data.msg == 'success') {
           this.loading.table = false
-          if(this.loading.isRotating){
+          if (this.loading.isRotating) {
             // 保证loading动画至少转0.5s
             setTimeout(() => {
-            this.loading.isRotating = false
-            }, 500);
+              this.loading.isRotating = false
+            }, 500)
           }
           this.table.log_count = res.data.total
           this.table.tableData = res.data.data
@@ -86,7 +86,7 @@ export default {
             this.$message.success('删除成功')
             // 移除表格的第index行
             this.table.tableData.splice(this.currentRow.index, 1)
-            this.table.log_count --
+            this.table.log_count--
           } else {
             this.$message.error(res.data.msg)
           }
@@ -95,13 +95,13 @@ export default {
       }
     },
     batchDelete(action) {
-      const ids = []
-      this.table.multipleSelection.forEach((item) => {
-        ids.push(item.id)
-      })
       if (action !== 'confirm') {
         return Promise.resolve(true)
       } else {
+        const ids = []
+        this.table.multipleSelection.forEach((item) => {
+          ids.push(item.id)
+        })
         return logApi.deleteLog({ ids: ids }).then((res) => {
           if (res.data.msg == 'success') {
             this.$message.success('删除成功')
@@ -148,10 +148,10 @@ export default {
     clearSelected() {
       this.$refs.table.clearSelection()
     },
-    tableHeadStyleName({ row, column, rowIndex, columnIndex }){
+    tableHeadStyleName({ row, column, rowIndex, columnIndex }) {
       return 'table-header'
     },
-    reload(){
+    reload() {
       this.loading.isRotating = true
       this.getLogs(this.table.currentPage)
     }
@@ -198,8 +198,7 @@ export default {
     :loading="loading.search"
     :throttle="{ leading: 500, trailing: 500 }"
   >
-
-  <ButtonReload v-model:stop="loading.isRotating" @click="reload" class="button-reload"/>
+    <ButtonReload v-model:stop="loading.isRotating" @click="reload" class="button-reload" />
     <el-table
       ref="table"
       :data="table.tableData"

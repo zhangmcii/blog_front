@@ -1,56 +1,69 @@
 import { fileURLToPath, URL } from 'node:url'
+// import { include, exclude } from "./build/optimize";
+import { loadEnv } from "vite";
+import { getPluginsList } from './build/plugins'
+import { root, wrapperEnv } from './build/utils'
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-
-import Icons from 'unplugin-icons/vite'
-import IconsResolver from 'unplugin-icons/resolver'
-import AppLoading from 'vite-plugin-app-loading'
-
-import { VantResolver } from '@vant/auto-import-resolver';
-export default defineConfig({
-  plugins: [
-    vue(),
-    AutoImport({
-      imports: ['vue'],
-      resolvers: [
-        ElementPlusResolver(),
-        // 自动导入图标组件
-        IconsResolver(),
-        VantResolver(),
-      ]
-    }),
-    Components({
-      resolvers: [
-        ElementPlusResolver(),
-        // Auto register icon components
-        // 自动注册图标组件
-        IconsResolver({
-          enabledCollections: ['ep']
-        }),
-        VantResolver(),
-      ]
-    }),
-    Icons({
-      autoInstall: true
-    }),
-    AppLoading('loading.html')
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+export default ({ mode }) => {
+  const { VITE_COMPRESSION } = wrapperEnv(
+    loadEnv(mode, root)
+  )
+  
+  return {
+    plugins: getPluginsList(VITE_COMPRESSION),
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    },
+    server: {
+      host: '0.0.0.0',
+      port: 5456
+    },
+    define: {
+      // enable hydration mismatch details in production build
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true'
+    },
+    // optimizeDeps: {
+    //     include,
+    //     exclude
+    // },
+    build: {
+      rollupOptions: {
+        // 静态资源分类打包
+        output: {
+          chunkFileNames: 'static/js/[name]-[hash].js',
+          entryFileNames: 'static/js/[name]-[hash].js',
+          assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
+        }
+      }
     }
-  },
-  server: {
-    host: '0.0.0.0',
-    port: 5456
-  },
-  define: {
-    // enable hydration mismatch details in production build
-    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true'
   }
-})
+}
+
+// export default defineConfig({
+//   plugins: getPluginsList(compress),
+//   resolve: {
+//     alias: {
+//       '@': fileURLToPath(new URL('./src', import.meta.url))
+//     }
+//   },
+//   server: {
+//     host: '0.0.0.0',
+//     port: 5456
+//   },
+//   define: {
+//     // enable hydration mismatch details in production build
+//     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true'
+//   },
+//   build: {
+//     rollupOptions: {
+//       // 静态资源分类打包
+//       output: {
+//         chunkFileNames: 'static/js/[name]-[hash].js',
+//         entryFileNames: 'static/js/[name]-[hash].js',
+//         assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
+//       }
+//     }
+//   }
+// })
