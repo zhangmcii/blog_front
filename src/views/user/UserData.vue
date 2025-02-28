@@ -13,6 +13,8 @@ import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import emitter from '@/utils/emitter.js'
 import upload from '@/config/postImageToken.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
+import { showConfirmDialog } from 'vant';
+
 export default {
   components: {
     PostCard,

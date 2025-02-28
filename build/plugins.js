@@ -1,11 +1,9 @@
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import AppLoading from 'vite-plugin-app-loading'
-import { VantResolver } from '@vant/auto-import-resolver'
 import { configCompressPlugin } from './compress'
 
 export function getPluginsList(VITE_COMPRESSION) {
@@ -13,16 +11,14 @@ export function getPluginsList(VITE_COMPRESSION) {
     vue(),
     AutoImport({
       imports: ['vue'],
-      resolvers: [ElementPlusResolver(), IconsResolver(), VantResolver()]
+      resolvers: []
     }),
     Components({
       resolvers: [
-        ElementPlusResolver(),
         // 自动注册图标组件
         IconsResolver({
           enabledCollections: ['ep']
-        }),
-        VantResolver()
+        })
       ]
     }),
     Icons({

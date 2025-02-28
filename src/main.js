@@ -6,9 +6,7 @@ import { createPinia } from 'pinia'
 import dayjs from './config/dayjsCfg'
 
 import 'element-plus/theme-chalk/dark/css-vars.css'
-// element plus配置为中文
-import ElementPlus from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
+
 import { ElMessage } from 'element-plus'
 
 import '@wangeditor/editor/dist/css/style.css'
@@ -20,15 +18,19 @@ loadingFadeOut()
 import vue3PhotoPreview from 'vue3-photo-preview';
 import 'vue3-photo-preview/dist/index.css';
 
+import { useElementPlus } from "@/plugins/elementPlus";
+import "element-plus/dist/index.css";
+
+import { useVant } from "@/plugins/vant";
+import 'vant/lib/index.css'
+
 const app = createApp(App)
 const pinia = createPinia()
 
 app.config.globalProperties.$dayjs = dayjs
 app.config.globalProperties.$message = ElMessage
-
-app.use(ElementPlus, {
-  locale: zhCn
-})
+app.use(useElementPlus)
+app.use(useVant)
 app.use(router)
 app.use(pinia)
 app.use(vue3PhotoPreview);

@@ -3,6 +3,8 @@ import ButtonClick from '@/utils/components/ButtonClick.vue'
 import common from '@/utils/common.js'
 import logApi from '@/api/log/logApi.js'
 import ButtonReload from '@/utils/components/ButtonReload.vue'
+import { showConfirmDialog } from 'vant'
+
 export default {
   components: {
     ButtonClick,
@@ -162,13 +164,14 @@ export default {
 <template>
   <el-row ref="h1" :gutter="10">
     <el-col :xs="20" :sm="16" :md="16" :lg="16" :xl="16">
-      <el-input
-        v-model="input3"
-        size="small"
-        :disabled="true"
-        :focus="() => (this.filter = true)"
-        :class="{ input: filter, shrink: !filter }"
-      />
+      <div @click="filter = true">
+        <el-input
+          v-model="input3"
+          size="small"
+          :disabled="true"
+          :class="{ input: filter, shrink: !filter }"
+        />
+      </div>
     </el-col>
     <el-col :xs="4" :sm="8" :md="8" :lg="8" :xl="8">
       <ButtonClick

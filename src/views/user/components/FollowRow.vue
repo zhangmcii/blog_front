@@ -37,6 +37,8 @@
 
 <script>
 import userApi from '@/api/user/userApi.js'
+import { showConfirmDialog } from 'vant';
+
 export default {
   props: {
     follows: {
