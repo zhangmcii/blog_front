@@ -64,7 +64,10 @@ export default {
         if (res.data.msg == 'success') {
           this.loading.table = false
           if(this.loading.isRotating){
+            // 保证loading动画至少转0.5s
+            setTimeout(() => {
             this.loading.isRotating = false
+            }, 500);
           }
           this.table.log_count = res.data.total
           this.table.tableData = res.data.data
@@ -196,7 +199,7 @@ export default {
     :throttle="{ leading: 500, trailing: 500 }"
   >
 
-  <ButtonReload v-model:stop="isRotating" @click="reload" class="button-reload"/>
+  <ButtonReload v-model:stop="loading.isRotating" @click="reload" class="button-reload"/>
     <el-table
       ref="table"
       :data="table.tableData"
