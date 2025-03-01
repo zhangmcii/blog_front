@@ -230,7 +230,7 @@ p {
   border-radius: 7px;
 }
 .register-container {
-  width: 100%;
+  width: 95%;
   display: flex;
   justify-content: center;
   margin-top: 3vh;
