@@ -108,12 +108,10 @@ export default {
   float: right;
 }
 
-.v-enter-active,
-.v-leave-active {
+.v-enter-active{
   transition: opacity 0.3s ease;
 }
-.v-enter-from,
-.v-leave-to {
+.v-enter-from {
   opacity: 0;
 }
 </style>

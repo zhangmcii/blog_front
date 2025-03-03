@@ -1,19 +1,15 @@
 <script>
-import { defineAsyncComponent, hydrateOnVisible } from 'vue'
 import PostCard from './PostCard.vue'
 import postApi from '@/api/posts/postApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { GradientText } from 'vue-amazing-ui'
 import 'vue-amazing-ui/es/gradienttext/GradientText.css'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
-
+import PostPublish from './PostPublish.vue'
 export default {
   components: {
     PostCard,
-    PostPublish: defineAsyncComponent({
-      loader: () => import('./PostPublish.vue'),
-      hydrate: hydrateOnVisible()
-    }),
+    PostPublish,
     GradientText,
     SkeletonUtil
   },
@@ -83,7 +79,6 @@ export default {
     @posts-result="getPostsResult"
     v-if="currentUser.token != ''"
   />
-  <Transition name="fade" mode="out-in">
     <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
       <el-tab-pane label="广场" name="all">
         <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
@@ -122,7 +117,6 @@ export default {
         </SkeletonUtil>
       </el-tab-pane>
     </el-tabs>
-  </Transition>
   <el-pagination
     v-model:current-page="currentPage"
     :page-size="10"
@@ -149,16 +143,6 @@ export default {
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .skeleton-container {
