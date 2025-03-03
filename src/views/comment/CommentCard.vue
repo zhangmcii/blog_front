@@ -2,6 +2,7 @@
 import { defineAsyncComponent } from 'vue'
 import commentApi from '@/api/comment/commentApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
+import { copyTextToClipboard } from '@pureadmin/utils'
 export default {
   props: {
     postId: {
@@ -21,15 +22,18 @@ export default {
         body: ''
       },
       comments: [],
-      total:0,
+      total: 0,
       currentPage: 1,
       pageSize: 10,
       allLoaded: false,
 
       drawer: false,
       currentComment: '',
-      actions: [{ name: '回复', callback: this.jumpReplyPage }, { name: '复制' }],
-      
+      actions: [
+        { name: '回复', callback: this.jumpReplyPage },
+        { name: '复制', callback: this.copy }
+      ],
+
       loading: false,
       finished: false,
       error: false
@@ -91,6 +95,15 @@ export default {
       let comment = JSON.stringify(this.currentComment)
       localStorage.setItem('currentComment', comment)
       this.$router.push('/reply')
+    },
+    copy() {
+      // 复制卡片内容到剪贴板
+      if(!this.currentComment.body) {
+        this.$message.error('内容为空')
+        return
+      }
+      const success = copyTextToClipboard(this.currentComment.body)
+      success ? this.$message.success('复制成功') : this.$message.error('复制失败')
     }
   }
 }

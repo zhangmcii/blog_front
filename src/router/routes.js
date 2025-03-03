@@ -13,6 +13,7 @@ const routes = [
         path: '/posts',
         name: 'posts',
         component: () => import('../views/posts/PostData.vue'),
+        meta: { keepAlive: true }
       },
       {
         path: '/user/:userName',

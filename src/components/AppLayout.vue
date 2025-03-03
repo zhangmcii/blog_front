@@ -12,7 +12,12 @@ import 'vue-amazing-ui/es/scrollbar/Scrollbar.css'
     <el-divider />
     <el-main>
       <Scrollbar ref="scrollbar" class="Scrollbar">
-        <router-view/>
+        <router-view v-slot="{ Component, route }">
+          <keep-alive>
+            <component v-if="route.meta.keepAlive" :is="Component" :key="route.name" />
+          </keep-alive>
+          <component v-if="!route.meta.keepAlive" :is="Component" :key="route.name" />
+        </router-view>
       </Scrollbar>
     </el-main>
   </el-container>

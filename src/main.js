@@ -23,13 +23,11 @@ import 'element-plus/dist/index.css'
 
 import { useVant } from '@/plugins/vant'
 import 'vant/lib/index.css'
-import {copy} from '@/directives/copy.js'
 const app = createApp(App)
 const pinia = createPinia()
 
 app.config.globalProperties.$dayjs = dayjs
 app.config.globalProperties.$message = ElMessage
-app.directive('copy', copy)
 app.use(useElementPlus)
 app.use(useVant)
 app.use(router)

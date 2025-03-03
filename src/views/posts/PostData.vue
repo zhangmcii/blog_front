@@ -60,6 +60,8 @@ export default {
     },
     getPostsResult(res) {
       this.posts = res.data.data
+      // 首页设置了缓存，手动更新为第一页
+      this.currentPage = 1
       this.posts_count = res.data.total
       this.loading.publishPost = false
     },
