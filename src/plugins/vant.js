@@ -1,5 +1,5 @@
 import {
-  Button,
+  // Button,
   Tab,
   Tabs,
   Icon,
@@ -11,14 +11,14 @@ import {
   CellGroup,
   Divider,
   ActionSheet ,
-  Empty ,
+  // Empty ,
   Area ,
   Search ,
   Popover ,
 } from 'vant'
 
 const components = [
-    Button,
+  // Button,
   Tab,
   Tabs,
   Icon,
@@ -30,7 +30,7 @@ const components = [
   CellGroup,
   Divider,
   ActionSheet ,
-  Empty ,
+  // Empty ,
   Area ,
   Search ,
   Popover 

@@ -12,7 +12,7 @@ const routes = [
       {
         path: '/posts',
         name: 'posts',
-        component: () => import('../views/posts/PostData.vue')
+        component: () => import('../views/posts/PostData.vue'),
       },
       {
         path: '/user/:userName',
@@ -47,12 +47,18 @@ const routes = [
       {
         path: '/commentManagement',
         name: 'commentManagement',
-        component: () => import('../views/comment/commentManagement.vue')
+        component: () => import('../views/comment/commentManagement.vue'),
+        meta: {
+          roles: ["3"]
+        }
       },
       {
         path: '/operateLog',
         name: 'operateLog',
-        component: () => import('../views/data_manage/OperateLog.vue')
+        component: () => import('../views/data_manage/OperateLog.vue'),
+        meta: {
+          roles: ["3"]
+        }
       },
       {
         path: '/register',
@@ -77,7 +83,10 @@ const routes = [
       {
         path: '/PasswordChangeAdmin',
         name: 'PasswordChangeAdmin',
-        component: () => import('../views/user/PasswordChangeAdmin.vue')
+        component: () => import('../views/user/PasswordChangeAdmin.vue'),
+        meta: {
+          roles: ["3"]
+        }
       },
       {
         path: '/resetPassword',
@@ -90,15 +99,20 @@ const routes = [
         component: () => import('../views/comment/CommentReply.vue')
       },
       {
-        path: '/networkError',
+        path: '/403',
+        name: 'notAuth',
+        component: () => import('../views/error/NotAuth.vue')
+      },
+      {
+        path: '/404',
+        name: 'notFound',
+        component: () => import('../views/error/NotFound404.vue')
+      },
+      {
+        path: '/500',
         name: 'networkError',
         component: () => import('../views/error/NetError.vue')
       },
-      {
-        path: '/notFound',
-        name: 'notFound',
-        component: () => import('../views/error/NotFound404.vue')
-      }
     ]
   },
 
