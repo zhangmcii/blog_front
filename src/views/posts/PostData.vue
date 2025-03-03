@@ -25,8 +25,6 @@ export default {
       currentPage: 1,
       loading: {
         publishPost: false,
-        fetchPost: false,
-        fetchPostDisabled: false,
         card: false
       }
     }
@@ -52,7 +50,6 @@ export default {
     getPosts(page, tabName) {
       this.loading.card = true
       postApi.getPosts(page, tabName).then((res) => {
-        this.loading.fetchPost = false
         this.loading.card = false
         this.posts = res.data.data
         this.posts_count = res.data.total
@@ -64,88 +61,77 @@ export default {
       this.currentPage = 1
       this.posts_count = res.data.total
       this.loading.publishPost = false
-    },
-    onRefresh() {
-      this.loading.fetchPost = true
-      this.getPosts(this.currentPage, this.activeName)
     }
   }
 }
 </script>
 
 <template>
-  <van-pull-refresh
-    v-model="loading.fetchPost"
-    success-text="刷新成功"
-    @refresh="onRefresh"
-    :disabled="loading.fetchPostDisabled"
+  <GradientText
+    class="gradient-text"
+    :size="28"
+    :weight="500"
+    :gradient="{
+      deg: '90deg',
+      from: '#09c8ce',
+      to: '#eb2f96'
+    }"
+    >你好 {{ currentUser.username }}</GradientText
   >
-    <GradientText
-      class="gradient-text"
-      :size="28"
-      :weight="500"
-      :gradient="{
-        deg: '90deg',
-        from: '#09c8ce',
-        to: '#eb2f96'
-      }"
-      >你好 {{ currentUser.username }}</GradientText
-    >
-    <PostPublish
-      @loading-begin="(flag) => (loading.publishPost = flag)"
-      @posts-result="getPostsResult"
-      v-if="currentUser.token != ''"
-    />
-    <Transition name="fade" mode="out-in">
-      <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
-        <el-tab-pane label="广场" name="all">
-          <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
-          <SkeletonUtil
-            :loading="loading.card"
-            :row="5"
-            :throttle="{}"
-            :cardStyle="{ marginBottom: '10px' }"
-          >
-            <PostCard
-              v-for="item in posts"
-              :key="item.id"
-              :post="item"
-              :showEdit="false"
-              :showShare="false"
-              @click="$router.push(`/share/${item.id}`)"
-            />
-          </SkeletonUtil>
-        </el-tab-pane>
-        <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
-          <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
-          <SkeletonUtil
-            :loading="loading.card"
-            :row="5"
-            :throttle="{}"
-            :cardStyle="{ marginBottom: '10px' }"
-          >
-            <PostCard
-              v-for="item in posts"
-              :key="item.id"
-              :post="item"
-              :showEdit="false"
-              :showShare="false"
-              @click="$router.push(`/share/${item.id}`)"
-            />
-          </SkeletonUtil>
-        </el-tab-pane>
-      </el-tabs>
-    </Transition>
-    <el-pagination
-      v-model:current-page="currentPage"
-      :page-size="10"
-      layout="total, prev, pager, next"
-      :total="posts_count"
-      @current-change="handleCurrentChange"
-      :hide-on-single-page="true"
-      :pager-count="5"
-    />
-  </van-pull-refresh>
+  <PostPublish
+    @loading-begin="(flag) => (loading.publishPost = flag)"
+    @posts-result="getPostsResult"
+    v-if="currentUser.token != ''"
+  />
+  <Transition name="fade" mode="out-in">
+    <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
+      <el-tab-pane label="广场" name="all">
+        <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
+        <SkeletonUtil
+          :loading="loading.card"
+          :row="5"
+          :throttle="{}"
+          :cardStyle="{ marginBottom: '10px' }"
+        >
+          <PostCard
+            v-for="item in posts"
+            :key="item.id"
+            :post="item"
+            :showEdit="false"
+            :showShare="false"
+            @click="$router.push(`/share/${item.id}`)"
+          />
+        </SkeletonUtil>
+      </el-tab-pane>
+      <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
+        <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
+        <SkeletonUtil
+          :loading="loading.card"
+          :row="5"
+          :throttle="{}"
+          :cardStyle="{ marginBottom: '10px' }"
+        >
+          <PostCard
+            v-for="item in posts"
+            :key="item.id"
+            :post="item"
+            :showEdit="false"
+            :showShare="false"
+            @click="$router.push(`/share/${item.id}`)"
+          />
+        </SkeletonUtil>
+      </el-tab-pane>
+    </el-tabs>
+  </Transition>
+  <el-pagination
+    v-model:current-page="currentPage"
+    :page-size="10"
+    layout="total, prev, pager, next"
+    :total="posts_count"
+    @current-change="handleCurrentChange"
+    :hide-on-single-page="true"
+    :pager-count="5"
+  />
 </template>
 <style scoped>
 .gradient-text {
@@ -167,7 +153,7 @@ export default {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease;
 }
 
 .fade-enter-from,

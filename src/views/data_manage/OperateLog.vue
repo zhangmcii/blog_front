@@ -1,6 +1,6 @@
 <script>
 import ButtonClick from '@/utils/components/ButtonClick.vue'
-import common from '@/utils/common.js'
+import date from '@/utils/date.js'
 import logApi from '@/api/log/logApi.js'
 import ButtonReload from '@/utils/components/ButtonReload.vue'
 import { showConfirmDialog } from 'vant'
@@ -77,7 +77,7 @@ export default {
           this.table.log_count = res.data.total
           this.table.tableData = res.data.data
           this.table.tableData.map((item) => {
-            item.operateTime = common.toDateStr(item.operateTime)
+            item.operateTime = date.toDateStr(item.operateTime)
           })
         }
       })

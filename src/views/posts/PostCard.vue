@@ -1,6 +1,6 @@
 <script>
 import { useCurrentUserStore } from '@/stores/currentUser'
-import common from '@/utils/common.js'
+import date from '@/utils/date.js'
 import imageCfg from '@/config/image.js'
 import praise from '@/api/praise/praiseApi.js'
 export default {
@@ -82,7 +82,7 @@ export default {
   },
   computed: {
     from_now() {
-      if (common.isYesterday(this.post.timestamp)) {
+      if (date.isYesterday(this.post.timestamp)) {
         let time = this.$dayjs(this.post.timestamp).format('HH:mm')
         return `昨天 ${time}`
       }

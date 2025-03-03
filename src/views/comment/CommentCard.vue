@@ -2,7 +2,7 @@
 import { defineAsyncComponent } from 'vue'
 import commentApi from '@/api/comment/commentApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
-import { copyTextToClipboard } from '@pureadmin/utils'
+import { copy } from '@/utils/common.js'
 export default {
   props: {
     postId: {
@@ -102,8 +102,8 @@ export default {
         this.$message.error('内容为空')
         return
       }
-      const success = copyTextToClipboard(this.currentComment.body)
-      success ? this.$message.success('复制成功') : this.$message.error('复制失败')
+      copy(this.currentComment.body)
+   
     }
   }
 }

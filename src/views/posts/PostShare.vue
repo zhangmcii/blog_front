@@ -3,6 +3,7 @@ import postApi from '@/api/posts/postApi.js'
 import PostCard from './PostCard.vue'
 import CommentCard from '../comment/CommentCard.vue'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import { copy } from '@/utils/common.js'
 export default {
   components: {
     PostCard,
@@ -12,14 +13,14 @@ export default {
   data() {
     return {
       post: {},
-      postId:-1,
-      showShare:false,
+      postId: -1,
+      showShare: false,
       shareOptions: [
         { name: '微信', icon: 'wechat' },
         { name: '朋友圈', icon: 'wechat-moments' },
         { name: '微博', icon: 'weibo' },
         { name: 'QQ', icon: 'qq' },
-        { name: '复制链接', icon: 'link' },
+        { name: '复制链接', icon: 'link' }
       ]
     }
   },
@@ -38,24 +39,32 @@ export default {
       })
     },
     shareSelect(option) {
-      this.$message.info(option.name)
+      if (option.name === '复制链接') {
+        copy(`117.72.109.0:1717/share/${this.postId}`)
+      } else {
+        this.$message.info(option.name)
+      }
       this.showShare = false
-    },
+    }
   }
 }
 </script>
 
 <template>
   <PageHeadBack>
-  <PostCard :post="post" @share="(flag) => (showShare = flag)" :loading="Object.keys(post).length === 0"/>
-  <CommentCard :post-id="postId" />
-  <van-share-sheet
+    <PostCard
+      :post="post"
+      @share="(flag) => (showShare = flag)"
+      :loading="Object.keys(post).length === 0"
+    />
+    <CommentCard :post-id="postId" />
+    <van-share-sheet
       v-model:show="showShare"
       title="立即分享给好友"
       :options="shareOptions"
       @select="shareSelect"
     />
-</PageHeadBack>
+  </PageHeadBack>
 </template>
 <style scoped>
 .el-button {

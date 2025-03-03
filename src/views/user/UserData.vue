@@ -2,7 +2,7 @@
 import userApi from '@/api/user/userApi.js'
 import authApi from '@/api/auth/authApi.js'
 import image from '@/api/user/image.js'
-import common from '@/utils/common.js'
+import date from '@/utils/date.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { useOtherUserStore } from '@/stores/otherUser'
 import PostCard from '../posts/PostCard.vue'
@@ -75,7 +75,7 @@ export default {
     from_now() {
       // 防止上线时间与当前时间过于接近而显示"几秒后"
       const time = dayjs(this.user.last_seen).subtract(5, 'second').format('YYYY-MM-DD HH:mm:ss')
-      if (common.isYesterday(time)) {
+      if (date.isYesterday(time)) {
         return `昨天 ${dayjs(time).format('HH:mm')}`
       }
       return dayjs(time).fromNow()
