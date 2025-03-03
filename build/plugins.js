@@ -5,6 +5,7 @@ import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import AppLoading from 'vite-plugin-app-loading'
 import { configCompressPlugin } from './compress'
+import svgLoader from 'vite-svg-loader'
 
 export function getPluginsList(VITE_COMPRESSION) {
   return [
@@ -25,6 +26,7 @@ export function getPluginsList(VITE_COMPRESSION) {
       autoInstall: true
     }),
     AppLoading('loading.html'),
-    configCompressPlugin(VITE_COMPRESSION)
+    configCompressPlugin(VITE_COMPRESSION),
+    svgLoader()
   ]
 }

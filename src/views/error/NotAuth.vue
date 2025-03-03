@@ -1,15 +1,15 @@
 <script>
-import noExist from "@/asset/status/404.svg?component";
+import noAccess from "@/asset/status/403.svg?component";
 export default {
   components: {
-    noExist
+    noAccess
   }
 }
 </script>
 <template>
   <div class="container">
-    <p>您访问的页面不存在</p>
-    <noExist />
+    <p>抱歉，您无权访问该页面</p>
+    <noAccess />
     <el-button round type="primary"  @click="$router.push('/posts')"
       >返回首页</el-button
     >

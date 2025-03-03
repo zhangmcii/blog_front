@@ -88,15 +88,11 @@ function setInterceptors(...instance) {
           //   message:'服务器出现错误',
           //   type:'error'
           // })
-          router.push('/networkError')
+          router.push('/500')
           return Promise.reject(error)
         }
         if (error.response.status === 404) {
-          // ElMessage({
-          //   message:'接口不存在',
-          //   type:'error'
-          // })
-          router.push('/notFound')
+          router.push('/404')
           return Promise.reject(error)
         }
         if (error.response.status === 400) {
@@ -108,9 +104,18 @@ function setInterceptors(...instance) {
         }
         if (error.response.status === 401) {
           ElMessage({
-            message:'您的操作未授权',
+             message:'您的身份未认证',
             type:'error'
           })
+          return Promise.reject(error)
+        }
+        
+        if (error.response.status === 403) {
+          // ElMessage({
+          //   message:'您无权访问该页面',
+          //   type:'error'
+          // })
+          router.push('/403')
           return Promise.reject(error)
         } else {
           const data = error.response.data
