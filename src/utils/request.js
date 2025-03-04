@@ -1,5 +1,13 @@
 import { ElMessage } from 'element-plus'
 import router from '../router/index.js'
+import axios from 'axios'
+import requestUrl from '@/config/requestUrl.js'
+
+const $http = axios.create({
+  baseURL: requestUrl.baseUrl + ':' + requestUrl.backendPort,
+  timeout: 10000
+})
+
 /**
  * 设置网路请求监听
  */
@@ -13,9 +21,6 @@ function setInterceptors(...instance) {
         if (token) {
           config.headers['Authorization'] = token
         }
-        // 在发送请求之前, 添加请求头
-        // config.headers = addHeaders(config.headers);
-
         if (import.meta.env.DEV) {
           console.log('==>请求开始')
           console.log(`${config.baseURL}${config.url}`)
@@ -44,7 +49,6 @@ function setInterceptors(...instance) {
     i.interceptors.response.use(
       function (response) {
         // 2xx 范围内的状态码都会触发该函数。
-        // 对响应数据做点什么
         if (import.meta.env.DEV) {
           console.log(response)
           console.log('==>请求结束')
@@ -70,7 +74,6 @@ function setInterceptors(...instance) {
       },
       function (error) {
         // 超出 2xx 范围的状态码都会触发该函数。
-        // 对响应错误做点什么
         if (import.meta.env.DEV) {
           console.log(error)
           console.log('==>请求结束')
@@ -78,8 +81,8 @@ function setInterceptors(...instance) {
 
         if (error.response === undefined) {
           ElMessage({
-            message:'服务器响应超时',
-            type:'error'
+            message: '服务器响应超时',
+            type: 'error'
           })
           return Promise.reject(error)
         }
@@ -97,42 +100,38 @@ function setInterceptors(...instance) {
         }
         if (error.response.status === 400) {
           ElMessage({
-            message:'接口报错',
-            type:'error'
+            message: '接口报错',
+            type: 'error'
           })
           return Promise.reject(error)
         }
         if (error.response.status === 401) {
           ElMessage({
-             message:'您的身份未认证',
-            type:'error'
+            message: '您的身份未认证',
+            type: 'error'
           })
           return Promise.reject(error)
         }
-        
+
         if (error.response.status === 403) {
-          // ElMessage({
-          //   message:'您无权访问该页面',
-          //   type:'error'
-          // })
           router.push('/403')
           return Promise.reject(error)
         } else {
           const data = error.response.data
           if (data === null || data === undefined) {
             ElMessage({
-              message:'请求失败，请稍后重试！',
-              type:'error'
+              message: '请求失败，请稍后重试！',
+              type: 'error'
             })
             return Promise.reject(error)
           } else {
             const resCode = data.code
             if (resCode && typeof resCode == 'number' && resCode !== 200) {
               ElMessage({
-                message:'请求失败，请稍后重试！',
-                type:'error'
+                message: '请求失败，请稍后重试！',
+                type: 'error'
               })
-            } 
+            }
             return Promise.reject(error)
           }
         }
@@ -141,4 +140,7 @@ function setInterceptors(...instance) {
   })
 }
 
-export { setInterceptors }
+//添加拦截器
+setInterceptors($http)
+
+export { $http }

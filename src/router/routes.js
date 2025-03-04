@@ -5,11 +5,6 @@ const routes = [
     component: () => import('../components/AppLayout.vue'),
     children: [
       {
-        path: '/history',
-        name: 'history',
-        component: () => import('../views/data_manage/HistoryData.vue')
-      },
-      {
         path: '/posts',
         name: 'posts',
         component: () => import('../views/posts/PostData.vue'),

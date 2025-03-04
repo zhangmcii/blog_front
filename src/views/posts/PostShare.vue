@@ -4,6 +4,7 @@ import PostCard from './PostCard.vue'
 import CommentCard from '../comment/CommentCard.vue'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import { copy } from '@/utils/common.js'
+import requestUrl from '@/config/requestUrl.js'
 export default {
   components: {
     PostCard,
@@ -40,7 +41,7 @@ export default {
     },
     shareSelect(option) {
       if (option.name === '复制链接') {
-        copy(`117.72.109.0:1717/share/${this.postId}`)
+        copy(`${requestUrl.baseUrl}:${requestUrl.frontPort}/share/${this.postId}`)
       } else {
         this.$message.info(option.name)
       }

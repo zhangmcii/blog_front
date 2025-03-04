@@ -97,7 +97,6 @@ export default {
   <PageHeadBack>
     <h1>编辑</h1>
     <h4>你在想什么？</h4>
-    <Transition mode="out-in">
       <RichText
         ref="rickText"
         v-if="activeRichEditor"
@@ -112,7 +111,6 @@ export default {
         type="textarea"
         placeholder="发你所想"
       />
-    </Transition>
     <ButtonClick content="修改" :loading="loading" :disabled="!isChange" @do-search="modify" />
   </PageHeadBack>
 </template>
