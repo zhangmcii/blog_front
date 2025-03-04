@@ -1,4 +1,4 @@
-import { $http } from '@/api/index'
+import { $http } from '@/utils/request.js'
 export default {
   submitPraise(postId) {
     return $http.post(`/praise/${postId}`)

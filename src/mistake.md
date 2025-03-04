@@ -181,3 +181,44 @@ brotli： Brotli 通过变种的 LZ77 算法、Huffman 编码以及二阶文本�
     import 'vant/lib/index.css';
     2.element-plus的自动引入不稳定。改为手动全局引入。
 
+
+主机免密传送文件到云服务器
+1、原理：
+将公钥拷贝到需要免登录的设备，私钥是自己的
+通过用户名和主机名来核对公钥
+
+A(公钥，私钥) --> B（A的公钥）
+
+2、 生成登录公钥私钥对
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+命令参数含义与之前介绍的相同。执行过程中，系统会提示你选择保存密钥的位置，默认路径是 `~/.ssh/id_rsa`，直接回车即可。如果你不想设置密码短语（即私钥的保护密码），在提示输入时直接回车两次。
+
+### 上传公钥到云服务器
+有两种常见的方法可以将 Mac 电脑生成的公钥上传到云服务器：
+
+#### 手动操作
+1. 在 Mac 的终端中，查看公钥文件内容：
+```bash
+cat ~/.ssh/id_rsa.pub
+```
+2. 全选并复制上述命令输出的公钥内容。
+
+3. 通过 SSH 登录到云服务器。打开一个新的终端窗口，运行：
+```bash
+ssh username@server_ip
+```
+4. 登录到云服务器后，创建或编辑 `~/.ssh/authorized_keys` 文件。如果不存在 `.ssh` 目录，先创建该目录：
+```bash
+mkdir -p ~/.ssh
+nano ~/.ssh/authorized_keys
+```
+5. 在打开的 `nano` 编辑器中，粘贴从 Mac 复制的公钥内容。粘贴完成后，按 `Ctrl + X`，然后按 `Y`，再按 `Enter` 保存并退出编辑器。
+
+### 验证免密传输
+完成上述操作后，在 Mac 电脑上使用 `scp` 命令尝试向云服务器传送文件，例如：
+```bash
+scp /path/to/local_file username@server_ip:/path/to/remote_directory
+```
+

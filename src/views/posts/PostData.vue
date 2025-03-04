@@ -81,7 +81,7 @@ export default {
   />
     <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
       <el-tab-pane label="广场" name="all">
-        <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0" />
+        <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0 && !loading.card"  />
         <SkeletonUtil
           :loading="loading.card"
           :row="5"
@@ -99,7 +99,7 @@ export default {
         </SkeletonUtil>
       </el-tab-pane>
       <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
-        <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0" />
+        <el-empty :image-size="200" v-if="activeName == 'showFollowed' && posts_count == 0 && !loading.card" />
         <SkeletonUtil
           :loading="loading.card"
           :row="5"

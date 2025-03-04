@@ -5,7 +5,7 @@ import { getPluginsList } from './build/plugins'
 import { root, wrapperEnv } from './build/utils'
 
 export default ({ mode }) => {
-  const { VITE_COMPRESSION } = wrapperEnv(
+  const { VITE_COMPRESSION, VITE_PORT } = wrapperEnv(
     loadEnv(mode, root)
   )
   
@@ -18,7 +18,7 @@ export default ({ mode }) => {
     },
     server: {
       host: '0.0.0.0',
-      port: 5456
+      port: VITE_PORT
     },
     define: {
       // enable hydration mismatch details in production build

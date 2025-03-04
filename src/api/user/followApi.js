@@ -1,4 +1,4 @@
-import { $http } from '@/api/index'
+import { $http } from '@/utils/request.js'
 const url_prefix = '/api/v1'
 export default {
   getFan(userName, page) {
