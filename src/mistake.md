@@ -222,3 +222,10 @@ nano ~/.ssh/authorized_keys
 scp /path/to/local_file username@server_ip:/path/to/remote_directory
 ```
 
+
+# mac传后端容器到服务器执行报错了（但windows不报错）
+> unable to start container process: exec: "./boot.sh": permission denied: unknown.
+
+根因： mac直接直接独对boot.sh文件就无权限执行，打包成镜像在服务区上也无权限执行。所以在打镜像前，赋予boot.sh可执行权限
+解决： chmod +x boot.sh
+
