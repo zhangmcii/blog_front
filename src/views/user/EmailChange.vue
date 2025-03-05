@@ -48,12 +48,18 @@ export default {
     applyCode() {
       this.value = Date.now() + 1000 * 60
       this.showButton = !this.showButton
+      const loadingInstance = this.$loading({
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      })
       authApi.applyCode({ email: this.form.email, action: 'change' }).then((res) => {
         if (res.data.msg == 'success') {
           this.$message.success('验证码已发送')
         } else {
           this.$message.error(res.data.detail)
         }
+        loadingInstance.close()
       })
     },
     changeEmail() {
