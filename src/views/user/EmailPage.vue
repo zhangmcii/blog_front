@@ -59,6 +59,9 @@ export default {
           this.$message.error(res.data.detail)
         }
         loadingInstance.close()
+      }).catch(() => {
+        this.$message.error('网络错误，请稍后再试')
+        loadingInstance.close()
       })
     },
     bindEmail() {
