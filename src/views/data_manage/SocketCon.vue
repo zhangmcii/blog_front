@@ -1,5 +1,5 @@
 <script>
-import connectSocket from '@/utils/socket'
+import {connectSocket} from '@/utils/socket'
 import commentApi from '@/api/comment/commentApi.js'
 export default {
   data() {
