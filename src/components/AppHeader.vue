@@ -42,6 +42,8 @@ import daysApi from '@/api/days/daysApi.js'
 import emitter from '@/utils/emitter.js'
 import imageCfg from '@/config/image.js'
 import homeIcon from "@/asset/svg/homeIcon.svg?component";
+import {disconnectSocket} from '@/utils/socket'
+import {connectSocket} from '@/utils/socket'
 export default {
   name: 'BurgerMenu',
   components: {
@@ -99,6 +101,7 @@ export default {
     emitter.on('image', (url) => {
       this.photo.Avatar = url
     })
+    this.connect()
   },
   created() {
     window.addEventListener('resize', this.updateWindowWidth)
@@ -126,6 +129,7 @@ export default {
     },
     log_out() {
       this.toggleMenu();
+      disconnectSocket()
       localStorage.removeItem('token')
       localStorage.removeItem('currentUserName')
       localStorage.removeItem('currentName')
@@ -173,7 +177,12 @@ export default {
       }else if(action.text=='注册'){
         this.$router.push('/register')
       }
-    }
+    },
+    connect() {
+      console.log('连接socket')
+      this.socket = connectSocket()
+      
+    },
 
   }
 }

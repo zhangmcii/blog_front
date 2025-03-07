@@ -2,15 +2,14 @@
 import { io } from 'socket.io-client'
 import requestUrl from '@/config/requestUrl.js'
 
-const connectSocket = () => {
+let socket = null
+
+function connectSocket() {
   const token = localStorage.getItem('token')
-  const socket = io(`${requestUrl.baseUrl}:${requestUrl.backendPort}`, {
-    auth: {  'Authorization': token },
+  socket = io(`${requestUrl.baseUrl}:${requestUrl.backendPort}`, {
+    auth: { Authorization: token },
     query: { token },
     transports: ['websocket'],
-    headers: {
-      Authorization: token
-    }
   })
 
   // 监听连接成功事件
@@ -27,4 +26,12 @@ const connectSocket = () => {
   return socket
 }
 
-export default connectSocket
+function disconnectSocket() {
+  if (socket) {
+    socket.disconnect()
+    socket = null
+    console.log('前端主动断开WebSocket连接')
+  }
+}
+
+export { connectSocket, disconnectSocket }
