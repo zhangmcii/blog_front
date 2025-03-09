@@ -4,11 +4,14 @@ export const useCurrentUserStore = defineStore('currentUser', {
   state: () => ({
     token: '',
     username: '',
-    name:'',
+    name: '',
     isAdmin: false,
     roleId: 0,
     isConfirmed: false,
-    image: ''
+    image: '',
+    Notification_data: [],
+    NOTIFICATION_KEY: 'user_notifications',
+    MAX_ITEM: 50
   }),
   actions: {
     saveToken(token) {
@@ -29,9 +32,9 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     loadUserName() {
       const data = localStorage.getItem('currentUserName')
-      if(!data || data == 'null'){
+      if (!data || data == 'null') {
         this.username = ''
-      }else{
+      } else {
         this.username = data
       }
     },
@@ -41,9 +44,9 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     loadName() {
       const data = localStorage.getItem('currentName')
-      if(!data || data == 'null'){
+      if (!data || data == 'null') {
         this.name = ''
-      }else{
+      } else {
         this.name = data
       }
     },
@@ -74,6 +77,31 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     loadImage() {
       this.image = localStorage.getItem('image')
+    },
+    // 保存通知
+    saveNotifications(notifications) {
+      const trimmed = notifications.slice(0, this.MAX_ITEM)
+      this.Notification_data = trimmed
+      localStorage.setItem(this.NOTIFICATION_KEY, JSON.stringify(trimmed))
+    },
+    // 读取通知
+    loadNotifications() {
+      const data = localStorage.getItem(this.NOTIFICATION_KEY)
+      this.Notification_data = data ? JSON.parse(data) : []
+      try {
+        const data = localStorage.getItem(this.NOTIFICATION_KEY)
+        const d = data ? JSON.parse(data) : []
+        this.Notification_data = d
+        return d
+      } catch (error) {
+        console.error('本地通知数据损坏，已重置', error)
+        // this.clearNotifications();
+        return []
+      }
+    },
+    // 清空通知（可选）
+    clearNotifications() {
+      localStorage.removeItem(this.NOTIFICATION_KEY)
     }
   }
 })

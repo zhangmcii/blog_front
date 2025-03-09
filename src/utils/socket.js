@@ -16,9 +16,9 @@ function connectSocket() {
   socket.on('connect', () => {
     console.log('已连接到WebSocket服务器')
   })
-  socket.on('new_notification', (data) => {
-    console.log('收到实时通知:', data)
-  })
+  // socket.on('new_notification', (data) => {
+  //   console.log('收到实时通知:', data)
+  // })
   socket.on('connect_error', (err) => {
     console.error('WebSocket连接失败:', err.message)
   })

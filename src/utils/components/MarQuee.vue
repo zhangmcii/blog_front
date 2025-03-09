@@ -49,7 +49,7 @@ const resumeAnimation = () => {
 .scroll-container {
   overflow: hidden;
   white-space: nowrap;
-  width: 80%;
+  width: 90%;
   height: 40px;
   position: relative;
   display: grid;

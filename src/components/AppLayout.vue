@@ -30,6 +30,7 @@ body {
 }
 .el-header {
   height: 45px;
+  padding:0px;
 }
 /* 45px header高度
      3vh 是随机添加的

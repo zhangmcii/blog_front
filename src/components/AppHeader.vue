@@ -3,11 +3,14 @@
     <div class="home" @click="goHomePage">
       <homeIcon/>
     </div>
-    <MarQuee :text=daySentence :speed="0.7"/>
-
+    <div class=marQuee>
+        <MarQuee :text=daySentence :speed="0.7"/>
+     </div>
+    <BellCom class="notification"/>
+    <div class="user-image" > 
     <van-popover v-model:show="showPopover" :show-arrow=false placement="bottom-end" :offset="[12,8]"  :actions="actions" @select="onSelect">
       <template #reference>
-      <el-avatar class="user-image" size="default" :src="photo.Avatar" @error="errorImage"   />
+      <el-avatar  :size="32" :src="photo.Avatar" @error="errorImage"   />
       <!-- <span class="dot"> </span> -->
       </template>
       <template #default v-if="login">
@@ -33,6 +36,7 @@
     
     </van-popover>
   </div>
+  </div>
 </template>
 
 <script>
@@ -43,12 +47,14 @@ import emitter from '@/utils/emitter.js'
 import imageCfg from '@/config/image.js'
 import homeIcon from "@/asset/svg/homeIcon.svg?component";
 import {disconnectSocket} from '@/utils/socket'
-import {connectSocket} from '@/utils/socket'
+// import {connectSocket} from '@/utils/socket'
+import BellCom from '@/components/BellCom.vue'
 export default {
   name: 'BurgerMenu',
   components: {
     MarQuee,
-    homeIcon
+    homeIcon,
+    BellCom
   },
   data() {
     return {
@@ -101,7 +107,6 @@ export default {
     emitter.on('image', (url) => {
       this.photo.Avatar = url
     })
-    this.connect()
   },
   created() {
     window.addEventListener('resize', this.updateWindowWidth)
@@ -178,12 +183,6 @@ export default {
         this.$router.push('/register')
       }
     },
-    connect() {
-      console.log('连接socket')
-      this.socket = connectSocket()
-      
-    },
-
   }
 }
 </script>
@@ -193,13 +192,21 @@ export default {
   width: 100%;
   height: 6vh;
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 .home {
-  margin-top: 8px;
-  margin-right:3px;
+  margin: 8px 0px 0px 10px;
+}
+.marQuee {
+  margin: 3px 0px 0px 0px;
+  width:70%;
+}
+.notification {
+  margin: 11px 10px 0px 0px;
 }
 .user-image {
-  margin-top:2px;
+  margin: 8px 10px 0px 0px;
 }
 .van-cell  {
   width: 200px;

@@ -15,6 +15,7 @@ import {
   Area ,
   Search ,
   Popover ,
+  Badge,
 } from 'vant'
 
 const components = [
@@ -33,7 +34,8 @@ const components = [
   // Empty ,
   Area ,
   Search ,
-  Popover 
+  Popover,
+  Badge,
 ]
 
 
