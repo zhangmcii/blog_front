@@ -49,7 +49,11 @@ export default {
 
 <template>
   <PageHeadBack title="评论">
-    <el-text> {{ title }}</el-text>
+    <div class="header">
+      <el-text> {{ title }}</el-text>
+      <el-button text :disabled="!replyData" @click="publish">发布</el-button>
+    </div>
+
     <el-card class="comment">
       {{ currentComment.body }}
     </el-card>
@@ -65,6 +69,12 @@ export default {
   </PageHeadBack>
 </template>
 <style scoped>
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
 .el-text {
   color: #71717a;
 }
