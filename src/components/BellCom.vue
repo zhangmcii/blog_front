@@ -28,26 +28,14 @@ export default {
   computed: {
     showDot() {
       return this.notifications.some((item) => !item.isRead)
-    }
+    },
+    login() {
+      this.currentUser.loadUserName()
+      return this.currentUser.username != ''
+    },
   },
   mounted() {
-    this.connect()
-    this.initLoad()
-    this.socket.on('new_notification', (data) => {
-      const d = data
-      // 更新前端实时状态
-      this.notifications = [d, ...this.notifications]
-      const existData = this.currentUser.loadNotifications()
-      // 新数据与本地数据合并后去重
-      const mergedData = [d, ...existData].filter(
-        (item, index, self) => index === self.findIndex((t) => t.id === item.id)
-      )
-      this.currentUser.saveNotifications(mergedData)
-      if (mergedData.length > this.currentUser.MAX_ITEM) {
-        this.currentUser.saveNotifications(mergedData.slice(0, 50))
-      }
-      console.log('收到实时通知:', data)
-    })
+    this.initSocket()
   },
   methods: {
     async initLoad() {
@@ -83,9 +71,28 @@ export default {
       console.log('标记已读:', item.id)
       notificationApi.mark_read({ ids: [item.id] })
     },
-    connect() {
+    initSocket(){
+      if(!this.login) {
+        return 
+      }
       console.log('连接socket')
       this.socket = connectSocket()
+      this.initLoad()
+      this.socket.on('new_notification', (data) => {
+        const d = data
+        // 更新前端实时状态
+        this.notifications = [d, ...this.notifications]
+        const existData = this.currentUser.loadNotifications()
+        // 新数据与本地数据合并后去重
+        const mergedData = [d, ...existData].filter(
+          (item, index, self) => index === self.findIndex((t) => t.id === item.id)
+        )
+        this.currentUser.saveNotifications(mergedData)
+        if (mergedData.length > this.currentUser.MAX_ITEM) {
+          this.currentUser.saveNotifications(mergedData.slice(0, 50))
+        }
+        console.log('收到实时通知:', data)
+    })
     },
     mergeNotifications(localData, serverUnRead) {
       // 创建映射防止重复
