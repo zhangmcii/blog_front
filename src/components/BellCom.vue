@@ -60,12 +60,12 @@ export default {
         item.isRead = true
         ids.push(item.id)
       })
-      notificationApi.mark_read({ ids: ids })
+      notificationApi.markRead({ ids: ids })
     },
     handleNoticeRead(item) {
       if (!item.isRead) {
         item.isRead = true
-        notificationApi.mark_read({ ids: [item.id] })
+        notificationApi.markRead({ ids: [item.id] })
       }
       this.$router.push(`/share/${item.postId}`)
     },

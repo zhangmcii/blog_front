@@ -5,6 +5,7 @@ import logApi from '@/api/log/logApi.js'
 import ButtonReload from '@/utils/components/ButtonReload.vue'
 import { showConfirmDialog } from 'vant'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import notificationApi from '@/api/notification/notificationApi.js'
 
 export default {
   components: {
@@ -16,8 +17,6 @@ export default {
     return {
       input3: '',
       filter: false,
-      // 帮我写个函数
-
       table: {
         tableData: [],
         multipleSelection: [],
@@ -33,6 +32,11 @@ export default {
       currentRow: {
         index: 0,
         row: {}
+      },
+      activeName: 'log',
+      online: {
+        user: [],
+        total: 0
       }
     }
   },
@@ -153,12 +157,27 @@ export default {
     clearSelected() {
       this.$refs.table.clearSelection()
     },
-    tableHeadStyleName({ row, column, rowIndex, columnIndex }) {
+    tableHeadStyleName() {
       return 'table-header'
     },
     reload() {
       this.loading.isRotating = true
       this.getLogs(this.table.currentPage)
+    },
+    getOnline(){
+      notificationApi.getOnline().then((res) => {
+          if (res.data.msg == 'success') {
+            this.online.user = res.data.data
+            this.online.total = res.data.total
+          }
+        })
+    },
+    changeTab(tabName) {
+      if (tabName === 'log') {
+        this.getLogs(this.table.currentPage)
+      } else if (tabName === 'online') {
+        this.getOnline()
+      }
     }
   }
 }
@@ -205,61 +224,79 @@ export default {
       :loading="loading.search"
       :throttle="{ leading: 500, trailing: 500 }"
     >
-      <ButtonReload v-model:stop="loading.isRotating" @click="reload" class="button-reload" />
-      <el-table
-        ref="table"
-        :data="table.tableData"
-        style="width: 100%"
-        :height="table.tableHeight"
-        :header-cell-class-name="tableHeadStyleName"
-        @selection-change="handleSelectionChange"
-        v-loading="loading.table"
-      >
-        <el-table-column type="selection" width="30" />
-        <el-table-column
-          type="index"
-          label="序号"
-          align="center"
-          fixed
-          :index="indexMethod"
-          width="52px"
-        />
-        <el-table-column prop="username" label="用户名" width="70px" />
-        <el-table-column prop="ip" label="ip" width="120" />
-        <el-table-column prop="operate" label="操作" />
-        <el-table-column prop="operateTime" label="操作时间" width="165px" />
-        <el-table-column label="操作">
-          <template #default="scope">
-            <el-button size="small" type="danger" @click="sDel(scope.$index, scope.row)">
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="check-button">
-        <el-button
-          type="primary"
-          size="small"
-          :disabled="table.multipleSelection.length == 0"
-          @click="bDel"
-          >批量删除</el-button
-        >
-        <el-button
-          type="primary"
-          size="small"
-          :disabled="table.multipleSelection.length == 0"
-          @click="clearSelected"
-          >清除选中</el-button
-        >
-      </div>
-      <el-pagination
-        v-model:current-page="table.currentPage"
-        :page-size="15"
-        layout="total, prev, pager, next"
-        :total="table.log_count"
-        @current-change="handleCurrentChange"
-        :pager-count="5"
-      />
+      <el-tabs v-model="activeName" type="card"  class="demo-tabs" @tab-change="changeTab">
+        <el-tab-pane label="登录日志" name="log">
+          <ButtonReload v-model:stop="loading.isRotating" @click="reload" class="button-reload" />
+          <el-table
+            ref="table"
+            :data="table.tableData"
+            style="width: 100%"
+            :height="table.tableHeight"
+            :header-cell-class-name="tableHeadStyleName"
+            @selection-change="handleSelectionChange"
+            v-loading="loading.table"
+          >
+            <el-table-column type="selection" width="30" />
+            <el-table-column
+              type="index"
+              label="序号"
+              align="center"
+              fixed
+              :index="indexMethod"
+              width="52px"
+            />
+            <el-table-column prop="username" label="用户名" width="70px" />
+            <el-table-column prop="ip" label="ip" width="120" />
+            <el-table-column prop="operate" label="操作" />
+            <el-table-column prop="operateTime" label="操作时间" width="165px" />
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button size="small" type="danger" @click="sDel(scope.$index, scope.row)">
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="check-button">
+            <el-button
+              type="primary"
+              size="small"
+              :disabled="table.multipleSelection.length == 0"
+              @click="bDel"
+              >批量删除</el-button
+            >
+            <el-button
+              type="primary"
+              size="small"
+              :disabled="table.multipleSelection.length == 0"
+              @click="clearSelected"
+              >清除选中</el-button
+            >
+          </div>
+          <el-pagination
+            v-model:current-page="table.currentPage"
+            :page-size="15"
+            layout="total, prev, pager, next"
+            :total="table.log_count"
+            @current-change="handleCurrentChange"
+            :pager-count="5"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="实时统计" name="online">
+          <ButtonReload v-model:stop="loading.isRotating" @click="getOnline" class="button-reload" />
+          <el-table :data="online.user"  >
+            <el-table-column
+              type="index"
+              label="序号"
+              align="center"
+              :index="indexMethod"
+              width="52px"
+            />
+            <el-table-column prop="username" label="用户名"  />
+            <el-table-column prop="nickName" label="昵称"  />
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
     </el-skeleton>
   </PageHeadBack>
 </template>
