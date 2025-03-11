@@ -95,11 +95,6 @@ const routes = [
         component: () => import('../views/comment/CommentReply.vue')
       },
       {
-        path: '/socket',
-        name: 'socket',
-        component: () => import('../views/data_manage/SocketCon.vue')
-      },
-      {
         path: '/403',
         name: 'notAuth',
         component: () => import('../views/error/NotAuth.vue')

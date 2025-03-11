@@ -1,5 +1,5 @@
 <script>
-import { connectSocket } from '@/utils/socket'
+import { connectSocket ,disconnectSocket } from '@/utils/socket'
 import NotificationCom from './NotificationCom.vue'
 import notificationApi from '@/api/notification/notificationApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
@@ -10,15 +10,7 @@ export default {
   data() {
     return {
       socket: null,
-      notifications: [
-        // {
-        //   avatar: 'https://avatar.vercel.sh/1',
-        //   date: '刚刚',
-        //   isRead: false,
-        //   message: '描述信息描述信息描述信息',
-        //   title: '小明 回复了你'
-        // }
-      ]
+      notifications: []
     }
   },
   setup() {
@@ -32,10 +24,16 @@ export default {
     login() {
       this.currentUser.loadUserName()
       return this.currentUser.username != ''
-    },
+    }
   },
   mounted() {
     this.initSocket()
+  },
+  unmounted(){
+    if(this.socket){
+      disconnectSocket()
+      this.socket = null
+    }
   },
   methods: {
     async initLoad() {
@@ -43,14 +41,12 @@ export default {
       const localData = this.currentUser.loadNotifications()
       // 请求服务器数据
       const unRead = await notificationApi.getUnRead().then((res) => res.data.data)
-      console.log('unRead:', unRead)
       // 合并去重
       const allData = [...unRead, ...localData].filter(
         (item, index, self) => index === self.findIndex((t) => t.id === item.id)
       )
       this.notifications = allData
       this.currentUser.saveNotifications(allData)
-      console.log('notifications:', this.notifications)
     },
 
     handleNoticeClear() {
@@ -67,15 +63,16 @@ export default {
       notificationApi.mark_read({ ids: ids })
     },
     handleNoticeRead(item) {
-      item.isRead = true
-      console.log('标记已读:', item.id)
-      notificationApi.mark_read({ ids: [item.id] })
-    },
-    initSocket(){
-      if(!this.login) {
-        return 
+      if (!item.isRead) {
+        item.isRead = true
+        notificationApi.mark_read({ ids: [item.id] })
       }
-      console.log('连接socket')
+      this.$router.push(`/share/${item.postId}`)
+    },
+    initSocket() {
+      if (!this.login) {
+        return
+      }
       this.socket = connectSocket()
       this.initLoad()
       this.socket.on('new_notification', (data) => {
@@ -92,7 +89,7 @@ export default {
           this.currentUser.saveNotifications(mergedData.slice(0, 50))
         }
         console.log('收到实时通知:', data)
-    })
+      })
     },
     mergeNotifications(localData, serverUnRead) {
       // 创建映射防止重复
@@ -115,7 +112,7 @@ export default {
 
 <template>
   <div>
-    <van-popover :show-arrow="false" :offset="[-120, 15]">
+    <van-popover :show-arrow="false" close-on-click-action :offset="[-120, 15]">
       <template #reference>
         <van-badge :dot="showDot" :offset="[-6, 5]">
           <el-button circle class="notification">

@@ -205,9 +205,7 @@ export default {
       image.saveImageUrl({ image: url }).then((res) => {
         if (res.data.msg == 'success') {
           this.user.image = url
-          console.log('111', url)
           this.imgList.push(this.user.image)
-          console.log('222', res.data.image)
           // 换图像成功后，更新本地image字段
           this.currentUser.saveImage(res.data.image)
           emitter.emit('image', url)
