@@ -23,7 +23,10 @@ import 'element-plus/dist/index.css'
 
 import { useVant } from '@/plugins/vant'
 import 'vant/lib/index.css'
+import vSlideIn from '@/directives/vSlideIn.js'
 const app = createApp(App)
+app.directive('slide-in',vSlideIn)
+
 const pinia = createPinia()
 
 app.config.globalProperties.$dayjs = dayjs

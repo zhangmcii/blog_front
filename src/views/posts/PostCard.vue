@@ -144,7 +144,7 @@ export default {
 </script>
 
 <template>
-  <el-card shadow="hover">
+  <el-card shadow="hover" v-slide-in>
     <el-row>
       <el-col :span="4" v-if="showImage">
         <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
