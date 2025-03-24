@@ -247,6 +247,10 @@ export default {
             />
             <el-table-column prop="username" label="用户名" width="70px" />
             <el-table-column prop="ip" label="ip" width="120" />
+            <el-table-column prop="city" label="城市" />
+            <el-table-column prop="os" label="操作系统" />
+            <el-table-column prop="device" label="设备" />
+            <el-table-column prop="browser" label="浏览器类型" />
             <el-table-column prop="operate" label="操作" />
             <el-table-column prop="operateTime" label="操作时间" width="165px" />
             <el-table-column label="操作">
