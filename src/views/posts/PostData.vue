@@ -94,7 +94,9 @@ export default {
           :post="item"
           :showEdit="false"
           :showShare="false"
+          :cardStyle="{ marginBottom: '10px' }"
           @click="$router.push(`/share/${item.id}`)"
+          v-slide-in
         />
       </SkeletonUtil>
     </el-tab-pane>
@@ -115,7 +117,9 @@ export default {
           :post="item"
           :showEdit="false"
           :showShare="false"
+          :cardStyle="{ marginBottom: '10px' }"
           @click="$router.push(`/share/${item.id}`)"
+          v-slide-in
         />
       </SkeletonUtil>
     </el-tab-pane>
@@ -134,9 +138,7 @@ export default {
 .gradient-text {
   margin: 20px 0px 0px 0px;
 }
-.el-card {
-  margin-bottom: 10px;
-}
+
 .el-pagination {
   float: right;
 }
@@ -146,16 +148,5 @@ export default {
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;
-}
-
-.skeleton-container {
-  display: flex;
-  gap: 10px;
-}
-.item {
-  width: v-bind(skeletonItemWidth);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 </style>

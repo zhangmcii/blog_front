@@ -7,7 +7,6 @@ const map = new WeakMap()
 // 异步观察目标元素与其祖先元素或顶级文档视口（viewport）交叉状态的方法
 // 监听根中一段给定比例的可见区域
 const ob = new IntersectionObserver((entries) => {
-    console.log(entries)
     for (const entry of entries){
         // 该元素和视口相交
         if(entry.isIntersecting){

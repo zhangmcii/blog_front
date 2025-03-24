@@ -3,16 +3,21 @@ import commentApi from '@/api/comment/commentApi.js'
 import PostCard from '../posts/PostCard.vue'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 export default {
   components: {
     PostCard,
-    PageHeadBack
+    PageHeadBack,
+    SkeletonUtil
   },
   data() {
     return {
       comments: {},
       currentPage: 1,
-      comments_count: 10
+      comments_count: 10,
+      loading: {
+        comment: false
+      }
     }
   },
   setup() {
@@ -29,9 +34,11 @@ export default {
   },
   methods: {
     getAllComments(page = 1) {
+      this.loading.comment = true
       commentApi.getAllComments(page).then((res) => {
         this.comments = res.data.data
         this.comments_count = res.data.total
+        this.loading.comment = false
       })
     },
     handleCurrentChange() {
@@ -59,20 +66,23 @@ export default {
 
 <template>
   <PageHeadBack>
-    <PostCard
-      v-for="item in comments"
-      :key="item"
-      :post="item"
-      :showEdit="false"
-      :showShare="false"
-      :showComment="false"
-      :showPraise="false"
-    >
-      <el-row v-if="isCommentManage">
-        <el-button @click="enable(item)" v-if="item.disabled">开启</el-button>
-        <el-button type="danger" @click="disabled(item)" v-else>禁用</el-button>
-      </el-row>
-    </PostCard>
+    <SkeletonUtil :loading="loading.comment" :row="7" :count="4">
+      <PostCard
+        v-for="item in comments"
+        :key="item"
+        :post="item"
+        :cardStyle="{ marginBottom: '10px' }"
+        :showEdit="false"
+        :showShare="false"
+        :showComment="false"
+        :showPraise="false"
+      >
+        <el-row v-if="isCommentManage">
+          <el-button @click="enable(item)" v-if="item.disabled">开启</el-button>
+          <el-button type="danger" @click="disabled(item)" v-else>禁用</el-button>
+        </el-row>
+      </PostCard>
+    </SkeletonUtil>
     <el-pagination
       v-model:current-page="currentPage"
       :page-size="10"
@@ -84,4 +94,8 @@ export default {
     />
   </PageHeadBack>
 </template>
-<style scoped></style>
+<style scoped>
+/* .el-card {
+  margin-bottom: 10px;
+} */
+</style>

@@ -330,6 +330,7 @@ export default {
         :post="item"
         :showImage="false"
         @click="$router.push(`/share/${item.id}`)"
+        v-slide-in
       />
 
       <el-pagination

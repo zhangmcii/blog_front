@@ -88,7 +88,9 @@ export default {
         if (mergedData.length > this.currentUser.MAX_ITEM) {
           this.currentUser.saveNotifications(mergedData.slice(0, 50))
         }
-        console.log('收到实时通知:', data)
+        if (import.meta.env.DEV) {
+          console.log('收到实时通知:', data)
+        }
       })
     },
     mergeNotifications(localData, serverUnRead) {

@@ -94,8 +94,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
         this.Notification_data = d
         return d
       } catch (error) {
-        console.error('本地通知数据损坏，已重置', error)
-        // this.clearNotifications();
+        this.clearNotifications();
         return []
       }
     },

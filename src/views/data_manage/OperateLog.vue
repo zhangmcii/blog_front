@@ -62,8 +62,6 @@ export default {
     },
     reCalTableHeight() {
       if (this.filter) {
-        const h2 = this.$refs.h2.$el.offsetHeight
-        console.log(h2)
         this.calTableHeight()
       }
     },

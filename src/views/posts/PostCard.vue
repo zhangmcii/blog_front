@@ -27,11 +27,16 @@ export default {
       type: Boolean,
       default: false
     },
-
     // 卡片的背景颜色
     cardBgColor: {
       type: String,
       default: 'white'
+    },
+    cardStyle: {
+      type: Object,
+      default() {
+        return {}
+      }
     },
     showImage: {
       type: Boolean,
@@ -144,7 +149,7 @@ export default {
 </script>
 
 <template>
-  <el-card shadow="hover" v-slide-in>
+  <el-card shadow="hover" :style="cardStyle">
     <el-row>
       <el-col :span="4" v-if="showImage">
         <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />

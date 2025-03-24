@@ -144,6 +144,7 @@ export default {
           v-for="item in comments"
           :key="item"
           :post="item"
+          :cardStyle="{ marginBottom: '10px' }"
           :showEdit="false"
           :showShare="false"
           :showComment="false"
@@ -154,6 +155,7 @@ export default {
             <PostCard
               v-if="item.parent_comment_id"
               :post="comments.find((x) => x.id === item.parent_comment_id)"
+              :cardStyle="{ marginBottom: '10px' }"
               :showEdit="false"
               :showShare="false"
               :showComment="false"
@@ -177,9 +179,9 @@ export default {
 .el-row {
   margin: 10px 0px;
 }
-.el-card {
+/* .el-card {
   margin-bottom: 10px;
-}
+} */
 .el-pagination {
   float: right;
 }

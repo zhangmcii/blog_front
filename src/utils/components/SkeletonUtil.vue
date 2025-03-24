@@ -7,7 +7,9 @@ export default {
     },
     throttle: {
       type: Object,
-      default: { leading: 300, trailing: 300, initVal: true }
+      default() {
+        return { leading: 300, trailing: 300, initVal: true }
+      }
     },
     showAvatar: {
       type: Boolean,
@@ -24,8 +26,7 @@ export default {
     cardStyle: {
       type: Object,
       default() {
-        return {
-        }
+        return {}
       }
     }
   },
