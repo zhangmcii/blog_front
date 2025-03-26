@@ -64,17 +64,20 @@ const routes = [
       {
         path: '/bindEmail',
         name: 'bindEmail',
-        component: () => import('../views/user/EmailPage.vue')
+        component: () => import('../views/user/EmailPage.vue'),
+        meta: { keepAlive: true }
       },
       {
         path: '/changeEmail',
         name: 'changeEmail',
-        component: () => import('../views/user/EmailChange.vue')
+        component: () => import('../views/user/EmailChange.vue'),
+        meta: { keepAlive: true }
       },
       {
         path: '/changePassword',
         name: 'changePassword',
-        component: () => import('../views/user/PasswordChange.vue')
+        component: () => import('../views/user/PasswordChange.vue'),
+        meta: { keepAlive: true }
       },
       {
         path: '/PasswordChangeAdmin',
