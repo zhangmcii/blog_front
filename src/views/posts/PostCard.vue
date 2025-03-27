@@ -3,6 +3,8 @@ import { useCurrentUserStore } from '@/stores/currentUser'
 import date from '@/utils/date.js'
 import imageCfg from '@/config/image.js'
 import praise from '@/api/praise/praiseApi.js'
+import emojiCfg from '@/config/emojiCfg.js'
+
 export default {
   props: {
     post: {
@@ -57,7 +59,7 @@ export default {
     showPraise: {
       type: Boolean,
       default: true
-    },
+    }
   },
   emits: ['share'],
   data() {
@@ -143,6 +145,17 @@ export default {
           this.$message.error(res.data.detail)
         }
       })
+    },
+    parseContent(content) {
+      if (!/\[emotion:(.+?)\]/.test(content)) {
+        return content 
+      }
+      
+      const withEmotions = content.replace(
+        /\[emotion:(.+?)\]/g,
+        `<img src="${emojiCfg.baseUrl}$1${emojiCfg.suffix}" style="width: 20px;height: 20px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 10px;"/>`
+      )
+      return withEmotions
     }
   }
 }
@@ -173,7 +186,9 @@ export default {
           <p><i>此评论已被版主禁用</i></p>
         </el-row>
         <el-row><div v-if="post.body_html && show_body" v-html="post.body_html"></div></el-row>
-        <el-row v-if="!post.body_html && show_body">{{ post.body }}</el-row>
+        <el-row v-if="!post.body_html && show_body"
+          ><div v-html="parseContent(post.body)"></div
+        ></el-row>
 
         <el-row :gutter="35" justify="end" class="icon-event">
           <el-col

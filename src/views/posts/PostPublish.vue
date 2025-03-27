@@ -2,11 +2,13 @@
 import postApi from '@/api/posts/postApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 import RichText from '@/utils/components/RichText.vue'
+import Emoji from '@/utils/components/Emoji.vue'
 export default {
   emits: ['postsResult', 'loadingBegin'],
   components: {
     ButtonClick,
-    RichText
+    RichText,
+    Emoji
   },
   data() {
     return {
@@ -17,7 +19,9 @@ export default {
         body: '',
         bodyHtml: ''
       },
-      activeRichEditor: false
+      activeRichEditor: false,
+      showPopover: false,
+      showEmoji: false
     }
   },
   mounted() {},
@@ -56,6 +60,9 @@ export default {
       } else {
         this.normalPublish()
       }
+    },
+    insertEmoji(name) {
+      this.content += name
     }
   }
 }
@@ -69,14 +76,19 @@ export default {
       v-if="activeRichEditor"
       @content_change="(n) => (this.rich_content = n)"
     />
-    <el-input
-      v-else
-      v-model="content"
-      :autosize="{ minRows: 2, maxRows: 4 }"
-      type="textarea"
-      placeholder="书写片段,温润流年。"
-    />
+    <div v-else>
+      <el-input
+        v-model="content"
+        :autosize="{ minRows: 2, maxRows: 4 }"
+        type="textarea"
+        @focus="() => (showEmoji = true)"
+        @blur="() => (showEmoji = false)"
+        placeholder="书写片段,温润流年。"
+      />
+      <Emoji @selectEmoji="insertEmoji" />
+    </div>
   </Transition>
+
   <ButtonClick
     class="custom-button"
     content="发布"
@@ -107,8 +119,7 @@ export default {
   margin-top: 10px;
   float: right;
 }
-
-.v-enter-active{
+.v-enter-active {
   transition: opacity 0.3s ease;
 }
 .v-enter-from {

@@ -6,14 +6,12 @@ import { GradientText } from 'vue-amazing-ui'
 import 'vue-amazing-ui/es/gradienttext/GradientText.css'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import PostPublish from './PostPublish.vue'
-import Emoji from '@/utils/components/Emoji.vue'
 export default {
   components: {
     PostCard,
     PostPublish,
     GradientText,
     SkeletonUtil,
-    Emoji
   },
   data() {
     return {
@@ -82,8 +80,6 @@ export default {
     @posts-result="getPostsResult"
     v-if="currentUser.token != ''"
   />
-  <!-- <div @click="showEmoji=!showEmoji">展开表情</div>
-  <Emoji :showEmoji="showEmoji"/> -->
   <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
     <el-tab-pane label="广场" name="all">
       <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0 && !loading.card" />
