@@ -12,9 +12,9 @@ export default {
   },
   data() {
     return {
-      comments: {},
+      comments: [],
       currentPage: 1,
-      comments_count: 10,
+      comments_count: 0,
       loading: {
         comment: false
       }
@@ -66,7 +66,7 @@ export default {
 
 <template>
   <PageHeadBack>
-    <SkeletonUtil :loading="loading.comment" :row="7" :count="4">
+    <SkeletonUtil :loading="loading.comment" :row="7" :count="4" :cardStyle="{ marginBottom: '10px' }">
       <PostCard
         v-for="item in comments"
         :key="item"

@@ -11,7 +11,7 @@ export default {
     PostCard,
     PostPublish,
     GradientText,
-    SkeletonUtil
+    SkeletonUtil,
   },
   data() {
     return {
@@ -22,7 +22,8 @@ export default {
       loading: {
         publishPost: false,
         card: false
-      }
+      },
+      showEmoji:false
     }
   },
   setup() {

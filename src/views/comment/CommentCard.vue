@@ -3,6 +3,7 @@ import { defineAsyncComponent } from 'vue'
 import commentApi from '@/api/comment/commentApi.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 import { copy } from '@/utils/common.js'
+import Emoji from '@/utils/components/Emoji.vue'
 export default {
   props: {
     postId: {
@@ -13,7 +14,8 @@ export default {
     }
   },
   components: {
-    PostCard: defineAsyncComponent(() => import('../posts/PostCard.vue'))
+    PostCard: defineAsyncComponent(() => import('../posts/PostCard.vue')),
+    Emoji
   },
   data() {
     return {
@@ -98,12 +100,14 @@ export default {
     },
     copy() {
       // 复制卡片内容到剪贴板
-      if(!this.currentComment.body) {
+      if (!this.currentComment.body) {
         this.$message.error('内容为空')
         return
       }
       copy(this.currentComment.body)
-   
+    },
+    insertEmoji(name){
+      this.submitComment.body += name
     }
   }
 }
@@ -114,11 +118,14 @@ export default {
     <el-col :span="24">
       <el-divider content-position="left">输入您的评论</el-divider>
       <div v-if="currentUser.token != ''">
-        <el-input
-          v-model="submitComment.body"
-          :autosize="{ minRows: 2, maxRows: 4 }"
-          type="textarea"
-        />
+        <div>
+          <el-input
+            v-model="submitComment.body"
+            :autosize="{ minRows: 2, maxRows: 4 }"
+            type="textarea"
+          />
+          <Emoji @selectEmoji="insertEmoji" />
+        </div>
         <el-button class="submit-button" :disabled="!submitComment.body" @click="submit"
           >提交</el-button
         >
@@ -179,9 +186,6 @@ export default {
 .el-row {
   margin: 10px 0px;
 }
-/* .el-card {
-  margin-bottom: 10px;
-} */
 .el-pagination {
   float: right;
 }
