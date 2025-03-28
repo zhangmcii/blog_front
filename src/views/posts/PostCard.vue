@@ -147,15 +147,30 @@ export default {
       })
     },
     parseContent(content) {
-      if (!/\[emotion:(.+?)\]/.test(content)) {
-        return content 
+      let r1 = this.replaceHeo(content)
+      let r2 = this.replaceDingtalk(r1)
+      return r2
+    },
+
+    replaceHeo(content) {
+      if (!/\[Heo:(.+?)\]/.test(content)) {
+        return content
       }
-      
-      const withEmotions = content.replace(
-        /\[emotion:(.+?)\]/g,
-        `<img src="${emojiCfg.baseUrl}$1${emojiCfg.suffix}" style="width: 20px;height: 20px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 10px;"/>`
+      const withHeo = content.replace(
+        /\[Heo:(.+?)\]/g,
+        `<img src="${emojiCfg.Heo_100.baseUrl}$1${emojiCfg.Heo_100.suffix}" style="width: 20px;height: 20px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 10px;"/>`
       )
-      return withEmotions
+      return withHeo
+    },
+    replaceDingtalk(content) {
+      if (!/\[ding:(.+?)\]/.test(content)) {
+        return content
+      }
+      const withDing = content.replace(
+        /\[ding:(.+?)\]/g,
+        `<img src="${emojiCfg.dingtalk.baseUrl}$1${emojiCfg.dingtalk.suffix}" style="width: 20px;height: 20px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 10px;"/>`
+      )
+      return withDing
     }
   }
 }
