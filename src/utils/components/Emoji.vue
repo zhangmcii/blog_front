@@ -1,8 +1,8 @@
 <template>
-  <van-popover v-model:show="showPopover" placement="bottom-start">
+  <van-popover v-model:show="showPopover" placement="bottom-start" :offset="offset">
     <template #default>
       <transition name="body">
-        <div  class="emoji-body">
+        <div class="emoji-body">
           <span
             v-for="(value, key, index) in emojiListURL"
             :key="index"
@@ -17,7 +17,8 @@
       <el-button circle class="emoji-button">
         <template #icon>
           <div style="font-size: 24px">
-            <EmojiIcon />
+            <EmojiIcon v-if="emoName==='Heo_100'"/>
+            <Dingtalk v-if="emoName==='dingtalk'"/>
           </div>
         </template>
       </el-button>
@@ -27,21 +28,48 @@
 <script>
 import emojiCfg from '@/config/emojiCfg.js'
 import EmojiIcon from '@/asset/svg/emojiIcon.svg?component'
+import Dingtalk from '@/asset/svg/dingtalk.svg?component'
 export default {
   props: {
+    emoName: {
+      type: String,
+      default: 'Heo_100'
+    },
+    offset:{
+      type: Array,
+      default: () => [0, 8]
+    }
   },
   components: {
-    EmojiIcon
+    EmojiIcon,
+    Dingtalk
   },
   emits: ['selectEmoji'],
   data() {
     return {
       showPopover: false,
-      emojiListURL: {}
+      emojiListURL: {},
+      prefix:{
+        Heo_100: 'Heo',
+        dingtalk: 'ding'
+      }
+    }
+  },
+  computed:{
+    emoji(){
+      if(this.emoName === 'Heo_100'){
+        return emojiCfg.Heo_100
+      }else if(this.emoName === 'dingtalk'){
+        return emojiCfg.dingtalk
+      }
+      return ''
+    },
+    prefixName(){
+      return this.prefix[this.emoName]
     }
   },
   created() {
-    this.emojiListURL = this.getEmojiList(emojiCfg.name)
+    this.emojiListURL = this.getEmojiList(this.emoji.name)
   },
   methods: {
     getEmojiList(emojiList) {
@@ -49,11 +77,10 @@ export default {
       let url
       let result = {}
       for (let i = 0; i < emojiList.length; i++) {
-        emojiName = '[emotion:' + emojiList[i] + ']'
-        url = emojiCfg.baseUrl + emojiList[i] + emojiCfg.suffix
+        emojiName = '[' + this.prefixName + ':' + emojiList[i] + ']'
+        url = this.emoji.baseUrl + emojiList[i] + this.emoji.suffix
         result[emojiName] = url
       }
-      console.log('11', result)
       return result
     }
   }
