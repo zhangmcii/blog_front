@@ -125,7 +125,7 @@ export default {
             type="textarea"
           />
           <Emoji @selectEmoji="insertEmoji" />
-          <Emoji emoName="dingtalk" :offset="[-35,8]" @selectEmoji="insertEmoji" />
+          <!-- <Emoji emoName="dingtalk" :offset="[-35,8]" @selectEmoji="insertEmoji" /> -->
         </div>
         <el-button class="submit-button" :disabled="!submitComment.body" @click="submit"
           >提交</el-button

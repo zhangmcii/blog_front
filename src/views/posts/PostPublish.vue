@@ -86,7 +86,7 @@ export default {
         placeholder="书写片段,温润流年。"
       />
       <Emoji emoName="Heo_100" @selectEmoji="insertEmoji" />
-      <Emoji emoName="dingtalk" :offset="[-30,8]" @selectEmoji="insertEmoji" />
+      <!-- <Emoji emoName="dingtalk" :offset="[-35,8]" @selectEmoji="insertEmoji" /> -->
     </div>
   </Transition>
 

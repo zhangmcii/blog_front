@@ -66,7 +66,8 @@ export default {
     return {
       praiseNum: 0,
       hasPraised: false,
-      iconSize: 15
+      iconSize: 15,
+      eStyle: `style="width: 26px;height: 26px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 3px;"`,
     }
   },
   setup() {
@@ -158,7 +159,7 @@ export default {
       }
       const withHeo = content.replace(
         /\[Heo:(.+?)\]/g,
-        `<img src="${emojiCfg.Heo_100.baseUrl}$1${emojiCfg.Heo_100.suffix}" style="width: 20px;height: 20px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 10px;"/>`
+        `<img src="${emojiCfg.Heo_100.baseUrl}$1${emojiCfg.Heo_100.suffix}" ${this.eStyle}/>`
       )
       return withHeo
     },
@@ -168,7 +169,7 @@ export default {
       }
       const withDing = content.replace(
         /\[ding:(.+?)\]/g,
-        `<img src="${emojiCfg.dingtalk.baseUrl}$1${emojiCfg.dingtalk.suffix}" style="width: 20px;height: 20px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 10px;"/>`
+        `<img src="${emojiCfg.dingtalk.baseUrl}$1${emojiCfg.dingtalk.suffix}" ${this.eStyle}/>`
       )
       return withDing
     }
