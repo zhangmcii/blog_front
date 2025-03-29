@@ -17,8 +17,6 @@ function front_to_remote(){
     docker save -o $front_tar nizhenshi/flasky_front
 
 
-    ROMOTE_USER="root"
-    ROMOTE_HOST="117.72.109.0"
     LOCAL_FILE=$front_tar
     REMOTE_FILE="/root/user/"
     scp $LOCAL_FILE $ROMOTE_USER@$ROMOTE_HOST:$REMOTE_FILE
