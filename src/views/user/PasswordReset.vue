@@ -117,13 +117,15 @@ export default {
         <el-input v-model="form.code" style="width: 40%" />
       </el-form-item>
       <el-form-item prop="password" label="密码">
-        <el-input v-model="form.password" type="password"  show-password />
+        <el-input v-model="form.password" type="password" show-password />
       </el-form-item>
       <el-form-item>
         <ButtonClick
           content="提交"
           type="primary"
           :disabled="isSubmit"
+          :round="true"
+          width="100%"
           :loading="loading"
           @do-search="submitForm"
         />
@@ -131,4 +133,9 @@ export default {
     </el-form>
   </PageHeadBack>
 </template>
-<style scoped></style>
+<style scoped>
+h1 {
+  text-align: center;
+  margin-bottom: 50px;
+}
+</style>

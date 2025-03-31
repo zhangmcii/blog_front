@@ -40,7 +40,16 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    round: {
+      type: Boolean,
+      default: false
+    },
+    width:{
+      type: String,
+      default: 'auto'
     }
+    // 是否圆角按钮
   },
   emits: ['doSearch']
 }
@@ -53,6 +62,8 @@ export default {
     :loading="loading"
     :size="size"
     :disabled="disabled"
+    :round="round"
+    :style="{ width: width }"
     @click="$emit('doSearch')"
   >
     <!-- 自定义图标插槽出口 -->

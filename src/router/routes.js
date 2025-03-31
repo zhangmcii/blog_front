@@ -121,7 +121,10 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/login/LoginPage.vue')
+    component: () =>
+      import.meta.env.DEV == true
+        ? import('@/views/login/LoginPageDev.vue')
+        : import('@/views/login/LoginPage.vue')
   }
 ]
 
