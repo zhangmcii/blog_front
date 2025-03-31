@@ -1,36 +1,37 @@
 <template>
   <PageHeadBack>
-    <div style="text-align: center; height: 50px">注册</div>
-    <el-form
-      :model="ruleForm"
-      status-icon
-      :rules="rules"
-      ref="ruleForm"
-      label-width="100px"
-      class="demo-ruleForm"
-    >
-      <el-form-item label="用户名" prop="user">
-        <el-input type="text" v-model="ruleForm.user" autocomplete="off"></el-input>
+    <h1 style="text-align: center">注册</h1>
+    <div class="info">密码通过加密签名(SHA-256)保护，请放心注册</div>
+    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm">
+      <el-form-item prop="user">
+        <el-input
+          type="text"
+          v-model="ruleForm.user"
+          autocomplete="off"
+          placeholder="用户名"
+        ></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="password">
+      <el-form-item prop="password">
         <el-input
           type="password"
           v-model="ruleForm.password"
           autocomplete="off"
           show-password
+          placeholder="密码"
         ></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" prop="confirmPass">
+      <el-form-item prop="confirmPass">
         <el-input
           type="password"
           v-model="ruleForm.confirmPass"
           autocomplete="off"
           show-password
+          placeholder="确认密码"
         ></el-input>
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" :disabled="!isChange" :loading="loading" @click="register"
+        <el-button type="primary" round :disabled="!isChange" :loading="loading" @click="register"
           >注册</el-button
         >
       </el-form-item>
@@ -158,5 +159,14 @@ body {
   border-radius: 5px;
   padding-top: 40px;
   padding-right: 40px;
+}
+.info {
+  font-size: 0.9rem;
+  color: gray;
+  text-align: center;
+  margin-bottom: 50px;
+}
+.el-button {
+  width: 100%;
 }
 </style>
