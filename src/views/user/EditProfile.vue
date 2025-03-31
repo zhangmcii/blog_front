@@ -30,8 +30,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userId = to.params.id
-      vm.getUserInfo(to.params.id)
-      vm.getUserInfo(to.params.id)
+      vm.getUserInfo(vm.userId)
       vm.$nextTick(() => {})
     })
   },

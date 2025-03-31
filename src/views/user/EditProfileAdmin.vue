@@ -53,6 +53,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userId = to.params.id
+      vm.getUserInfo(vm.userId)
       vm.$nextTick(() => {})
     })
   },
@@ -62,11 +63,6 @@ export default {
       handler(newVal) {
         this.isChange = JSON.stringify(newVal) !== this.originalForm
       }
-    }
-  },
-  mounted() {
-    if (this.userID != -1) {
-      this.getUserInfo(this.userId)
     }
   },
   methods: {
