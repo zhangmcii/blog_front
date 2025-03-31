@@ -11,6 +11,7 @@
   "dependencies": {
     "@pureadmin/utils": "^2.5.0",
     "@vant/area-data": "^2.0.0",
+    "@vueuse/core": "^13.0.0",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
     "@wangeditor/plugin-md": "^1.0.0",
@@ -22,7 +23,9 @@
     "nodemon": "^3.1.7",
     "pinia": "^2.2.2",
     "pre-commit": "^1.2.2",
+    "sass": "^1.86.0",
     "socket.io-client": "^4.8.1",
+    "undraw-ui": "^1.2.6",
     "vant": "^4.9.15",
     "vue": "^3.3.4",
     "vue-amazing-ui": "^2.1.4",

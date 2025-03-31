@@ -1,7 +1,7 @@
 <script>
 import postApi from '@/api/posts/postApi.js'
 import PostCard from './PostCard.vue'
-import CommentCard from '../comment/CommentCard.vue'
+import CommentCard from '../comment/CommentCardNew.vue'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import { copy } from '@/utils/common.js'
 import requestUrl from '@/config/requestUrl.js'
