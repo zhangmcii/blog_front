@@ -107,9 +107,10 @@ function setInterceptors(...instance) {
         }
         if (error.response.status === 401) {
           ElMessage({
-            message: '您的身份未认证',
+            message: '您的身份未认证, 请重新登录',
             type: 'error'
           })
+          router.push('/login')
           return Promise.reject(error)
         }
 
