@@ -18,12 +18,14 @@ const routes = [
       {
         path: '/editProfile/:id',
         name: 'editProfile',
-        component: () => import('../views/user/EditProfile.vue')
+        component: () => import('../views/user/EditProfile.vue'),
+        meta: { requireAuth: true }
       },
       {
         path: '/editProfileAdmin/:id',
         name: 'editProfileAdmin',
-        component: () => import('../views/user/EditProfileAdmin.vue')
+        component: () => import('../views/user/EditProfileAdmin.vue'),
+        meta: { roles: ['admin'] }
       },
       {
         path: '/share/:id',
@@ -33,7 +35,8 @@ const routes = [
       {
         path: '/editPost/:id',
         name: 'editPost',
-        component: () => import('../views/posts/PostEdit.vue')
+        component: () => import('../views/posts/PostEdit.vue'),
+        meta: { requireAuth: true }
       },
       {
         path: '/follow/:action/:userName',
@@ -44,17 +47,13 @@ const routes = [
         path: '/commentManagement',
         name: 'commentManagement',
         component: () => import('../views/comment/commentManagement.vue'),
-        meta: {
-          roles: ["3"]
-        }
+        meta: { roles: ['admin'] }
       },
       {
         path: '/operateLog',
         name: 'operateLog',
         component: () => import('../views/data_manage/OperateLog.vue'),
-        meta: {
-          roles: ["3"]
-        }
+        meta: { roles: ['admin'] }
       },
       {
         path: '/register',
@@ -65,27 +64,25 @@ const routes = [
         path: '/bindEmail',
         name: 'bindEmail',
         component: () => import('../views/user/EmailPage.vue'),
-        meta: { keepAlive: true }
+        meta: { keepAlive: true, requireAuth: true }
       },
       {
         path: '/changeEmail',
         name: 'changeEmail',
         component: () => import('../views/user/EmailChange.vue'),
-        meta: { keepAlive: true }
+        meta: { keepAlive: true, requireAuth: true }
       },
       {
         path: '/changePassword',
         name: 'changePassword',
         component: () => import('../views/user/PasswordChange.vue'),
-        meta: { keepAlive: true }
+        meta: { keepAlive: true, requireAuth: true }
       },
       {
         path: '/PasswordChangeAdmin',
         name: 'PasswordChangeAdmin',
         component: () => import('../views/user/PasswordChangeAdmin.vue'),
-        meta: {
-          roles: ["3"]
-        }
+        meta: { roles: ['admin'] }
       },
       {
         path: '/resetPassword',
@@ -95,7 +92,8 @@ const routes = [
       {
         path: '/reply',
         name: 'replyComment',
-        component: () => import('../views/comment/CommentReply.vue')
+        component: () => import('../views/comment/CommentReply.vue'),
+        meta: { requireAuth: true }
       },
       {
         path: '/403',
@@ -111,13 +109,13 @@ const routes = [
         path: '/500',
         name: 'networkError',
         component: () => import('../views/error/NetError.vue')
-      },
+      }
     ]
   },
 
   {
     path: '/',
-    redirect: '/posts',
+    redirect: '/posts'
   },
   // 登陆页面
   {

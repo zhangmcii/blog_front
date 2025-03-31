@@ -26,13 +26,9 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.postId = to.params.id
+      vm.getPostById(vm.postId)
       vm.$nextTick(() => {})
     })
-  },
-  mounted() {
-    if (this.postId != -1) {
-      this.getPostById(this.postId)
-    }
   },
   watch: {
     'post.body'(newVal){
