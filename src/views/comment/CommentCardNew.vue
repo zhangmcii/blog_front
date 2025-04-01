@@ -140,7 +140,7 @@ export default {
       </div>
     </el-col>
   </el-row>
-  <!-- <el-row>
+  <el-row>
     <el-divider content-position="left">全部评论({{ total }})</el-divider>
     <el-col :span="24">
       <van-list
@@ -184,10 +184,8 @@ export default {
       cancel-text="取消"
       close-on-click-action
     />
-  </el-row> -->
-  <el-row>
+  </el-row> 
     <ComNew/>
-  </el-row>
 </template>
 <style scoped>
 .el-row {
