@@ -1,14 +1,14 @@
 #!/bin/bash
 
 function front_to_remote(){
-    base_path="/e/project/vue-proj/responsive_new/"
+    base_path=`pwd`
 
     # 对项目打包
     cd $base_path
     npm run build --mode=production
 
     # 删除上次的压缩包
-    front_tar=$base_path"flasky_front.tar"
+    front_tar=$base_path"/flasky_front.tar"
     if [[ -e  $front_tar ]];then
         rm -f $front_tar
         echo "已删除 $front_tar"

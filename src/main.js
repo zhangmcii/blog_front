@@ -25,6 +25,7 @@ import { useVant } from '@/plugins/vant'
 import 'vant/lib/index.css'
 import vSlideIn from '@/directives/vSlideIn.js'
 
+import { UIcon } from 'undraw-ui'
 import 'undraw-ui/dist/style.css'
 
 const app = createApp(App)
@@ -39,4 +40,5 @@ app.use(useVant)
 app.use(router)
 app.use(pinia)
 app.use(vue3PhotoPreview)
+app.component('u-icon', UIcon)
 app.mount('#app')

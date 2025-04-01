@@ -367,5 +367,5 @@ export default {
     //   'emotion_191',
     //   'emotion_192'
     // ]
-  }
+  },
 }

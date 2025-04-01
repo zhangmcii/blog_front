@@ -72,7 +72,7 @@
 <script setup>
 // 下载表情包资源emoji.zip https://gitee.com/undraw/undraw-ui/releases/tag/v1.0.0
 // static文件放在public下,引入emoji.ts文件可以移动assets下引入,也可以自定义到指定位置
-//   import emoji from './emoji'
+// import emoji from '@/utils/emoji.js'
 import { reactive, ref } from 'vue'
 import {
   UToast,
@@ -82,11 +82,10 @@ import {
   usePage,
   UComment,
   UCommentScroll,
-  UCommentNav,
-  UIcon
+  UCommentNav
 } from 'undraw-ui'
-// import UIcon from 'undraw-ui'
 import Operate from './operate.vue'
+import commentApi from '@/api/comment/commentApi.js'
 
 const userArr = [
   {
@@ -157,7 +156,7 @@ const config = reactive({
   comments: [], // 评论数据
   relativeTime: true, // 开启人性化时间
   show: {
-    likes: true
+    likes: false
   },
   page: true, // 开启分页
   mention: {
@@ -220,6 +219,7 @@ const submit = ({ content, parentId, finish }) => {
   setTimeout(() => {
     finish(comment)
     UToast({ message: '评论成功!', type: 'info' })
+    console.log('结构', comments)
   }, 200)
 }
 
@@ -418,19 +418,19 @@ const comments = [
     }
   }
 ]
-// 模拟请求接口获取评论数据
-setTimeout(() => {
-  // 当前登录用户数据
-  config.user = {
-    id: 1,
-    username: '杜甫 [唐代]',
-    level: 6,
-    avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg',
-    // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
-    likeIds: [1, 2, 3]
-  }
-  config.comments = comments
-}, 500)
+// // 模拟请求接口获取评论数据
+// setTimeout(() => {
+//   // 当前登录用户数据
+//   config.user = {
+//     id: 1,
+//     username: '杜甫 [唐代]',
+//     level: 6,
+//     avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg',
+//     // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
+//     likeIds: [1, 2, 3]
+//   }
+//   config.comments = comments
+// }, 500)
 
 // 模拟请求接口分页 请求覆盖评论对应的回复数据(全量覆盖回复数据)
 let reply = cloneDeep(comments[3].reply)
@@ -488,6 +488,26 @@ const remove = (comment) => {
     commentRef.value?.remove(comment)
   }, 200)
 }
+
+// 模拟请求接口获取评论数据
+setTimeout(() => {
+  // 当前登录用户数据
+  config.user = {
+    id: 1,
+    username: '杜甫 [唐代]',
+    level: 6,
+    avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg',
+    // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
+    likeIds: [1, 2, 3]
+  }
+
+  commentApi.getComment(2, 1).then((res) => {
+    if (res.data.msg == 'success') {
+      config.comments = res.data.data
+      console.log('222', res.data.data)
+    }
+  })
+}, 500)
 </script>
 
 <style lang="scss" scoped>

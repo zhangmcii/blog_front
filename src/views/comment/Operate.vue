@@ -20,14 +20,13 @@
   </el-dropdown>
 </template>
 <script setup>
-import { useClipboard } from '@vueuse/core'
-import { UToast, UIcon } from 'undraw-ui'
+import { copy } from '@/utils/common.js'
+import { UToast } from 'undraw-ui'
 
 const props = defineProps({ comment: Object })
 
 const emit = defineEmits(['remove'])
 
-const { copy } = useClipboard()
 
 const onCommand = (command) => {
   switch (command) {
@@ -39,7 +38,6 @@ const onCommand = (command) => {
       break
     case 'copy':
       copy(props.comment.content)
-      UToast({ type: 'info', message: '复制成功' })
   }
 }
 </script>
