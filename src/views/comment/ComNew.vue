@@ -156,7 +156,7 @@ const config = reactive({
   comments: [], // 评论数据
   relativeTime: true, // 开启人性化时间
   show: {
-    likes: false
+    likes: true
   },
   page: true, // 开启分页
   mention: {
@@ -198,29 +198,64 @@ const mentionSearch = (val) => {
 }
 
 // 评论提交事件
-let temp_id = 100
+// let temp_id = 100
 // 提交评论事件
+// const submit = ({ content, parentId, finish }) => {
+//   let str = '提交评论:' + content + ';\t父id: ' + parentId
+//   console.log(str)
+
+//   // 模拟请求接口生成数据
+//   const comment = {
+//     id: String((temp_id += 1)),
+//     parentId: parentId,
+//     uid: config.user.id,
+//     address: '来自江苏',
+//     content: content,
+//     likes: 0,
+//     createTime: new Date().toString(),
+//     user: config.user,
+//     reply: null
+//   }
+//   setTimeout(() => {
+//     finish(comment)
+//     UToast({ message: '评论成功!', type: 'info' })
+//     console.log('结构', comments)
+//   }, 200)
+// }
+
 const submit = ({ content, parentId, finish }) => {
   let str = '提交评论:' + content + ';\t父id: ' + parentId
   console.log(str)
 
-  // 模拟请求接口生成数据
-  const comment = {
-    id: String((temp_id += 1)),
-    parentId: parentId,
-    uid: config.user.id,
-    address: '来自江苏',
-    content: content,
-    likes: 0,
-    createTime: new Date().toString(),
-    user: config.user,
-    reply: null
-  }
-  setTimeout(() => {
-    finish(comment)
-    UToast({ message: '评论成功!', type: 'info' })
-    console.log('结构', comments)
-  }, 200)
+  // // 模拟请求接口生成数据
+  // const comment = {
+  //   id: String((temp_id += 1)),
+  //   parentId: parentId,
+  //   uid: config.user.id,
+  //   address: '来自江苏',
+  //   content: content,
+  //   likes: 0,
+  //   createTime: new Date().toString(),
+  //   user: config.user,
+  //   reply: null
+  // }
+  // setTimeout(() => {
+  //   finish(comment)
+  //   UToast({ message: '评论成功!', type: 'info' })
+  //   console.log('结构', comments)
+  // }, 200)
+
+  commentApi
+    .submitComment(1, { body: content, parentCommentId: parentId })
+    .then((res) => {
+      if (res.data.msg == 'success') {
+        finish(res.data.data.at(-1))
+        UToast({ message: '评论成功!', type: 'info' })
+        console.log('结构', res.data.data.at(-1))
+      } else {
+        this.$message.error(res.data.detail)
+      }
+    })
 }
 
 // 点赞按钮事件
@@ -432,22 +467,20 @@ const comments = [
 //   config.comments = comments
 // }, 500)
 
-// 模拟请求接口分页 请求覆盖评论对应的回复数据(全量覆盖回复数据)
-let reply = cloneDeep(comments[3].reply)
 //回复分页
 const replyPage = ({ parentId, current, size, finish }) => {
-  console.log(current, size)
-  // 根据 parentId查询后端分页回复列表返回并覆盖回复
-  if (reply) {
-    let tmp = {
-      total: reply?.total,
-      // 分页提取回复
-      list: usePage(current, size, reply.list)
-    }
-    setTimeout(() => {
+  console.log(parentId, current, size)
+  commentApi.getReplyComment(parentId, current).then((res) => {
+    if (res.data.msg == 'success') {
+      console.log('333', res.data.data)
+      let tmp = {
+        total: res.data.total,
+        // 分页提取回复
+        list: res.data.data
+      }
       finish(tmp)
-    }, 200)
-  }
+    }
+  })
 }
 // <-
 
@@ -501,7 +534,7 @@ setTimeout(() => {
     likeIds: [1, 2, 3]
   }
 
-  commentApi.getComment(2, 1).then((res) => {
+  commentApi.getComment(1, 1).then((res) => {
     if (res.data.msg == 'success') {
       config.comments = res.data.data
       console.log('222', res.data.data)

@@ -9,6 +9,14 @@ export default {
     params['page'] = page
     return $http.get(`${url_prefix}/posts/${postId}/comments/`, { params: params })
   },
+  
+  // 获取评论的回复
+  getReplyComment(parentCommentId, page) {
+    let params = {}
+    params['parentId'] = parentCommentId
+    params['page'] = page
+    return $http.get(`${url_prefix}/reply_comments/`, { params: params })
+  },
 
   getAllComments(page) {
     let params = {}
@@ -22,6 +30,6 @@ export default {
     return $http.get(`/moderate/disable/${commentId}`)
   },
   test_comm() {
-    return $http.post(`/comm`,{})
+    return $http.post(`/comm`, {})
   }
 }
