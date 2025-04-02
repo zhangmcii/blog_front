@@ -140,51 +140,6 @@ export default {
       </div>
     </el-col>
   </el-row>
-  <el-row>
-    <el-divider content-position="left">全部评论({{ total }})</el-divider>
-    <el-col :span="24">
-      <van-list
-        v-model:loading="loading"
-        v-model:error="error"
-        :finished="finished"
-        finished-text="没有更多评论了"
-        error-text="请求失败，点击重新加载"
-        @load="getComment"
-      >
-        <PostCard
-          v-for="item in comments"
-          :key="item"
-          :post="item"
-          :cardStyle="{ marginBottom: '10px' }"
-          :showEdit="false"
-          :showShare="false"
-          :showComment="false"
-          :showPraise="false"
-          @click="showDrawer(item, $event)"
-        >
-          <template #default>
-            <PostCard
-              v-if="item.parent_comment_id"
-              :post="comments.find((x) => x.id === item.parent_comment_id)"
-              :cardStyle="{ marginBottom: '10px' }"
-              :showEdit="false"
-              :showShare="false"
-              :showComment="false"
-              :showPraise="false"
-              cardBgColor="rgb(243.9, 244.2, 244.8)"
-            >
-            </PostCard>
-          </template>
-        </PostCard>
-      </van-list>
-    </el-col>
-    <van-action-sheet
-      v-model:show="drawer"
-      :actions="actions"
-      cancel-text="取消"
-      close-on-click-action
-    />
-  </el-row> 
     <ComNew/>
 </template>
 <style scoped>

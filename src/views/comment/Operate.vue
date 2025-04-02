@@ -12,9 +12,10 @@
     </div>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item command="report">举报</el-dropdown-item>
-        <el-dropdown-item command="remove">删除</el-dropdown-item>
-        <el-dropdown-item divided command="copy">复制</el-dropdown-item>
+        <!-- <el-dropdown-item command="report">举报</el-dropdown-item>
+        <el-dropdown-item command="remove">删除</el-dropdown-item> -->
+        <!-- <el-dropdown-item divided command="copy">复制</el-dropdown-item> -->
+        <el-dropdown-item command="copy">复制</el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>

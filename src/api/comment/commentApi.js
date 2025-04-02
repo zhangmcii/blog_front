@@ -17,7 +17,6 @@ export default {
     params['page'] = page
     return $http.get(`${url_prefix}/reply_comments/`, { params: params })
   },
-
   getAllComments(page) {
     let params = {}
     params['page'] = page

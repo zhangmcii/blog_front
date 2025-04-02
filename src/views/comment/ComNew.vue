@@ -10,10 +10,13 @@
       @show-info="showInfo"
     >
       <u-comment-nav v-model="latest" @sorted="sorted"></u-comment-nav>
+      <template #avatar="scope">
+        <el-avatar :src="scope.user.avatar" style="margin-top: 5px"/>
+      </template>
       <template #operate="scope">
         <Operate :comment="scope" @remove="remove" />
       </template>
-      <template #card="scope">
+       <template #card="scope">
         <el-skeleton :loading="loading" :throttle="200" animated>
           <template #template>
             <el-skeleton-item
@@ -39,7 +42,7 @@
                     <span class="name" style="max-width: 10em">{{ scope.username }}</span>
                     <span blank="true" class="rank">
                       <u-icon size="24" v-html="useLevel(scope.level)"></u-icon>
-                    </span>
+                    </span> 
                   </a>
                 </div>
                 <div class="social-info">
@@ -64,7 +67,7 @@
             </div>
           </template>
         </el-skeleton>
-      </template>
+      </template> 
     </u-comment>
   </u-comment-scroll>
 </template>
@@ -86,7 +89,9 @@ import {
 } from 'undraw-ui'
 import Operate from './operate.vue'
 import commentApi from '@/api/comment/commentApi.js'
-
+import praiseApi from '@/api/praise/praiseApi.js'
+import userApi from '@/api/user/userApi.js'
+import { useCurrentUserStore } from '@/stores/currentUser'
 const userArr = [
   {
     id: 1,
@@ -156,7 +161,9 @@ const config = reactive({
   comments: [], // 评论数据
   relativeTime: true, // 开启人性化时间
   show: {
-    likes: true
+    likes: true,
+    level: false,
+    address: false
   },
   page: true, // 开启分页
   mention: {
@@ -178,18 +185,24 @@ const showInfo = (uid, finish) => {
   console.log('获取用户信息: ' + uid)
   let userInfo
   // 模拟获取后端根据uid查询用户信息
-  setTimeout(() => {
-    userInfo = {
-      username: '杜甫 [唐代]',
-      level: 6,
-      avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg',
-      like: 36011,
-      attention: 15,
-      follower: 6878
+
+  userApi.getUser(uid).then((res) => {
+    if (res.data.msg == 'success') {
+      const u = res.data.data
+      userInfo = {
+        username: u.name,
+        level: 6,
+        avatar: u.image,
+        like: u.praised_count,
+        attention: u.followed_count,
+        follower: u.followers_count
+      }
+      loading.value = false
+      finish(userInfo)
+    } else {
+      this.$message.error(res.data.detail)
     }
-    loading.value = false
-    finish(userInfo)
-  }, 200)
+  })
 }
 
 // 提交触发搜索: 模拟请求接口返回搜索用户数据
@@ -198,276 +211,40 @@ const mentionSearch = (val) => {
 }
 
 // 评论提交事件
-// let temp_id = 100
-// 提交评论事件
-// const submit = ({ content, parentId, finish }) => {
-//   let str = '提交评论:' + content + ';\t父id: ' + parentId
-//   console.log(str)
-
-//   // 模拟请求接口生成数据
-//   const comment = {
-//     id: String((temp_id += 1)),
-//     parentId: parentId,
-//     uid: config.user.id,
-//     address: '来自江苏',
-//     content: content,
-//     likes: 0,
-//     createTime: new Date().toString(),
-//     user: config.user,
-//     reply: null
-//   }
-//   setTimeout(() => {
-//     finish(comment)
-//     UToast({ message: '评论成功!', type: 'info' })
-//     console.log('结构', comments)
-//   }, 200)
-// }
-
 const submit = ({ content, parentId, finish }) => {
   let str = '提交评论:' + content + ';\t父id: ' + parentId
   console.log(str)
 
-  // // 模拟请求接口生成数据
-  // const comment = {
-  //   id: String((temp_id += 1)),
-  //   parentId: parentId,
-  //   uid: config.user.id,
-  //   address: '来自江苏',
-  //   content: content,
-  //   likes: 0,
-  //   createTime: new Date().toString(),
-  //   user: config.user,
-  //   reply: null
-  // }
-  // setTimeout(() => {
-  //   finish(comment)
-  //   UToast({ message: '评论成功!', type: 'info' })
-  //   console.log('结构', comments)
-  // }, 200)
-
-  commentApi
-    .submitComment(1, { body: content, parentCommentId: parentId })
-    .then((res) => {
-      if (res.data.msg == 'success') {
-        finish(res.data.data.at(-1))
-        UToast({ message: '评论成功!', type: 'info' })
-        console.log('结构', res.data.data.at(-1))
-      } else {
-        this.$message.error(res.data.detail)
-      }
-    })
+  commentApi.submitComment(1, { body: content, parentCommentId: parentId }).then((res) => {
+    if (res.data.msg == 'success') {
+      finish(res.data.data.at(-1))
+      UToast({ message: '评论成功!', type: 'info' })
+      console.log('结构', res.data.data.at(-1))
+    } else {
+      this.$message.error(res.data.detail)
+    }
+  })
 }
 
 // 点赞按钮事件
 const like = (id, finish) => {
   console.log('点赞: ' + id)
-  // 模拟请求接口成功处理
-  setTimeout(() => {
-    finish()
-  }, 200)
-}
-/**
- * 评论对象数据结构
- * 存储结构: 一个评论表，通过paretnId是否为空判断类型 评论/回复
- * 层数: 两层
- * 第一层：评论 parentId属性为空; 第二层关系: id等于parentId的数据，则为第二层回复的评论数据
- * 第二层: 回复 parentId属性不为空; 第一层关系: parentId等于第一层id，则为第一层评论的回复数据
- *
- */
-// --> 初始化评论列表
-const comments = [
-  {
-    id: '1',
-    parentId: null,
-    uid: '2',
-    content:
-      '床前明月光，疑是地上霜。<br>举头望明月，低头思故乡。<img class="a" id="a" style="width: 50px" src=a onerror="window.location.href=\'https://baidu.com\'">',
-    createTime: new Time().add(-2, 'hour'),
-    user: {
-      username: '李白 [唐代]',
-      level: 6,
-      avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png',
-      homeLink: '/2'
-    },
-    reply: {
-      total: 1,
-      list: [
-        {
-          id: '11',
-          parentId: 1,
-          uid: '1',
-          content: '[狗头][微笑2]',
-          likes: 6666,
-          createTime: new Time().add(-1, 'hour'),
-          user: {
-            username: '杜甫 [唐代]',
-            level: 6,
-            avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg',
-            homeLink: '/1'
-          }
-        }
-      ]
-    }
-  },
-  {
-    id: '2',
-    parentId: null,
-    uid: '1',
-    content:
-      '国破山河在，城春草木深。<br>感时花溅泪，恨别鸟惊心。<br>烽火连三月，家书抵万金。<br>白头搔更短，浑欲不胜簪。',
-    createTime: new Time().add(-6, 'hour'),
-    user: {
-      username: '杜甫 [唐代]',
-      level: 5,
-      avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg',
-      homeLink: '/1'
-    }
-  },
-  {
-    id: '3',
-    parentId: null,
-    uid: '2',
-    content: '日照香炉生紫烟，遥看瀑布挂前川。<br>飞流直下三千尺，疑是银河落九天。',
-    likes: 3411,
-    createTime: new Time().add(-12, 'hour'),
-    user: {
-      username: '李白 [唐代]',
-      level: 4,
-      avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png',
-      homeLink: '/2'
-    }
-  },
-  {
-    id: '4',
-    parentId: null,
-    uid: '3',
-    content: '明月几时有？把酒问青天。',
-    likes: 3422,
-    createTime: new Time().add(-1, 'day'),
-    user: {
-      username: '苏轼[宋代]',
-      level: 6,
-      avatar: 'https://static.juzicon.com/images/image-180327175138-PCH1.jpg',
-      homeLink: '/3'
-    },
-    reply: {
-      total: 7,
-      list: [
-        {
-          id: '41',
-          parentId: 4,
-          uid: '3',
-          content: '不知天上宫阙，今夕是何年。',
-          likes: 34116,
-          createTime: new Time().add(-23, 'hour'),
-          user: {
-            username: '苏轼[宋代]',
-            level: 6,
-            avatar: 'https://static.juzicon.com/images/image-180327175138-PCH1.jpg',
-            homeLink: '/3'
-          }
-        },
-        {
-          id: '42',
-          parentId: 4,
-          uid: '3',
-          content: '我欲乘风归去，又恐琼楼玉宇，高处不胜寒。',
-          likes: 34116,
-          createTime: new Time().add(-20, 'hour'),
-          user: {
-            username: '苏轼[宋代]',
-            level: 5,
-            avatar: 'https://static.juzicon.com/images/image-180327175138-PCH1.jpg',
-            homeLink: '/3'
-          }
-        },
-        {
-          id: '43',
-          parentId: 4,
-          uid: '3',
-          content: '起舞弄清影，何似在人间。',
-          likes: 34116,
-          createTime: new Time().add(-15, 'hour'),
-          user: {
-            username: '苏轼[宋代]',
-            level: 4,
-            avatar: 'https://static.juzicon.com/images/image-180327175138-PCH1.jpg',
-            homeLink: '/3'
-          }
-        },
-        {
-          id: '44',
-          parentId: 4,
-          uid: '3',
-          content: '转朱阁，低绮户，照无眠。',
-          likes: 34116,
-          createTime: new Time().add(-14, 'hour'),
-          user: {
-            username: '苏轼[宋代]',
-            level: 3,
-            avatar: 'https://static.juzicon.com/images/image-180327175138-PCH1.jpg',
-            homeLink: '/3'
-          }
-        },
-        {
-          id: '45',
-          parentId: 4,
-          uid: '3',
-          content: '不应有恨，何事长向别时圆？',
-          likes: 34116,
-          createTime: new Time().add(-10, 'hour'),
-          user: {
-            username: '苏轼[宋代]',
-            level: 2,
-            avatar: 'https://static.juzicon.com/images/image-180327175138-PCH1.jpg',
-            homeLink: '/3'
-          }
-        },
-        {
-          id: '46',
-          parentId: 4,
-          uid: '3',
-          content: '人有悲欢离合，月有阴晴圆缺，此事古难全。',
-          likes: 34116,
-          createTime: new Time().add(-8, 'hour'),
-          user: {
-            username: '苏轼[宋代]',
-            avatar: 'https://static.juzicon.com/images/image-180327175138-PCH1.jpg',
-            homeLink: '/3'
-          }
-        },
-        {
-          id: '47',
-          parentId: 4,
-          uid: '3',
-          content: '但愿人长久，千里共婵娟。',
-          likes: 34116,
-          createTime: new Time().add(-4, 'hour'),
-          user: {
-            username: '苏轼[宋代]',
-            avatar: 'https://static.juzicon.com/images/image-180327175138-PCH1.jpg',
-            homeLink: '/3'
-          }
-        }
-      ]
-    }
-  }
-]
-// // 模拟请求接口获取评论数据
-// setTimeout(() => {
-//   // 当前登录用户数据
-//   config.user = {
-//     id: 1,
-//     username: '杜甫 [唐代]',
-//     level: 6,
-//     avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg',
-//     // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
-//     likeIds: [1, 2, 3]
-//   }
-//   config.comments = comments
-// }, 500)
 
-//回复分页
+  if (config.user.likeIds.findIndex((item) => item == id) == -1) {
+    // 点赞
+    praiseApi.submitPraiseComment(id).then((res) => {
+      if (res.data.msg == 'success') {
+        finish()
+      } else {
+        this.$message.error(res.data.detail)
+      }
+    })
+  } else {
+    // 取消点赞
+  }
+}
+
+//请求回复分页
 const replyPage = ({ parentId, current, size, finish }) => {
   console.log(parentId, current, size)
   commentApi.getReplyComment(parentId, current).then((res) => {
@@ -482,27 +259,27 @@ const replyPage = ({ parentId, current, size, finish }) => {
     }
   })
 }
-// <-
 
-// 模拟请求接口部分评论数据； 回复按需提取部分如: 5条回复，总数为总回复10条。
-config.comments = usePage(1, 2, comments)
-
-// 当前页数
-let pageNum = 3
-// 页大小
-let pageSize = 1
-// 评论总数量
-let total = comments.length
+const query = reactive({
+  current: 1, // 当前页数
+  size: 10, // 页大小
+  total: 0, // 评论总数
+  articleId: 1 // 文章id
+})
 // 是否禁用滚动加载评论
 const disable = ref(false)
-// 模拟接口请求加载更多评论
+
+// 请求接口请求加载更多评论
 const more = () => {
-  console.log(disable.value)
-  if (pageNum <= Math.ceil(total / pageSize)) {
-    setTimeout(() => {
-      config.comments.push(...usePage(pageNum, 1, comments))
-      pageNum++
-    }, 200)
+  console.log('加载更多', query.current)
+  if (query.current <= Math.ceil(query.total / query.size)) {
+    commentApi.getComment(query.articleId, query.current).then((res) => {
+      if (res.data.msg == 'success') {
+        console.log('加载...', res.data.data)
+        config.comments.push(...res.data.data)
+        query.current++
+      }
+    })
   } else {
     disable.value = true
   }
@@ -514,33 +291,42 @@ const sorted = (latest) => {
   console.log(latest)
 }
 
-const commentRef = ref()
-// 删除评论
-const remove = (comment) => {
-  setTimeout(() => {
-    commentRef.value?.remove(comment)
-  }, 200)
+// const commentRef = ref()
+// // 删除评论
+// const remove = (comment) => {
+//   setTimeout(() => {
+//     commentRef.value?.remove(comment)
+//   }, 200)
+// }
+
+// 请求接口获取评论数据
+const currentUser = useCurrentUserStore()
+// 设置当前登录用户数据
+config.user = {
+  id: currentUser.id,
+  username: currentUser.name,
+  // level: 6,
+  avatar: currentUser.image,
+  // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
+  // 存储已点赞的评论id
+  likeIds: []
 }
-
-// 模拟请求接口获取评论数据
-setTimeout(() => {
-  // 当前登录用户数据
-  config.user = {
-    id: 1,
-    username: '杜甫 [唐代]',
-    level: 6,
-    avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg',
-    // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
-    likeIds: [1, 2, 3]
+commentApi.getComment(query.articleId, query.current).then((res) => {
+  if (res.data.msg == 'success') {
+    config.comments = res.data.data
+    console.log('初始加载评论', query.current)
+    query.current++
+    query.total = res.data.total
   }
+})
 
-  commentApi.getComment(1, 1).then((res) => {
-    if (res.data.msg == 'success') {
-      config.comments = res.data.data
-      console.log('222', res.data.data)
-    }
-  })
-}, 500)
+// 查找某文章下当前用户已点赞的评论id
+praiseApi.get_has_praised_comment_id(query.articleId).then((res) => {
+  if (res.data.msg == 'success') {
+    config.user.likeIds = res.data.data
+    console.log('已点赞', config.user.likeIds)
+  }
+})
 </script>
 
 <style lang="scss" scoped>
