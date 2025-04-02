@@ -40,8 +40,7 @@ export default {
 
       loading: false,
       finished: false,
-      error: false,
-
+      error: false
     }
   },
   setup() {
@@ -109,7 +108,7 @@ export default {
       }
       copy(this.currentComment.body)
     },
-    insertEmoji(name){
+    insertEmoji(name) {
       this.submitComment.body += name
     }
   }
@@ -117,15 +116,15 @@ export default {
 </script>
 
 <template>
-  <el-row>
+  <!-- <el-row>
     <el-col :span="24">
       <div class="not-login" v-if="currentUser.token == ''">
         <el-text class="describe">还未登录，</el-text>
         <el-link class="describe-login" @click="$router.push('/login')">去登录？</el-link>
       </div>
     </el-col>
-  </el-row>
-    <ComNew :postId="postId"/>
+  </el-row> -->
+  <ComNew :postId="postId" />
 </template>
 <style scoped>
 .el-row {

@@ -13,9 +13,9 @@
       <template #avatar="scope">
         <el-avatar :src="scope.user.avatar" style="margin-top: 5px" />
       </template>
-      <template #operate="scope">
+      <!-- <template #operate="scope">
         <Operate :comment="scope" @remove="remove" />
-      </template>
+      </template> -->
       <template #card="scope">
         <UserInfo :scope="scope" :loading="loading" />
       </template>
@@ -28,12 +28,14 @@
 // static文件放在public下,引入emoji.ts文件可以移动assets下引入,也可以自定义到指定位置
 // import emoji from '@/utils/emoji.js'
 import { reactive, ref } from 'vue'
-import { UToast, Time, cloneDeep, usePage, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
+import { UToast, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
 import Operate from './operate.vue'
 import UserInfo from './components/UserInfo.vue'
 import commentApi from '@/api/comment/commentApi.js'
 import praiseApi from '@/api/praise/praiseApi.js'
 import userApi from '@/api/user/userApi.js'
+import followApi from '@/api/user/followApi.js'
+import imageCfg from '@/config/image.js'
 import { useCurrentUserStore } from '@/stores/currentUser'
 const userArr = [
   {
@@ -119,6 +121,19 @@ const config = reactive({
   }
 })
 
+// 请求接口获取评论数据
+const currentUser = useCurrentUserStore()
+// 设置当前登录用户数据
+config.user = {
+  id: localStorage.getItem('currentUserId'),
+  username: localStorage.getItem('currentNickName'),
+  // level: 6,
+  avatar: localStorage.getItem('image')?localStorage.getItem('image'):imageCfg.logOut,
+  // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
+  // 存储已点赞的评论id
+  likeIds: []
+}
+
 // 用户信息是否加载
 const loading = ref(false)
 // 模拟请求获取用户详细信息
@@ -150,10 +165,31 @@ const showInfo = (uid, finish) => {
 }
 
 // 提交触发搜索: 模拟请求接口返回搜索用户数据
-const mentionSearch = (val) => {
-  config.mention.data = userArr.filter((v) => v.name.includes(val))
+// const mentionSearch = (val) => {
+//   config.mention.data = userArr.filter((v) => v.name.includes(val))
+// }
+
+const followed = reactive([])
+if (currentUser.token != '') {
+  followApi.getFollowing(localStorage.getItem('currentUserName')).then((res) => {
+    if (res.data.msg == 'success') {
+      res.data.data.map((item) =>
+        followed.push({
+          id: item.id,
+          name: item.name ? item.name : item.username,
+          avatar: item.image
+        })
+      )
+    } else {
+      this.$message.error(res.data.detail)
+    }
+  })
 }
 
+// 提交触发搜索: 模拟请求接口返回搜索用户数据
+const mentionSearch = (val) => {
+  config.mention.data = followed.filter((v) => v.name.includes(val))
+}
 // 评论提交事件
 const submit = ({ content, parentId, finish }) => {
   let str = '提交评论:' + content + ';\t父id: ' + parentId
@@ -249,34 +285,25 @@ const sorted = (latest) => {
 //   }, 200)
 // }
 
-// 请求接口获取评论数据
-const currentUser = useCurrentUserStore()
-// 设置当前登录用户数据
-config.user = {
-  id: currentUser.id,
-  username: currentUser.name,
-  // level: 6,
-  avatar: currentUser.image,
-  // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
-  // 存储已点赞的评论id
-  likeIds: []
-}
-commentApi.getComment(props.postId, query.current).then((res) => {
-  if (res.data.msg == 'success') {
-    config.comments = res.data.data
-    console.log('初始加载评论', query.current)
-    query.current++
-    query.total = res.data.total
+setTimeout(() => {
+  commentApi.getComment(props.postId, query.current).then((res) => {
+    if (res.data.msg == 'success') {
+      config.comments = res.data.data
+      console.log('初始加载评论', query.current)
+      query.current++
+      query.total = res.data.total
+    }
+  })
+  if (currentUser.token != '') {
+    // 查找某文章下当前用户已点赞的评论id
+    praiseApi.get_has_praised_comment_id(props.postId).then((res) => {
+      if (res.data.msg == 'success') {
+        config.user.likeIds = res.data.data
+        console.log('已点赞', config.user.likeIds)
+      }
+    })
   }
-})
-
-// 查找某文章下当前用户已点赞的评论id
-praiseApi.get_has_praised_comment_id(props.postId).then((res) => {
-  if (res.data.msg == 'success') {
-    config.user.likeIds = res.data.data
-    console.log('已点赞', config.user.likeIds)
-  }
-})
+}, 200)
 </script>
 
 <style lang="scss" scoped></style>
