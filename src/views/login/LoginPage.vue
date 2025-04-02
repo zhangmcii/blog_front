@@ -57,19 +57,21 @@ export default {
           if (this.ruleForm.isPassing2) {
             this.loading = true
             authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
-              if (res.data.msg == '登录成功') {
+              if (res.data.msg == 'success') {
                 this.loading = false
                 // 判断是否勾选记住密码
                 this.hasRemember()
-                this.currentUser.saveToken(res.data.token)
-                this.currentUser.saveUserName(res.data.username)
-                this.currentUser.saveName(res.data.name)
-                this.currentUser.saveAdmin(res.data.admin)
-                this.currentUser.saveRoleId(res.data.roleId)
-                this.currentUser.saveConfirmed(res.data.isConfirmed)
-                this.currentUser.saveImage(res.data.image)
+                const u = res.data.data
+                this.currentUser.saveToken(u.token)
+                this.currentUser.saveId(u.userId)
+                this.currentUser.saveUserName(u.username)
+                this.currentUser.saveName(u.nickname)
+                this.currentUser.saveAdmin(u.admin)
+                this.currentUser.saveRoleId(u.roleId)
+                this.currentUser.saveConfirmed(u.isConfirmed)
+                this.currentUser.saveImage(u.image)
                 this.$message({
-                  message: res.data.msg,
+                  message: '登录成功',
                   type: 'success',
                   duration: 1700
                 })

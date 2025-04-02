@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
+import { set } from 'undraw-ui'
 
 export const useCurrentUserStore = defineStore('currentUser', {
   state: () => ({
     token: '',
+    id: '',
     username: '',
     name: '',
     isAdmin: false,
@@ -13,6 +15,25 @@ export const useCurrentUserStore = defineStore('currentUser', {
     NOTIFICATION_KEY: 'user_notifications',
     MAX_ITEM: 50
   }),
+  // state: () => {
+  //   return {
+  //     toekn: '',
+  //     userInfo: {
+  //       id:'1',
+  //       username: '',
+  //       name: '',
+  //       isAdmin: false,
+  //       roleId: 0,
+  //       isConfirmed: false,
+  //       image: ''
+  //     },
+  //     notice: {
+  //       Notification_data: [],
+  //       NOTIFICATION_KEY: `user_notifications_${userInfo.id}`,
+  //       MAX_ITEM: 50
+  //     }
+  //   }
+  // },
   actions: {
     saveToken(token) {
       this.token = token
@@ -24,6 +45,18 @@ export const useCurrentUserStore = defineStore('currentUser', {
         this.token = token
       } else {
         this.token = ''
+      }
+    },
+    saveId(id) {
+      this.id = id
+      localStorage.setItem('currentUserId', id)
+    },
+    loadId() {
+      const data = localStorage.getItem('currentUserId')
+      if (!data || data == 'null') {
+        this.id = ''
+      } else {
+        this.id = data
       }
     },
     saveUserName(data) {
@@ -40,10 +73,10 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     saveName(data) {
       this.name = data
-      localStorage.setItem('currentName', data)
+      localStorage.setItem('currentNickName', data)
     },
     loadName() {
-      const data = localStorage.getItem('currentName')
+      const data = localStorage.getItem('currentNickName')
       if (!data || data == 'null') {
         this.name = ''
       } else {
@@ -94,7 +127,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
         this.Notification_data = d
         return d
       } catch (error) {
-        this.clearNotifications();
+        this.clearNotifications()
         return []
       }
     },
