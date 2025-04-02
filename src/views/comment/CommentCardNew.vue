@@ -119,28 +119,13 @@ export default {
 <template>
   <el-row>
     <el-col :span="24">
-      <el-divider content-position="left">输入您的评论</el-divider>
-      <div v-if="currentUser.token != ''">
-        <div>
-          <el-input
-            v-model="submitComment.body"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-            type="textarea"
-          />
-          <!-- <Emoji @selectEmoji="insertEmoji" /> -->
-          <!-- <Emoji emoName="dingtalk" :offset="[-35,8]" @selectEmoji="insertEmoji" /> -->
-        </div>
-        <el-button class="submit-button" :disabled="!submitComment.body" @click="submit"
-          >提交</el-button
-        >
-      </div>
-      <div class="not-login" v-else>
+      <div class="not-login" v-if="currentUser.token == ''">
         <el-text class="describe">还未登录，</el-text>
         <el-link class="describe-login" @click="$router.push('/login')">去登录？</el-link>
       </div>
     </el-col>
   </el-row>
-    <ComNew/>
+    <ComNew :postId="postId"/>
 </template>
 <style scoped>
 .el-row {

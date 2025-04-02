@@ -11,63 +11,14 @@
     >
       <u-comment-nav v-model="latest" @sorted="sorted"></u-comment-nav>
       <template #avatar="scope">
-        <el-avatar :src="scope.user.avatar" style="margin-top: 5px"/>
+        <el-avatar :src="scope.user.avatar" style="margin-top: 5px" />
       </template>
       <template #operate="scope">
         <Operate :comment="scope" @remove="remove" />
       </template>
-       <template #card="scope">
-        <el-skeleton :loading="loading" :throttle="200" animated>
-          <template #template>
-            <el-skeleton-item
-              variant="image"
-              style="width: 50px; height: 50px; margin-bottom: 10px"
-            />
-            <div>
-              <el-skeleton-item variant="h3" style="width: 100px" />
-              <el-skeleton-item variant="text" style="margin-right: 16px" />
-              <el-skeleton-item variant="text" style="width: 100px" />
-            </div>
-          </template>
-          <template #default>
-            <div class="user-card">
-              <div class="user-avatar">
-                <el-avatar style="margin-top: 5px" :size="40" fit="cover" :src="scope.avatar">
-                  <span>{{ scope.username }}</span>
-                </el-avatar>
-              </div>
-              <div class="user-content">
-                <div class="user-info">
-                  <a href="" class="username" target="_blank">
-                    <span class="name" style="max-width: 10em">{{ scope.username }}</span>
-                    <span blank="true" class="rank">
-                      <u-icon size="24" v-html="useLevel(scope.level)"></u-icon>
-                    </span> 
-                  </a>
-                </div>
-                <div class="social-info">
-                  <a href="" class="attention">
-                    <span>{{ scope.attention }}</span>
-                    <span>关注</span>
-                  </a>
-                  <a href="" class="follower">
-                    <span>{{ scope.follower }}</span>
-                    <span>粉丝</span>
-                  </a>
-                  <a href="" class="like">
-                    <span>{{ scope.like }}</span>
-                    <span>获赞</span>
-                  </a>
-                </div>
-                <div class="card-btn">
-                  <el-button type="primary">关注</el-button>
-                  <el-button>发消息</el-button>
-                </div>
-              </div>
-            </div>
-          </template>
-        </el-skeleton>
-      </template> 
+      <template #card="scope">
+        <UserInfo :scope="scope" :loading="loading" />
+      </template>
     </u-comment>
   </u-comment-scroll>
 </template>
@@ -77,17 +28,9 @@
 // static文件放在public下,引入emoji.ts文件可以移动assets下引入,也可以自定义到指定位置
 // import emoji from '@/utils/emoji.js'
 import { reactive, ref } from 'vue'
-import {
-  UToast,
-  Time,
-  useLevel,
-  cloneDeep,
-  usePage,
-  UComment,
-  UCommentScroll,
-  UCommentNav
-} from 'undraw-ui'
+import { UToast, Time, cloneDeep, usePage, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
 import Operate from './operate.vue'
+import UserInfo from './components/UserInfo.vue'
 import commentApi from '@/api/comment/commentApi.js'
 import praiseApi from '@/api/praise/praiseApi.js'
 import userApi from '@/api/user/userApi.js'
@@ -154,7 +97,7 @@ const userArr = [
       'https://gd-hbimg.huaban.com/d9643d6181d506ccc159a940e11bdc6b9a2b53ae57139-pxAnk9_fw240webp'
   }
 ]
-
+const props = defineProps({ postId: Number })
 const config = reactive({
   user: {}, // 当前用户信息
   // emoji: emoji, // 表情包数据
@@ -191,6 +134,7 @@ const showInfo = (uid, finish) => {
       const u = res.data.data
       userInfo = {
         username: u.name,
+        jumpId: u.username,
         level: 6,
         avatar: u.image,
         like: u.praised_count,
@@ -263,8 +207,7 @@ const replyPage = ({ parentId, current, size, finish }) => {
 const query = reactive({
   current: 1, // 当前页数
   size: 10, // 页大小
-  total: 0, // 评论总数
-  articleId: 1 // 文章id
+  total: 0 // 评论总数
 })
 // 是否禁用滚动加载评论
 const disable = ref(false)
@@ -273,7 +216,7 @@ const disable = ref(false)
 const more = () => {
   console.log('加载更多', query.current)
   if (query.current <= Math.ceil(query.total / query.size)) {
-    commentApi.getComment(query.articleId, query.current).then((res) => {
+    commentApi.getComment(props.postId, query.current).then((res) => {
       if (res.data.msg == 'success') {
         console.log('加载...', res.data.data)
         config.comments.push(...res.data.data)
@@ -288,7 +231,14 @@ const more = () => {
 //排序
 const latest = ref(true)
 const sorted = (latest) => {
-  console.log(latest)
+  console.log('排序', latest)
+  if (latest) {
+    // 按最新时间排序（时间从新到旧）
+    config.comments.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+  } else {
+    // 按点赞数量排序（点赞数从高到低）
+    config.comments.sort((a, b) => b.likes - a.likes)
+  }
 }
 
 // const commentRef = ref()
@@ -311,7 +261,7 @@ config.user = {
   // 存储已点赞的评论id
   likeIds: []
 }
-commentApi.getComment(query.articleId, query.current).then((res) => {
+commentApi.getComment(props.postId, query.current).then((res) => {
   if (res.data.msg == 'success') {
     config.comments = res.data.data
     console.log('初始加载评论', query.current)
@@ -321,7 +271,7 @@ commentApi.getComment(query.articleId, query.current).then((res) => {
 })
 
 // 查找某文章下当前用户已点赞的评论id
-praiseApi.get_has_praised_comment_id(query.articleId).then((res) => {
+praiseApi.get_has_praised_comment_id(props.postId).then((res) => {
   if (res.data.msg == 'success') {
     config.user.likeIds = res.data.data
     console.log('已点赞', config.user.likeIds)
@@ -329,41 +279,4 @@ praiseApi.get_has_praised_comment_id(query.articleId).then((res) => {
 })
 </script>
 
-<style lang="scss" scoped>
-.user-card {
-  display: flex;
-  .user-content {
-    flex: 1;
-    margin-left: 16px;
-    .user-info {
-      .username {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        .name {
-          max-width: 100px;
-          font-weight: 500;
-          font-size: 15px;
-          color: #252933;
-          line-height: 32px;
-          margin-right: 4px;
-        }
-      }
-    }
-    .social-info {
-      font-size: 12px;
-      margin-bottom: 10px;
-      a {
-        text-decoration: none;
-      }
-      a:not(:first-child) {
-        margin-left: 18px;
-      }
-      a span:last-child {
-        margin-left: 3px;
-        color: #9499a0;
-      }
-    }
-  }
-}
-</style>
+<style lang="scss" scoped></style>
