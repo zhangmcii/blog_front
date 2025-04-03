@@ -17,14 +17,14 @@ export const useCurrentUserStore = defineStore('currentUser', {
         // 已点赞的评论id
         likeIds: [],
         // 关注的用户
-        followed:[
+        followed: [
           {
             id: -1,
             name: '',
-            uName:'',
+            uName: '',
             avatar: ''
-          },
-        ],
+          }
+        ]
       },
       notice: {
         Notification_data: [],
@@ -39,17 +39,17 @@ export const useCurrentUserStore = defineStore('currentUser', {
     isCommentManage: (state) => state.userInfo.roleId >= 2,
     isConfirmed: (state) => state.userInfo.isConfirmed == true,
     isAdmin: (state) => state.userInfo.isAdmin == true,
-    priorityName: (state) => state.userInfo.name ? state.userInfo.name : state.userInfo.username
+    priorityName: (state) => (state.userInfo.name ? state.userInfo.name : state.userInfo.username)
   },
   actions: {
-    addItemLikeIds(value){
+    addItemLikeIds(value) {
       this.userInfo.likeIds.push(value)
     },
-    addItemFollowed(value){
+    addItemFollowed(value) {
       this.userInfo.followed.push(value)
     },
-    delItemFollowed(username){
-      this.userInfo.followed = this.userInfo.followed.filter(item => item.uName != username)
+    delItemFollowed(username) {
+      this.userInfo.followed = this.userInfo.followed.filter((item) => item.uName != username)
     },
     // 保存通知
     saveNotifications(notifications) {
@@ -61,14 +61,12 @@ export const useCurrentUserStore = defineStore('currentUser', {
       return this.notice.Notification_data
     },
     // 清空通知（可选）
-    clearNotifications() {
-
-    },
+    clearNotifications() {},
     logOut() {
       this.$reset()
       localStorage.removeItem('blog')
       localStorage.removeItem('blogOtherUser')
-    },
+    }
   },
   persist: {
     enabled: true,

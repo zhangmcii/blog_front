@@ -47,7 +47,6 @@ import emitter from '@/utils/emitter.js'
 import imageCfg from '@/config/image.js'
 import homeIcon from "@/asset/svg/homeIcon.svg?component";
 import {disconnectSocket} from '@/utils/socket'
-// import {connectSocket} from '@/utils/socket'
 import BellCom from '@/components/BellCom.vue'
 export default {
   name: 'BurgerMenu',
@@ -83,25 +82,11 @@ export default {
     return { currentUser }
   },
   computed: {
-    // login() {
-    //   return this.currentUser.userInfo.username != ''
-    // },
-    // isCommentManage() {
-    //   return this.currentUser.roleId >= 2
-    // },
-    // isConfirmed() {
-    //   return this.currentUser.isConfirmed == 'true'
-    // },
     isHomePage(){
       return this.$route.path === '/posts'
     },
 },
   mounted() {
-    // this.currentUser.loadUserName()
-    // this.currentUser.loadName()
-    // this.currentUser.loadRoleId()
-    // this.currentUser.loadConfirmed()
-
     this.initImage()
     this.daySentence = daysApi.fetchQuote()
     emitter.on('image', (url) => {
@@ -136,19 +121,6 @@ export default {
       this.toggleMenu();
       disconnectSocket()
       this.currentUser.logOut()
-      // localStorage.removeItem('token')
-      // localStorage.removeItem('currentUserName')
-      // localStorage.removeItem('currentName')
-      // localStorage.removeItem('isAdmin')
-      // localStorage.removeItem('roleId')
-      // localStorage.removeItem('isConfirmed')
-      // localStorage.removeItem('currentComment')
-      // localStorage.removeItem('image')
-
-      // 更新pinia
-      // this.currentUser.loadUserName()
-      // // 退出后跳转到主页面 隐藏发布文章区域
-      // this.currentUser.loadToken()
       console.log('name', this.currentUser.userInfo.username)
       console.log('token', this.currentUser.userInfo.token)
       this.$message({
@@ -160,7 +132,6 @@ export default {
       this.initImage()
     },
     goHomePage(){
-      // 如果汉堡菜单展开，则关闭
       if(this.showPopover){
         this.closeToggleMenu()
       }

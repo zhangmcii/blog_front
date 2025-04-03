@@ -21,10 +21,6 @@ export default {
     showDot() {
       return this.notifications.some((item) => !item.isRead)
     }
-    // login() {
-    //   this.currentUser.loadUserName()
-    //   return this.currentUser.username != ''
-    // },
   },
   mounted() {
     this.initSocket()
@@ -38,7 +34,6 @@ export default {
   methods: {
     async initLoad() {
       // 加载本地数据
-      // const localData = this.currentUser.loadNotifications()
       const localData = this.currentUser.notice.Notification_data
       // 请求服务器数据
       const unRead = await notificationApi.getUnRead().then((res) => res.data.data)
@@ -68,6 +63,7 @@ export default {
         item.isRead = true
         notificationApi.markRead({ ids: [item.id] })
       }
+      console.log('标记跳转', item) 
       this.$router.push(`/share/${item.postId}`)
     },
     initSocket() {

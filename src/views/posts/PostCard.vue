@@ -67,7 +67,7 @@ export default {
       praiseNum: 0,
       hasPraised: false,
       iconSize: 15,
-      eStyle: `style="width: 26px;height: 26px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 3px;"`,
+      eStyle: `style="width: 26px;height: 26px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 3px;"`
     }
   },
   setup() {
@@ -111,18 +111,11 @@ export default {
     isUserRoute() {
       return this.$route.path.startsWith('/user')
     },
-    // login() {
-    //   this.currentUser.loadUserName()
-    //   return this.currentUser.username != ''
-    // },
     skeletonItemWidth() {
       return this.avatar ? '80%' : ' 100%'
     }
   },
-  mounted() {
-    // this.currentUser.loadAdmin()
-    // this.currentUser.loadRoleId()
-  },
+  mounted() {},
   methods: {
     share() {
       this.$router.push(`/share/${this.post.id}`)

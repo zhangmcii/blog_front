@@ -95,7 +95,4 @@ export default {
   </PageHeadBack>
 </template>
 <style scoped>
-/* .el-card {
-  margin-bottom: 10px;
-} */
 </style>
