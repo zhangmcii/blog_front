@@ -1,7 +1,7 @@
 <script>
 import PostCard from './PostCard.vue'
 import postApi from '@/api/posts/postApi.js'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 import { GradientText } from 'vue-amazing-ui'
 import 'vue-amazing-ui/es/gradienttext/GradientText.css'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
@@ -31,10 +31,10 @@ export default {
     return { currentUser }
   },
   mounted() {
-    this.currentUser.loadToken()
-    this.currentUser.loadUserName()
-    this.currentUser.loadConfirmed()
-    this.currentUser.loadRoleId()
+    // this.currentUser.loadToken()
+    // this.currentUser.loadUserName()
+    // this.currentUser.loadConfirmed()
+    // this.currentUser.loadRoleId()
     this.getPosts(this.currentPage, this.activeName)
   },
   methods: {
@@ -73,12 +73,12 @@ export default {
       from: '#09c8ce',
       to: '#eb2f96'
     }"
-    >你好 {{ currentUser.name ? currentUser.name : currentUser.username }}</GradientText
+    >你好 {{ currentUser.priorityName }}</GradientText
   >
   <PostPublish
     @loading-begin="(flag) => (loading.publishPost = flag)"
     @posts-result="getPostsResult"
-    v-if="currentUser.token != ''"
+    v-if="currentUser.isLogin"
   />
   <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
     <el-tab-pane label="广场" name="all">
@@ -101,7 +101,7 @@ export default {
         />
       </SkeletonUtil>
     </el-tab-pane>
-    <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.token != ''">
+    <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.isLogin">
       <el-empty
         :image-size="200"
         v-if="activeName == 'showFollowed' && posts_count == 0 && !loading.card"

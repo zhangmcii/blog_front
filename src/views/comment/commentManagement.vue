@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     isCommentManage() {
-      return this.currentUser.roleId >= 2
+      return this.currentUser.userInfo.roleId >= 2
     }
   },
   mounted() {
@@ -95,7 +95,4 @@ export default {
   </PageHeadBack>
 </template>
 <style scoped>
-/* .el-card {
-  margin-bottom: 10px;
-} */
 </style>

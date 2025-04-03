@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 
 import App from './App.vue'
 import router from './router'
-import { createPinia } from 'pinia'
+import pinia from './stores/index.js'
 import dayjs from './config/dayjsCfg'
 
 import 'element-plus/theme-chalk/dark/css-vars.css'
@@ -31,7 +31,6 @@ import 'undraw-ui/dist/style.css'
 const app = createApp(App)
 app.directive('slide-in',vSlideIn)
 
-const pinia = createPinia()
 
 app.config.globalProperties.$dayjs = dayjs
 app.config.globalProperties.$message = ElMessage

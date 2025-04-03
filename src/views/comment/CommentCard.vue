@@ -46,7 +46,6 @@ export default {
     return { currentUser }
   },
   mounted() {
-    this.currentUser.loadToken()
   },
   methods: {
     submit() {
@@ -85,7 +84,7 @@ export default {
         })
     },
     showDrawer(commentData) {
-      if (commentData.disabled || this.currentUser.token == '') {
+      if (commentData.disabled || !this.currentUser.isLogin) {
         return
       }
       this.drawer = !this.drawer

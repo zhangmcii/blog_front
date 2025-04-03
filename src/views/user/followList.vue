@@ -43,7 +43,7 @@ export default {
   },
   computed:{
     isCurrentUser() {
-      return this.userName == this.currentUser.username
+      return this.userName == this.currentUser.userInfo.username
     },
   },
   methods: {

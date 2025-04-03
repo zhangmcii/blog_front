@@ -13,14 +13,14 @@
       <el-avatar  :size="32" :src="photo.Avatar" @error="errorImage"   />
       <!-- <span class="dot"> </span> -->
       </template>
-      <template #default v-if="login">
-        <van-cell :title="currentUser.name?currentUser.name:'(未设置昵称)'" :label="currentUser.username"  title-style="margin-left:10px">
+      <template #default v-if="currentUser.isLogin">
+        <van-cell :title="currentUser.userInfo.name?currentUser.userInfo.name:'(未设置昵称)'" :label="currentUser.userInfo.username"  title-style="margin-left:10px">
           <template #icon>
             <el-avatar :src="photo.Avatar" :size="47"/>
           </template>
         </van-cell>
-        <van-cell title="个人资料" icon="manager-o" clickable @click="toggleMenu();$router.push(`/user/${currentUser.username}`)"/>
-        <div v-if="isCommentManage">
+        <van-cell title="个人资料" icon="manager-o" clickable @click="toggleMenu();$router.push(`/user/${currentUser.userInfo.username}`)"/>
+        <div v-if="currentUser.isCommentManage">
           <van-cell title="评论管理" icon="chat-o" clickable @click="toggleMenu();$router.push('/commentManagement')" />
           <van-cell title="操作日志" icon="shield-o" clickable @click="toggleMenu();$router.push('/operateLog')" />
           <van-cell title="找回其他用户密码" icon="warning-o" clickable @click="toggleMenu();$router.push('/PasswordChangeAdmin')" ></van-cell>
@@ -28,7 +28,7 @@
         <van-cell :title="accountLabel" :icon="accountLabel=='账户'?'notes-o':''" is-link arrow-direction="down" @click.prevent="toggleContactDropdown"/>
         <div  v-if="isContactDropdownActive">
           <van-cell title="修改密码" title-style="margin-left:10px" clickable @click="toggleMenu();$router.push('/changePassword')"></van-cell>
-          <van-cell title="修改邮箱" title-style="margin-left:10px" clickable @click="toggleMenu();$router.push('/changeEmail')" v-if="isConfirmed"></van-cell>
+          <van-cell title="修改邮箱" title-style="margin-left:10px" clickable @click="toggleMenu();$router.push('/changeEmail')" v-if="currentUser.userInfo.isConfirmed"></van-cell>
           <van-cell title="绑定邮箱" title-style="margin-left:10px" clickable @click="toggleMenu();$router.push('/bindEmail')" v-else></van-cell>
         </div>
         <van-cell title="退出登录" icon="peer-pay" clickable @click="log_out" href="/posts"></van-cell>
@@ -40,14 +40,13 @@
 </template>
 
 <script>
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 import MarQuee from '@/utils/components/MarQuee.vue'
 import daysApi from '@/api/days/daysApi.js'
 import emitter from '@/utils/emitter.js'
 import imageCfg from '@/config/image.js'
 import homeIcon from "@/asset/svg/homeIcon.svg?component";
 import {disconnectSocket} from '@/utils/socket'
-// import {connectSocket} from '@/utils/socket'
 import BellCom from '@/components/BellCom.vue'
 export default {
   name: 'BurgerMenu',
@@ -83,25 +82,11 @@ export default {
     return { currentUser }
   },
   computed: {
-    login() {
-      this.currentUser.loadUserName()
-      return this.currentUser.username != ''
-    },
-    isCommentManage() {
-      return this.currentUser.roleId >= 2
-    },
-    isConfirmed() {
-      return this.currentUser.isConfirmed == 'true'
-    },
     isHomePage(){
       return this.$route.path === '/posts'
     },
 },
   mounted() {
-    this.currentUser.loadUserName()
-    this.currentUser.loadName()
-    this.currentUser.loadRoleId()
-    this.currentUser.loadConfirmed()
     this.initImage()
     this.daySentence = daysApi.fetchQuote()
     emitter.on('image', (url) => {
@@ -135,18 +120,9 @@ export default {
     log_out() {
       this.toggleMenu();
       disconnectSocket()
-      localStorage.removeItem('token')
-      localStorage.removeItem('currentUserName')
-      localStorage.removeItem('currentName')
-      localStorage.removeItem('isAdmin')
-      localStorage.removeItem('roleId')
-      localStorage.removeItem('isConfirmed')
-      localStorage.removeItem('currentComment')
-      localStorage.removeItem('image')
-      // 更新pinia
-      this.currentUser.loadUserName()
-      // 退出后跳转到主页面 隐藏发布文章区域
-      this.currentUser.loadToken()
+      this.currentUser.logOut()
+      console.log('name', this.currentUser.userInfo.username)
+      console.log('token', this.currentUser.userInfo.token)
       this.$message({
         message: '已退出',
         type: 'success',
@@ -156,7 +132,6 @@ export default {
       this.initImage()
     },
     goHomePage(){
-      // 如果汉堡菜单展开，则关闭
       if(this.showPopover){
         this.closeToggleMenu()
       }
@@ -169,12 +144,12 @@ export default {
       this.photo.Avatar = imageCfg.logOut
     },
     initImage(){
-      this.currentUser.loadImage()
-      if(!this.currentUser.image){
+      console.log('image', this.currentUser.userInfo)
+      if(!this.currentUser.userInfo.image){
         this.photo.Avatar = imageCfg.logOut
         return 
       }
-      this.photo.Avatar = this.currentUser.image
+      this.photo.Avatar = this.currentUser.userInfo.image
     },
     onSelect(action){
       if(action.text=='登录'){

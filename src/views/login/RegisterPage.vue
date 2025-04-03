@@ -41,7 +41,6 @@
 
 <script>
 import authApi from '@/api/auth/authApi.js'
-import { useCurrentUserStore } from '@/stores/currentUser'
 import confetti from 'canvas-confetti'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import imageCfg from '@/config/image.js'
@@ -90,10 +89,6 @@ export default {
       isChange: false,
       loading: false
     }
-  },
-  setup() {
-    const currentUser = useCurrentUserStore()
-    return { currentUser }
   },
   watch: {
     ruleForm: {

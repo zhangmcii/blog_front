@@ -1,11 +1,14 @@
 // src/utils/socket.js
 import { io } from 'socket.io-client'
 import requestUrl from '@/config/requestUrl.js'
+import { useCurrentUserStore } from '@/stores/user'
+
 
 let socket = null
+const currentUser = useCurrentUserStore()
 
 function connectSocket() {
-  const token = localStorage.getItem('token')
+  const token = currentUser.userInfo.token
   if (!socket) {
     socket = io(`${requestUrl.baseUrl}:${requestUrl.backendPort}`, {
       auth: { Authorization: token },

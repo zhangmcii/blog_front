@@ -67,7 +67,7 @@ export default {
       praiseNum: 0,
       hasPraised: false,
       iconSize: 15,
-      eStyle: `style="width: 26px;height: 26px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 3px;"`,
+      eStyle: `style="width: 26px;height: 26px;vertical-align: middle; position: relative;top: -3px;margin: 0px 2px 0px 3px;"`
     }
   },
   setup() {
@@ -97,7 +97,7 @@ export default {
       return this.$dayjs(this.post.timestamp).fromNow()
     },
     isCommentManage() {
-      return this.currentUser.roleId >= 2
+      return this.currentUser.userInfo.roleId >= 2
     },
     show_body() {
       return this.isCommentManage || !this.post.disabled
@@ -111,18 +111,11 @@ export default {
     isUserRoute() {
       return this.$route.path.startsWith('/user')
     },
-    login() {
-      this.currentUser.loadUserName()
-      return this.currentUser.username != ''
-    },
     skeletonItemWidth() {
       return this.avatar ? '80%' : ' 100%'
     }
   },
-  mounted() {
-    this.currentUser.loadAdmin()
-    this.currentUser.loadRoleId()
-  },
+  mounted() {},
   methods: {
     share() {
       this.$router.push(`/share/${this.post.id}`)
@@ -134,7 +127,7 @@ export default {
       this.$router.push(`/share/${this.post.id}`)
     },
     praise() {
-      if (!this.login) {
+      if (!this.currentUser.isLogin) {
         this.$message.info('请先登录')
         return
       }
@@ -213,7 +206,7 @@ export default {
             :md="2"
             :lg="2"
             :xl="2"
-            v-if="showEdit && post.author == currentUser.username"
+            v-if="showEdit && post.author == currentUser.userInfo.username"
           >
             <van-icon name="edit" @click.stop="edit" :size="iconSize" />
           </el-col>
@@ -223,7 +216,7 @@ export default {
             :md="2"
             :lg="2"
             :xl="2"
-            v-else-if="showEdit && currentUser.isAdmin == 'true'"
+            v-else-if="showEdit && currentUser.userInfo.isAdmin == 'true'"
           >
             <van-icon name="edit" @click.stop="edit" :size="iconSize" color="red" />
           </el-col>
