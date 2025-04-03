@@ -14,7 +14,7 @@
       <!-- <span class="dot"> </span> -->
       </template>
       <template #default v-if="currentUser.isLogin">
-        <van-cell :title="currentUser.userInfo.name?currentUser.userInfo.name:'(未设置昵称)'" :label="currentUser.userInfo.username"  title-style="margin-left:10px">
+        <van-cell :title="currentUser.priorityName" :label="currentUser.userInfo.username"  title-style="margin-left:10px">
           <template #icon>
             <el-avatar :src="photo.Avatar" :size="47"/>
           </template>

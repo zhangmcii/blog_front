@@ -39,7 +39,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
     isCommentManage: (state) => state.userInfo.roleId >= 2,
     isConfirmed: (state) => state.userInfo.isConfirmed == true,
     isAdmin: (state) => state.userInfo.isAdmin == true,
-    priorityName: (state) => (state.userInfo.name ? state.userInfo.name : state.userInfo.username)
+    priorityName: (state) => (state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username)
   },
   actions: {
     addItemLikeIds(value) {

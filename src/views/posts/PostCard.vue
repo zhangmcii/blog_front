@@ -1,5 +1,5 @@
 <script>
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 import date from '@/utils/date.js'
 import imageCfg from '@/config/image.js'
 import praise from '@/api/praise/praiseApi.js'

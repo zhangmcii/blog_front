@@ -1,6 +1,6 @@
 <script>
 import authApi from '@/api/auth/authApi.js'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 export default {

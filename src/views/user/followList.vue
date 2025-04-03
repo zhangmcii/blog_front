@@ -4,7 +4,7 @@ import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import FollowsList from '@/views/user/components/FollowsList.vue'
 import FollowRow from '@/views/user/components/FollowRow.vue'
 import arrayUtil from '@/utils/arrayUtil.js'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 export default {
   components: {
     PageHeadBack,
