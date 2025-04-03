@@ -15,5 +15,14 @@ export const useOtherUserStore = defineStore('otherUser', {
         this.username = ''
       }
     }
+  },
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        key: 'blogOtherUser',
+        storage: localStorage
+      }
+    ]
   }
 })

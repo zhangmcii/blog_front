@@ -3,7 +3,7 @@ import userApi from '@/api/user/userApi.js'
 import authApi from '@/api/auth/authApi.js'
 import image from '@/api/user/image.js'
 import date from '@/utils/date.js'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
 import PostCard from '../posts/PostCard.vue'
 import dayjs from 'dayjs'
@@ -13,7 +13,7 @@ import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import emitter from '@/utils/emitter.js'
 import upload from '@/config/postImageToken.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
-import { showConfirmDialog } from 'vant';
+import { showConfirmDialog } from 'vant'
 
 export default {
   components: {
@@ -81,30 +81,28 @@ export default {
       return dayjs(time).fromNow()
     },
     isCurrentUser() {
-      return this.user.username == this.currentUser.username
-    },
-    isAdmin() {
-      return this.currentUser.isAdmin == 'true'
+      return this.user.username == this.currentUser.userInfo.username
     },
     follow() {
-      return this.followPerm && this.currentUser.username != this.user.username
+      return this.followPerm && this.currentUser.userInfo.username != this.user.username
     },
     isFollowCurrentUser() {
-      return this.currentUser.username && !this.isCurrentUser && this.user.is_following_current_user
+      return (
+        this.currentUser.userInfo.username &&
+        !this.isCurrentUser &&
+        this.user.is_following_current_user
+      )
     }
   },
   mounted() {
     this.getPermission(1)
-    // 页面刷新手动加载一次pinia
-    this.currentUser.loadUserName()
-    this.currentUser.loadAdmin()
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userName = to.params.userName
       vm.getUserData(vm.userName)
       // 持久化保存 防止用户刷新本页面导致传入的username丢失
-      vm.otherUser.saveUserName(to.params.userName)
+      vm.otherUser.username = to.params.userName
       vm.$nextTick(() => {})
     })
   },
@@ -112,7 +110,6 @@ export default {
     getUserData(userName, page) {
       this.loading.userData = true
       if (!userName) {
-        this.otherUser.loadUserName()
         userName = this.otherUser.username
       }
       if (!userName) {
@@ -151,8 +148,14 @@ export default {
       userApi.follow(this.user.username).then((res) => {
         if (res.data.msg == 'success') {
           this.loading.follow = false
-          this.$message.success('关注成功')
           this.user = res.data.data
+          this.currentUser.addItemFollowed({
+            id: this.user.id,
+            name: this.user.name ? this.user.name : this.user.username,
+            uName: this.user.username,
+            avatar: this.user.image
+          })
+          this.$message.success('关注成功')
         } else {
           this.loading.follow = false
           this.$message.error(res.data.msg)
@@ -173,8 +176,9 @@ export default {
       } else {
         return userApi.unFollow(this.user.username).then((res) => {
           if (res.data.msg == 'success') {
-            this.$message.success('已取消关注')
             this.user = res.data.data
+            this.currentUser.delItemFollowed(this.user.username)
+            this.$message.success('已取消关注')
           } else {
             this.$message.error(res.data.msg)
           }
@@ -207,7 +211,7 @@ export default {
           this.user.image = url
           this.imgList.push(this.user.image)
           // 换图像成功后，更新本地image字段
-          this.currentUser.saveImage(res.data.image)
+          this.currentUser.userInfo.image = res.data.image
           emitter.emit('image', url)
           this.$message.success('图像上传成功')
         } else {
@@ -310,12 +314,12 @@ export default {
         </el-card>
       </template>
       <template #default>
-        <el-card shadow="never" v-if="isCurrentUser || isAdmin">
+        <el-card shadow="never" v-if="isCurrentUser || currentUser.isAdmin">
           <el-row justify="space-between">
             <el-col v-if="isCurrentUser" :xs="9" :xl="6">
               <el-button @click="editProfile">编辑资料</el-button>
             </el-col>
-            <el-col v-if="isAdmin" :xs="12" :xl="12">
+            <el-col v-if="currentUser.isAdmin" :xs="12" :xl="12">
               <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
             </el-col>
           </el-row>

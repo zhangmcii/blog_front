@@ -21,11 +21,13 @@ export const useCurrentUserStore = defineStore('currentUser', {
   //     userInfo: {
   //       id:'1',
   //       username: '',
-  //       name: '',
+  //       nickname: '',
   //       isAdmin: false,
   //       roleId: 0,
   //       isConfirmed: false,
-  //       image: ''
+  //       image: '',
+  //       // 已点赞的评论id
+  //       likeIds:[],
   //     },
   //     notice: {
   //       Notification_data: [],
@@ -34,6 +36,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
   //     }
   //   }
   // },
+
   actions: {
     saveToken(token) {
       this.token = token

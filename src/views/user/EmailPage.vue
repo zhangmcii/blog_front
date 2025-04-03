@@ -67,8 +67,8 @@ export default {
     bindEmail() {
       authApi.checkCode(this.form).then((res) => {
         if (res.data.msg == 'success') {
-          this.currentUser.saveConfirmed(res.data.isConfirmed)
-          this.currentUser.saveRoleId(res.data.roleId)
+          this.currentUser.userInfo.isConfirmed = res.data.isConfirmed
+          this.currentUser.userInfo.roleId = res.data.roleId
           this.$message.success('邮箱绑定成功！')
           this.$router.push('/posts')
         } else {

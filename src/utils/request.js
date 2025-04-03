@@ -2,6 +2,10 @@ import { ElMessage } from 'element-plus'
 import router from '../router/index.js'
 import axios from 'axios'
 import requestUrl from '@/config/requestUrl.js'
+import { useCurrentUserStore } from '@/stores/user'
+
+
+const currentUser = useCurrentUserStore()
 
 const $http = axios.create({
   baseURL: requestUrl.baseUrl + ':' + requestUrl.backendPort,
@@ -17,7 +21,7 @@ function setInterceptors(...instance) {
     i.interceptors.request.use(
       function (config) {
         // 从localStorage中获取token
-        const token = localStorage.getItem('token')
+        const token = currentUser.userInfo.token
         if (token) {
           config.headers['Authorization'] = token
         }

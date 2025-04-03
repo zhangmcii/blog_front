@@ -1,8 +1,8 @@
 <script>
-import { connectSocket ,disconnectSocket } from '@/utils/socket'
+import { connectSocket, disconnectSocket } from '@/utils/socket'
 import NotificationCom from './NotificationCom.vue'
 import notificationApi from '@/api/notification/notificationApi.js'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 export default {
   components: {
     NotificationCom
@@ -20,17 +20,17 @@ export default {
   computed: {
     showDot() {
       return this.notifications.some((item) => !item.isRead)
-    },
-    login() {
-      this.currentUser.loadUserName()
-      return this.currentUser.username != ''
     }
+    // login() {
+    //   this.currentUser.loadUserName()
+    //   return this.currentUser.username != ''
+    // },
   },
   mounted() {
     this.initSocket()
   },
-  unmounted(){
-    if(this.socket){
+  unmounted() {
+    if (this.socket) {
       disconnectSocket()
       this.socket = null
     }
@@ -38,7 +38,8 @@ export default {
   methods: {
     async initLoad() {
       // 加载本地数据
-      const localData = this.currentUser.loadNotifications()
+      // const localData = this.currentUser.loadNotifications()
+      const localData = this.currentUser.notice.Notification_data
       // 请求服务器数据
       const unRead = await notificationApi.getUnRead().then((res) => res.data.data)
       // 合并去重
@@ -70,7 +71,8 @@ export default {
       this.$router.push(`/share/${item.postId}`)
     },
     initSocket() {
-      if (!this.login) {
+      console.log('11')
+      if (!this.currentUser.isLogin) {
         return
       }
       this.socket = connectSocket()
@@ -85,7 +87,7 @@ export default {
           (item, index, self) => index === self.findIndex((t) => t.id === item.id)
         )
         this.currentUser.saveNotifications(mergedData)
-        if (mergedData.length > this.currentUser.MAX_ITEM) {
+        if (mergedData.length > this.currentUser.notice.MAX_ITEM) {
           this.currentUser.saveNotifications(mergedData.slice(0, 50))
         }
         if (import.meta.env.DEV) {

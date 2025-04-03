@@ -84,18 +84,19 @@ export default {
       })
     },
     log_out() {
-      localStorage.removeItem('token')
-      localStorage.removeItem('currentUserName')
-      localStorage.removeItem('isAdmin')
-      localStorage.removeItem('roleId')
-      localStorage.removeItem('userName')
-      localStorage.removeItem('isConfirmed')
-      localStorage.removeItem('currentComment')
-      localStorage.removeItem('image')
+      this.currentUser.logOut()
+      // localStorage.removeItem('token')
+      // localStorage.removeItem('currentUserName')
+      // localStorage.removeItem('isAdmin')
+      // localStorage.removeItem('roleId')
+      // localStorage.removeItem('userName')
+      // localStorage.removeItem('isConfirmed')
+      // localStorage.removeItem('currentComment')
+      // localStorage.removeItem('image')
       // 更新pinia
-      this.currentUser.loadUserName()
-      // 退出后跳转到主页面 隐藏发布文章区域
-      this.currentUser.loadToken()
+      // this.currentUser.loadUserName()
+      // // 退出后跳转到主页面 隐藏发布文章区域
+      // this.currentUser.loadToken()
       this.$router.push('/login')
     }
   }

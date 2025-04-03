@@ -1,7 +1,7 @@
 <script>
 import dragVerifyImgRotate from './components/dragVerifyImgRotate.vue'
 import authApi from '@/api/auth/authApi.js'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 import imageCfg from '@/config/image.js'
 export default {
   components: {
@@ -62,14 +62,7 @@ export default {
                 // 判断是否勾选记住密码
                 this.hasRemember()
                 const u = res.data.data
-                this.currentUser.saveToken(u.token)
-                this.currentUser.saveId(u.userId)
-                this.currentUser.saveUserName(u.username)
-                this.currentUser.saveName(u.nickname)
-                this.currentUser.saveAdmin(u.admin)
-                this.currentUser.saveRoleId(u.roleId)
-                this.currentUser.saveConfirmed(u.isConfirmed)
-                this.currentUser.saveImage(u.image)
+                this.currentUser.userInfo=u
                 this.$message({
                   message: '登录成功',
                   type: 'success',

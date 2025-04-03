@@ -38,6 +38,7 @@
 <script>
 import userApi from '@/api/user/userApi.js'
 import { showConfirmDialog } from 'vant';
+import { useCurrentUserStore } from '@/stores/user'
 
 export default {
   props: {
@@ -69,6 +70,10 @@ export default {
       isMutualFollow: false
     }
   },
+  setup() {
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
+  },
   mounted() {
     // 初始状态 是否互关
     if (this.tabAction == 'fan' && this.follows.is_following) {
@@ -85,6 +90,12 @@ export default {
         if (res.data.msg == 'success') {
           this.isFollowed = true
           this.isMutualFollow = true
+          this.currentUser.addItemFollowed({
+            id: this.follows.id,
+            name: this.follows.nickname ? this.follows.nickname : this.follows.username,
+            uName: this.follows.username,
+            avatar: this.follows.image
+          })
           this.$message.success('关注成功')
         } else {
           this.$message.error(res.data.msg)
@@ -104,6 +115,7 @@ export default {
       } else {
         return userApi.unFollow(this.follows.username).then((res) => {
           if (res.data.msg == 'success') {
+            this.currentUser.delItemFollowed(this.follows.username)
             this.$message.success('已取消关注')
             if (this.tabAction == 'followed') {
               this.$emit('remove', this.follows.username)

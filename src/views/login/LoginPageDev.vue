@@ -1,6 +1,6 @@
 <script>
 import authApi from '@/api/auth/authApi.js'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 export default {
   data() {
     var validateUser = (rule, value, callback) => {
@@ -38,7 +38,7 @@ export default {
   computed: {
     formHasValue() {
       return this.ruleForm.user !== '' && this.ruleForm.pass !== ''
-    }
+    },
   },
   mounted() {
     this.getAccount()
@@ -54,14 +54,7 @@ export default {
                 // 判断是否勾选记住密码
                 this.hasRemember()
                 const u = res.data.data
-                this.currentUser.saveToken(u.token)
-                this.currentUser.saveId(u.userId)
-                this.currentUser.saveUserName(u.username)
-                this.currentUser.saveName(u.nickname)
-                this.currentUser.saveAdmin(u.admin)
-                this.currentUser.saveRoleId(u.roleId)
-                this.currentUser.saveConfirmed(u.isConfirmed)
-                this.currentUser.saveImage(u.image)
+                this.currentUser.userInfo=u
                 this.$message({
                   message: '登录成功',
                   type: 'success',
