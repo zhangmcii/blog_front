@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useLevel } from 'undraw-ui'
 import { useCurrentUserStore } from '@/stores/user'
 import userApi from '@/api/user/userApi.js'
@@ -36,7 +37,7 @@ const isF = computed(() => {
   return currentUser.userInfo.followed.some((item) => {
     return item.uName === props.scope.uName
   })
-})  
+})
 </script>
 
 <template>

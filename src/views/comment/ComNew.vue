@@ -27,6 +27,7 @@
 // 下载表情包资源emoji.zip https://gitee.com/undraw/undraw-ui/releases/tag/v1.0.0
 // static文件放在public下,引入emoji.ts文件可以移动assets下引入,也可以自定义到指定位置
 // import emoji from '@/utils/emoji.js'
+
 import { reactive, ref } from 'vue'
 import { UToast, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
 import Operate from './operate.vue'
@@ -37,7 +38,6 @@ import userApi from '@/api/user/userApi.js'
 import imageCfg from '@/config/image.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
-
 
 const currentUser = useCurrentUserStore()
 
@@ -55,14 +55,13 @@ const config = reactive({
   page: true, // 开启分页
   mention: {
     // 开启提交功能
-    data: [...currentUser.userInfo.followed],
+    data: currentUser.userInfo.followed,
     alias: {
       username: 'name'
     },
     showAvatar: true
   }
 })
-// 请求接口获取评论数据
 
 // 设置当前登录用户数据
 config.user = {
@@ -99,7 +98,7 @@ const showInfo = (uid, finish) => {
         id: u.id,
         isFollowed:
           currentUser.userInfo.followed.findIndex((item) => item.uName == u.username) != -1,
-        uName: u.username,
+        uName: u.username
       }
       console.log('用户信息', userInfo)
       loading.value = false
@@ -110,10 +109,9 @@ const showInfo = (uid, finish) => {
   })
 }
 
-const followed = reactive({ localData: [...currentUser.userInfo.followed] })
 // 提交触发搜索: 模拟请求接口返回搜索用户数据
 const mentionSearch = (val) => {
-  config.mention.data = followed.localData.filter((v) => v.name.includes(val))
+  config.mention.data = currentUser.userInfo.followed.filter((v) => v.name.includes(val))
 }
 // 评论提交事件
 const submit = ({ content, parentId, finish }) => {
