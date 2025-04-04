@@ -35,13 +35,19 @@ export default {
     const currentUser = useCurrentUserStore()
     return { currentUser }
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (to.query?.username) {
+        vm.ruleForm.user = to.query.username
+      } else {
+        vm.getAccount()
+      }
+    })
+  },
   computed: {
     formHasValue() {
       return this.ruleForm.user !== '' && this.ruleForm.pass !== ''
-    },
-  },
-  mounted() {
-    this.getAccount()
+    }
   },
   methods: {
     login() {
@@ -50,19 +56,19 @@ export default {
           this.loading = true
           authApi.login(this.ruleForm.user, this.ruleForm.pass).then((res) => {
             if (res.data.msg == 'success') {
-                this.loading = false
-                // 判断是否勾选记住密码
-                this.hasRemember()
-                const u = res.data.data
-                this.currentUser.userInfo=u
-                this.$message({
-                  message: '登录成功',
-                  type: 'success',
-                  duration: 1700
-                })
-                this.$router.push({ path: '/posts' })
-                return
-              }
+              this.loading = false
+              // 判断是否勾选记住密码
+              this.hasRemember()
+              const u = res.data.data
+              this.currentUser.userInfo = u
+              this.$message({
+                message: '登录成功',
+                type: 'success',
+                duration: 1700
+              })
+              this.$router.push({ path: '/posts' })
+              return
+            }
             this.loading = false
             this.$message({
               message: '账号或密码错误',

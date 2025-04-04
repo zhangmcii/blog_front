@@ -116,7 +116,13 @@ export default {
                 this.congratulation()
                 this.$message.success('注册成功')
                 setTimeout(() => {
-                  this.$router.push('/login')
+                  this.$router.push({
+                    path: '/login',
+                    query: {
+                      username: this.ruleForm.user
+                    },
+                    hash: false
+                  })
                 }, 700)
               } else {
                 this.$message.error(res.data.detail)

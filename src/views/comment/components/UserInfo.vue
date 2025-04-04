@@ -4,7 +4,7 @@ import { useLevel } from 'undraw-ui'
 import { useCurrentUserStore } from '@/stores/user'
 import userApi from '@/api/user/userApi.js'
 import { ElMessage } from 'element-plus'
-const props = defineProps({ scope: Object, loading: Boolean })
+const props = defineProps({ scope: Object, loading: Boolean, config: Object })
 
 const currentUser = useCurrentUserStore()
 
@@ -65,24 +65,30 @@ const isF = computed(() => {
               <span
                 class="name"
                 style="max-width: 10em"
-                @click="$router.push(`/user/${scope.uName}`)"
                 >{{ scope.username }}</span
               >
-              <span blank="true" class="rank">
+              <span blank="true" class="rank" v-if="config.show.level">
                 <u-icon size="24" v-html="useLevel(scope.level)"></u-icon>
               </span>
             </div>
           </div>
           <div class="social-info">
-            <a href="" class="attention">
+            <router-link
+              :to="{ name: 'follow', params: { action: 'followed', userName: scope.uName || 1 } }"
+              class="attention"
+            >
               <span>{{ scope.attention }}</span>
               <span>关注</span>
-            </a>
-            <a href="" class="follower">
+            </router-link>
+            <router-link
+              :to="{ name: 'follow', params: { action: 'follower', userName: scope.uName || 1} }"
+              class="follower"
+            >
               <span>{{ scope.follower }}</span>
               <span>粉丝</span>
-            </a>
-            <a href="" class="like">
+            </router-link>
+            <a
+              class="like">
               <span>{{ scope.like }}</span>
               <span>获赞</span>
             </a>

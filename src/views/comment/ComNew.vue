@@ -17,7 +17,7 @@
         <Operate :comment="scope" @remove="remove" />
       </template> -->
       <template #card="scope">
-        <UserInfo :scope="scope" :loading="loading" />
+        <UserInfo :scope="scope" :loading="loading" :config="config" />
       </template>
     </u-comment>
   </u-comment-scroll>
@@ -63,12 +63,12 @@ const config = reactive({
   }
 })
 
-// 设置当前登录用户数据
+
 config.user = {
   id: currentUser.userInfo.id,
-  username: localStorage.getItem('currentNickName'),
+  username: currentUser.priorityName,
   // level: 6,
-  avatar: localStorage.getItem('image') ? localStorage.getItem('image') : imageCfg.logOut,
+  avatar: currentUser.userInfo.image ?  currentUser.userInfo.image : imageCfg.logOut,
   // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
   // 存储已点赞的评论id
   likeIds: []
@@ -100,7 +100,6 @@ const showInfo = (uid, finish) => {
           currentUser.userInfo.followed.findIndex((item) => item.uName == u.username) != -1,
         uName: u.username
       }
-      console.log('用户信息', userInfo)
       loading.value = false
       finish(userInfo)
     } else {

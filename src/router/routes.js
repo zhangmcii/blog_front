@@ -31,7 +31,6 @@ const routes = [
         path: '/share/:id',
         name: 'share',
         component: () => import('../views/posts/PostShare.vue'),
-        meta: { keepAlive: true}
       },
       {
         path: '/editPost/:id',
