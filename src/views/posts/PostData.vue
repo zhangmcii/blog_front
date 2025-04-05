@@ -23,7 +23,12 @@ export default {
         publishPost: false,
         card: false
       },
-      showEmoji:false
+      showEmoji:false,
+      throttle:{
+        leading: 200,
+        trailing: 200,
+        initVal: true
+      },
     }
   },
   setup() {
@@ -31,10 +36,6 @@ export default {
     return { currentUser }
   },
   mounted() {
-    // this.currentUser.loadToken()
-    // this.currentUser.loadUserName()
-    // this.currentUser.loadConfirmed()
-    // this.currentUser.loadRoleId()
     this.getPosts(this.currentPage, this.activeName)
   },
   methods: {
@@ -86,7 +87,7 @@ export default {
       <SkeletonUtil
         :loading="loading.card"
         :row="5"
-        :throttle="{}"
+        :throttle="throttle"
         :cardStyle="{ marginBottom: '10px' }"
       >
         <PostCard
@@ -109,7 +110,7 @@ export default {
       <SkeletonUtil
         :loading="loading.card"
         :row="5"
-        :throttle="{}"
+        :throttle="throttle"
         :cardStyle="{ marginBottom: '10px' }"
       >
         <PostCard

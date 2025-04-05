@@ -30,7 +30,7 @@
 
 import { reactive, ref } from 'vue'
 import { UToast, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
-import Operate from './operate.vue'
+// import Operate from './operate.vue'
 import UserInfo from './components/UserInfo.vue'
 import commentApi from '@/api/comment/commentApi.js'
 import praiseApi from '@/api/praise/praiseApi.js'
@@ -38,9 +38,11 @@ import userApi from '@/api/user/userApi.js'
 import imageCfg from '@/config/image.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
+import { showConfirmDialog } from 'vant';
+import { useRouter } from 'vue-router'
 
 const currentUser = useCurrentUserStore()
-
+const router = useRouter()
 const props = defineProps({ postId: Number })
 const config = reactive({
   user: {}, // 当前用户信息
@@ -63,12 +65,11 @@ const config = reactive({
   }
 })
 
-
 config.user = {
   id: currentUser.userInfo.id,
   username: currentUser.priorityName,
   // level: 6,
-  avatar: currentUser.userInfo.image ?  currentUser.userInfo.image : imageCfg.logOut,
+  avatar: currentUser.userInfo.image ? currentUser.userInfo.image : imageCfg.logOut,
   // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
   // 存储已点赞的评论id
   likeIds: []
@@ -114,9 +115,27 @@ const mentionSearch = (val) => {
 }
 // 评论提交事件
 const submit = ({ content, parentId, finish }) => {
-  let str = '提交评论:' + content + ';\t父id: ' + parentId
-  console.log(str)
-
+  if (!currentUser.isLogin) {
+    // showConfirmDialog({
+    //   title: '去登录？',
+    //   width: 230,
+    //   beforeClose: beforeClose
+    // })
+    showConfirmDialog({
+  title: '您还未登录',
+  message:'快去登录再发布文章吧',
+  confirmButtonText: '去登录',
+  width: 300,
+})
+  .then(() => {
+    router.push('/login')
+    // on confirm
+  })
+  .catch(() => {
+    // on cancel
+  });
+    return
+  }
   commentApi.submitComment(1, { body: content, parentCommentId: parentId }).then((res) => {
     if (res.data.msg == 'success') {
       finish(res.data.data.at(-1))
@@ -126,6 +145,14 @@ const submit = ({ content, parentId, finish }) => {
       ElMessage.error(res.data.detail)
     }
   })
+}
+
+function beforeClose(action) {
+  if (action !== 'confirm') {
+    return Promise.resolve(true)
+  } else {
+    return router.push('/login')
+  }
 }
 
 // 点赞按钮事件
@@ -219,7 +246,7 @@ setTimeout(() => {
   })
   console.log('初始已点赞', currentUser.userInfo.likeIds)
 
-  // 已点赞的评论id
+  // 已点赞的评论idssss
   // 注意这里不能用`等于号`
   config.user.likeIds = [...currentUser.userInfo.likeIds]
 }, 200)
