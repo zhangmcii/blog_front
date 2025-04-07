@@ -4,6 +4,7 @@ import date from '@/utils/date.js'
 import imageCfg from '@/config/image.js'
 import praise from '@/api/praise/praiseApi.js'
 import emojiCfg from '@/config/emojiCfg.js'
+import { loginReminder } from '@/utils/common.js'
 
 export default {
   props: {
@@ -128,7 +129,7 @@ export default {
     },
     praise() {
       if (!this.currentUser.isLogin) {
-        this.$message.info('请先登录')
+        loginReminder('快去登录再点赞吧')
         return
       }
       praise.submitPraise(this.post.id).then((res) => {

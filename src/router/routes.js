@@ -90,12 +90,6 @@ const routes = [
         component: () => import('../views/user/PasswordReset.vue')
       },
       {
-        path: '/reply',
-        name: 'replyComment',
-        component: () => import('../views/comment/CommentReply.vue'),
-        meta: { requireAuth: true }
-      },
-      {
         path: '/403',
         name: 'notAuth',
         component: () => import('../views/error/NotAuth.vue')
@@ -109,6 +103,11 @@ const routes = [
         path: '/500',
         name: 'networkError',
         component: () => import('../views/error/NetError.vue')
+      },
+      {
+        path: '/chat',
+        name: 'chat',
+        component: () => import('../views/chat/chat.vue')
       }
     ]
   },

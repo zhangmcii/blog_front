@@ -1,7 +1,7 @@
 <script>
 import commentApi from '@/api/comment/commentApi.js'
 import PostCard from '../posts/PostCard.vue'
-import { useCurrentUserStore } from '@/stores/currentUser'
+import { useCurrentUserStore } from '@/stores/user'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 export default {

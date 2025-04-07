@@ -24,10 +24,11 @@ export default {
         card: false
       },
       showEmoji:false,
+      // 延迟渲染会导致与空页面闪烁
       throttle:{
-        leading: 200,
-        trailing: 200,
-        initVal: true
+        // leading: 200,
+        // trailing: 200,
+        // initVal: true
       },
     }
   },
@@ -151,4 +152,5 @@ export default {
   font-size: 32px;
   font-weight: 600;
 }
+
 </style>
