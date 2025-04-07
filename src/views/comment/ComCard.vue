@@ -125,14 +125,6 @@ const submit = ({ content, parentId, finish }) => {
   })
 }
 
-function beforeClose(action) {
-  if (action !== 'confirm') {
-    return Promise.resolve(true)
-  } else {
-    return router.push('/login')
-  }
-}
-
 // 点赞按钮事件
 const like = (id, finish) => {
   if (!currentUser.isLogin) {
