@@ -1,0 +1,226 @@
+<template>
+  <u-chat :config="config" style="height:83vh;" @load-more="loadMore" @submit="submit" >
+    <template #header>
+      <div style="height: 40px; display: flex; align-items: center;">
+        <div>xx聊天</div>
+      </div>
+    </template>
+  </u-chat>
+</template>
+<!-- 
+  满屏高度： height:45vh; 
+  无数据：   height:83vh
+
+  所有尺寸： height:83vh
+-->
+<script setup lang="ts">
+import { onMounted, reactive, ref } from 'vue'
+import { usePage } from 'undraw-ui'
+import emoji from '@/config/emoji.js'
+import {UChat} from 'undraw-ui'
+
+// 下载表情包资源emoji.zip https://gitee.com/undraw/undraw-ui/releases/tag/v1.0.0
+// static文件放在public下,引入emoji.ts文件可以移动assets下引入,也可以自定义到指定位置
+
+const config = reactive({
+  user: {
+    id: 1,
+    username: 'user',
+    avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+  },
+  data: [],
+  emoji: emoji // 可选
+})
+
+// let data = [
+//   {
+//     id: 10,
+//     content: 'test10',
+//     uid: 1,
+//     user: {
+//       username: 'user',
+//       avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+//     },
+//     createTime: '2024-06-29 09:30:00'
+//   },
+//   {
+//     id: 9,
+//     content: 'test9',
+//     uid: 2,
+//     user: {
+//       username: 'user2',
+//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
+//     },
+//     createTime: '2024-06-29 09:10:30'
+//   },
+//   {
+//     id: 8,
+//     content: 'test8',
+//     uid: 1,
+//     user: {
+//       username: 'user',
+//       avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+//     },
+//     createTime: '2024-06-29 09:11:20'
+//   },
+//   {
+//     id: 7,
+//     content: 'test7',
+//     uid: 2,
+//     user: {
+//       username: 'user2',
+//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
+//     },
+//     createTime: '2024-06-29 09:11:10'
+//   },
+//   {
+//     id: 6,
+//     content: 'test6',
+//     uid: 1,
+//     user: {
+//       username: 'user',
+//       avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+//     },
+//     createTime: '2024-06-29 09:11:00'
+//   },
+//   {
+//     id: 5,
+//     content: 'test5',
+//     uid: 1,
+//     user: {
+//       username: 'user2',
+//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
+//     },
+//     createTime: '2024-06-29 08:45:30'
+//   },
+//   {
+//     id: 4,
+//     content: 'test4',
+//     uid: 1,
+//     user: {
+//       username: 'user',
+//       avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+//     },
+//     createTime: '2024-06-29 08:45:00'
+//   },
+//   {
+//     id: 3,
+//     content: 'test3',
+//     uid: 1,
+//     user: {
+//       username: 'user',
+//       avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+//     },
+//     createTime: '2024-06-28 09:00:00'
+//   },
+//   {
+//     id: 2,
+//     content: 'test2',
+//     uid: 1,
+//     user: {
+//       username: 'user',
+//       avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+//     },
+//     createTime: '2024-05-27 09:01:20'
+//   },
+//   {
+//     id: 1,
+//     content: 'test1',
+//     uid: 2,
+//     user: {
+//       username: 'user2',
+//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
+//     },
+//     createTime: '2024-05-27 09:01:00'
+//   }
+// ]
+
+// let data = [
+// {
+//     id: 10,
+//     content: 'test10',
+//     uid: 1,
+//     user: {
+//       username: 'user',
+//       avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+//     },
+//     createTime: '2024-06-29 09:30:00'
+//   },
+//   {
+//     id: 9,
+//     content: 'test9',
+//     uid: 2,
+//     user: {
+//       username: 'user2',
+//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
+//     },
+//     createTime: '2024-06-29 09:10:30'
+//   },
+//   {
+//     id: 8,
+//     content: 'test9',
+//     uid: 2,
+//     user: {
+//       username: 'user2',
+//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
+//     },
+//     createTime: '2024-06-29 09:10:30'
+//   },
+//   {
+//     id: 8,
+//     content: 'test9',
+//     uid: 2,
+//     user: {
+//       username: 'user2',
+//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
+//     },
+//     createTime: '2024-06-29 09:10:30'
+//   },
+//    {
+//     id: 8,
+//     content: 'test9',
+//     uid: 2,
+//     user: {
+//       username: 'user2',
+//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
+//     },
+//     createTime: '2024-06-29 09:10:30'
+//   },
+// ]
+
+let data = []
+function getRandom(min, max) {
+  return Math.round(Math.random() * (max - min) + min)
+}
+
+let n = 0
+function loadMore(finish) {
+  if (n <= Math.ceil(data.length / 4)) {
+    setTimeout(() => {
+      finish(usePage(++n, 4, data))
+    }, getRandom(200, 500))
+  } else {
+    // 传入空数组没有更多消息了
+    finish([])
+  }
+}
+
+let id = 10
+function submit(val, finish) {
+  setTimeout(() => {
+    let chat = {
+      id: ++id,
+      content: val,
+      uid: 1,
+      user: {
+        username: 'user',
+        avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
+      },
+      createTime: new Date() as any
+    }
+    finish(chat)
+  }, 200)
+}
+</script>
+
+<style lang="scss" scoped></style>

@@ -17,9 +17,10 @@ router.beforeEach((to, _from, next) => {
       }
     }
   }
-  const r = j.roleId
+  const r = j.userInfo.roleId
+  console.log('路由守卫', r)
 
-  const role = r === '3' ? 'admin' : r
+  const role = r === 3 ? 'admin' : r
 
   // 无权限跳转403页面
   if (to.meta?.roles && !to.meta?.roles.includes(role)) {

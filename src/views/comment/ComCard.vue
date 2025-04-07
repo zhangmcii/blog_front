@@ -30,7 +30,7 @@
 
 import { reactive, ref } from 'vue'
 import { UToast, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
-// import Operate from './operate.vue'
+// import Operate from './components/CommentOperate.vue'
 import UserInfo from './components/UserInfo.vue'
 import commentApi from '@/api/comment/commentApi.js'
 import praiseApi from '@/api/praise/praiseApi.js'
@@ -38,11 +38,9 @@ import userApi from '@/api/user/userApi.js'
 import imageCfg from '@/config/image.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
-import { showConfirmDialog } from 'vant';
-import { useRouter } from 'vue-router'
+import { loginReminder } from '@/utils/common.js'
 
 const currentUser = useCurrentUserStore()
-const router = useRouter()
 const props = defineProps({ postId: Number })
 const config = reactive({
   user: {}, // 当前用户信息
@@ -79,9 +77,7 @@ config.user = {
 const loading = ref(false)
 // 模拟请求获取用户详细信息
 const showInfo = (uid, finish) => {
-  console.log(loading.value)
   loading.value = true
-  console.log('获取用户信息: ' + uid)
   let userInfo
   // 模拟获取后端根据uid查询用户信息
 
@@ -116,31 +112,13 @@ const mentionSearch = (val) => {
 // 评论提交事件
 const submit = ({ content, parentId, finish }) => {
   if (!currentUser.isLogin) {
-    // showConfirmDialog({
-    //   title: '去登录？',
-    //   width: 230,
-    //   beforeClose: beforeClose
-    // })
-    showConfirmDialog({
-  title: '您还未登录',
-  message:'快去登录再发布文章吧',
-  confirmButtonText: '去登录',
-  width: 300,
-})
-  .then(() => {
-    router.push('/login')
-    // on confirm
-  })
-  .catch(() => {
-    // on cancel
-  });
+    loginReminder('快去登录再发布文章吧')
     return
   }
   commentApi.submitComment(1, { body: content, parentCommentId: parentId }).then((res) => {
     if (res.data.msg == 'success') {
       finish(res.data.data.at(-1))
       UToast({ message: '评论成功!', type: 'info' })
-      console.log('结构', res.data.data.at(-1))
     } else {
       ElMessage.error(res.data.detail)
     }
@@ -157,8 +135,10 @@ function beforeClose(action) {
 
 // 点赞按钮事件
 const like = (id, finish) => {
-  console.log('点赞: ' + id)
-
+  if (!currentUser.isLogin) {
+    loginReminder('快去登录再点赞吧')
+    return
+  }
   if (config.user.likeIds.findIndex((item) => item == id) == -1) {
     // 点赞
     praiseApi.submitPraiseComment(id).then((res) => {
@@ -176,10 +156,8 @@ const like = (id, finish) => {
 
 //请求回复分页
 const replyPage = ({ parentId, current, size, finish }) => {
-  console.log(parentId, current, size)
   commentApi.getReplyComment(parentId, current).then((res) => {
     if (res.data.msg == 'success') {
-      console.log('333', res.data.data)
       let tmp = {
         total: res.data.total,
         // 分页提取回复
@@ -200,11 +178,9 @@ const disable = ref(false)
 
 // 请求接口请求加载更多评论
 const more = () => {
-  console.log('加载更多', query.current)
   if (query.current <= Math.ceil(query.total / query.size)) {
     commentApi.getComment(props.postId, query.current).then((res) => {
       if (res.data.msg == 'success') {
-        console.log('加载...', res.data.data)
         config.comments.push(...res.data.data)
         query.current++
       }
@@ -217,7 +193,6 @@ const more = () => {
 //排序
 const latest = ref(true)
 const sorted = (latest) => {
-  console.log('排序', latest)
   if (latest) {
     // 按最新时间排序（时间从新到旧）
     config.comments.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
@@ -239,12 +214,10 @@ setTimeout(() => {
   commentApi.getComment(props.postId, query.current).then((res) => {
     if (res.data.msg == 'success') {
       config.comments = res.data.data
-      console.log('初始加载评论', query.current)
       query.current++
       query.total = res.data.total
     }
   })
-  console.log('初始已点赞', currentUser.userInfo.likeIds)
 
   // 已点赞的评论idssss
   // 注意这里不能用`等于号`
