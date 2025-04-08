@@ -1,19 +1,25 @@
+<!--
+  注意： 
+        1.看了源码，UChat组件挂载后会自动执行一次loadMore函数。所以loadMore函数包含了第一次加载的聊天记录
+        2.返回的聊天记录不可以直接赋值给config.data。
+          而是把已分页的数据传给finish()回调函数（底层应该是自动帮我们拼接给config.data）
+        3.config.data中的id没什么用。界面是按数组顺序排列的，靠前的数组是最近发送的消息
+-->
 <template>
   <u-chat :config="config" style="max-height: 83vh" @load-more="loadMore" @submit="submit">
     <template #header>
-      <PageHeadBack :title="otherUser.priorityName"/>
+      <PageHeadBack :title="otherUser.priorityName" />
     </template>
   </u-chat>
 </template>
 <!-- 
   满屏高度： height:45vh; 
   无数据：   height:83vh
-
   所有尺寸： height:83vh
 -->
 <script setup>
 import { reactive } from 'vue'
-import { UChat, usePage } from 'undraw-ui'
+import { UChat } from 'undraw-ui'
 import chatApi from '@/api/chat/chatApi.js'
 import emoji from '@/config/emoji.js'
 import imageCfg from '@/config/image.js'
@@ -22,7 +28,6 @@ import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
 const currentUser = useCurrentUserStore()
 const otherUser = useOtherUserStore()
-
 
 const config = reactive({
   user: {
@@ -33,52 +38,31 @@ const config = reactive({
   data: [],
   emoji: emoji // 可选
 })
-// 这里的id没什么用。界面是按数组顺序排列的，靠前的数组是最近发送的消息
-// let data = [
-//   {
-//     id: 10,
-//     content: 'test10',
-//     uid: 1,
-//     user: {
-//       username: 'user',
-//       avatar: 'https://static.juzicon.com/images/image-180327173755-IELJ.jpg'
-//     },
-//     createTime: '2024-06-29 09:30:00'
-//   },
-//   {
-//     id: 9,
-//     content: 'test9',
-//     uid: 2,
-//     user: {
-//       username: 'user2',
-//       avatar: 'https://static.juzicon.com/images/image-231107185110-DFSX.png'
-//     },
-//     createTime: '2024-06-29 09:10:30'
-//   },
-// ]
-let data = reactive([])
-chatApi.getMessageHistory(otherUser.userInfo.id, 1).then((res) => {
-  if (res.data.msg == 'success') {
-    data = res.data.data
-  }
+
+const query = reactive({
+  current: 0, // 当前页数
+  size: 15, // 页大小
+  total: 0 // 评论总数
 })
-// config.data = usePage(1, 4, data)
 
-function getRandom(min, max) {
-  return Math.round(Math.random() * (max - min) + min)
-}
-
-let n = 0
 function loadMore(finish) {
-  if (n <= Math.ceil(data.length / 4)) {
-    setTimeout(
-      () => {
-        finish(usePage(++n, 4, data))
-      },
-      getRandom(200, 500)
-    )
+  // 打开页面第一次加载
+  if(!query.current){
+    chatApi.getMessageHistory(otherUser.userInfo.id, 1).then((res) => {
+      if (res.data.msg == 'success') {
+        query.total = res.data.total
+        finish([...res.data.data])
+        query.current = 2
+      }
+    })
+  }else if (query.current <= Math.ceil(query.total / query.size)) {
+    chatApi.getMessageHistory(otherUser.userInfo.id, query.current).then((res) => {
+      if (res.data.msg == 'success') {
+        query.current++
+        finish([...res.data.data])
+      }
+    })
   } else {
-    // 传入空数组没有更多消息了
     finish([])
   }
 }
