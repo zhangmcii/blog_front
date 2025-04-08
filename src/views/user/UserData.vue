@@ -14,6 +14,7 @@ import emitter from '@/utils/emitter.js'
 import upload from '@/config/postImageToken.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import { showConfirmDialog } from 'vant'
+import { loginReminder } from '@/utils/common.js'
 
 export default {
   components: {
@@ -62,6 +63,16 @@ export default {
     const otherUser = useOtherUserStore()
     return { currentUser, otherUser, areaList }
   },
+  // 当从A资料跳转B资料时，更新资料页面
+  created() {
+    this.$watch(
+      () => this.$route.params.userName,
+      (newVal) => {
+        this.userName = newVal
+        this.getUserData(newVal)
+      }
+    )
+  },
   computed: {
     location() {
       if (this.user.location && !isNaN(this.user.location)) {
@@ -102,7 +113,7 @@ export default {
       vm.userName = to.params.userName
       vm.getUserData(vm.userName)
       // 持久化保存 防止用户刷新本页面导致传入的username丢失
-      vm.otherUser.username = to.params.userName
+      // vm.otherUser.username = to.params.userName
       vm.$nextTick(() => {})
     })
   },
@@ -110,7 +121,7 @@ export default {
     getUserData(userName, page) {
       this.loading.userData = true
       if (!userName) {
-        userName = this.otherUser.username
+        userName = this.otherUser.userInfo.username
       }
       if (!userName) {
         this.$message.error('要显示资料的用户名为空！')
@@ -119,6 +130,8 @@ export default {
       userApi.get_user(userName, page).then((res) => {
         this.loading.userData = false
         this.user = res.data.data
+        // 保存当前点开的用户资料信息
+        this.otherUser.userInfo = res.data.data
         this.imgList.push(this.user.image)
         this.posts = res.data.posts
         this.posts.forEach((item) => {
@@ -227,6 +240,13 @@ export default {
     },
     showDrawer() {
       this.drawer = !this.drawer
+    },
+    openChat() {
+      if (!this.currentUser.isLogin) {
+        loginReminder('快去登录再私信吧')
+        return
+      }
+      this.$router.push('/chat')
     }
   }
 }
@@ -347,6 +367,8 @@ export default {
         :pager-count="5"
       />
     </SkeletonUtil>
+
+    <el-button @click="openChat" v-if="!isCurrentUser">私信</el-button>
   </PageHeadBack>
   <van-action-sheet v-model:show="drawer" cancel-text="取消">
     <photo-provider :photo-closable="true">

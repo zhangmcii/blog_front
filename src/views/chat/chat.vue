@@ -1,9 +1,7 @@
 <template>
   <u-chat :config="config" style="max-height: 83vh" @load-more="loadMore" @submit="submit">
     <template #header>
-      <div style="height: 40px; display: flex; align-items: center">
-        <div>xx聊天</div>
-      </div>
+      <PageHeadBack :title="otherUser.priorityName"/>
     </template>
   </u-chat>
 </template>
@@ -19,11 +17,12 @@ import { UChat, usePage } from 'undraw-ui'
 import chatApi from '@/api/chat/chatApi.js'
 import emoji from '@/config/emoji.js'
 import imageCfg from '@/config/image.js'
+import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import { useCurrentUserStore } from '@/stores/user'
+import { useOtherUserStore } from '@/stores/otherUser'
 const currentUser = useCurrentUserStore()
+const otherUser = useOtherUserStore()
 
-// 下载表情包资源emoji.zip https://gitee.com/undraw/undraw-ui/releases/tag/v1.0.0
-// static文件放在public下,引入emoji.ts文件可以移动assets下引入,也可以自定义到指定位置
 
 const config = reactive({
   user: {
@@ -58,7 +57,7 @@ const config = reactive({
 //   },
 // ]
 let data = reactive([])
-chatApi.getMessageHistory(2).then((res) => {
+chatApi.getMessageHistory(otherUser.userInfo.id, 1).then((res) => {
   if (res.data.msg == 'success') {
     data = res.data.data
   }
@@ -89,14 +88,14 @@ function submit(val, finish) {
   let chat = {
     id: ++id,
     content: val,
-    uid: 1,
+    uid: currentUser.userInfo.id,
     user: {
       username: currentUser.priorityName,
       avatar: currentUser.userInfo.image ? currentUser.userInfo.image : imageCfg.logOut
     },
     createTime: new Date()
   }
-  chatApi.sendMsg({ userId: 2, content: val }).then((res) => {
+  chatApi.sendMsg({ userId: otherUser.userInfo.id, content: val }).then((res) => {
     if (res.data.msg == 'success') {
       finish(chat)
     }

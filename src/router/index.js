@@ -18,7 +18,6 @@ router.beforeEach((to, _from, next) => {
     }
   }
   const r = j.userInfo.roleId
-  console.log('路由守卫', r)
 
   const role = r === 3 ? 'admin' : r
 

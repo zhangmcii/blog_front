@@ -33,6 +33,12 @@ const routes = [
         component: () => import('../views/posts/PostShare.vue'),
       },
       {
+        path: '/chat',
+        name: 'chat',
+        component: () => import('../views/chat/chat.vue'),
+        meta: { requireAuth: true }
+      },
+      {
         path: '/editPost/:id',
         name: 'editPost',
         component: () => import('../views/posts/PostEdit.vue'),
@@ -104,11 +110,6 @@ const routes = [
         name: 'networkError',
         component: () => import('../views/error/NetError.vue')
       },
-      {
-        path: '/chat',
-        name: 'chat',
-        component: () => import('../views/chat/chat.vue')
-      }
     ]
   },
 
@@ -124,7 +125,12 @@ const routes = [
       import.meta.env.DEV == true
         ? import('@/views/login/LoginPageDev.vue')
         : import('@/views/login/LoginPage.vue')
-  }
+  },
+  {
+    path: '/clear',
+    name: 'clear',
+    component: () => import('../views/login/Clear.vue')
+  },
 ]
 
 export default routes
