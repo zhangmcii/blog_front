@@ -14,6 +14,7 @@ import emitter from '@/utils/emitter.js'
 import upload from '@/config/postImageToken.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import { showConfirmDialog } from 'vant'
+import { loginReminder } from '@/utils/common.js'
 
 export default {
   components: {
@@ -62,6 +63,16 @@ export default {
     const otherUser = useOtherUserStore()
     return { currentUser, otherUser, areaList }
   },
+  // 当从A资料跳转B资料时，更新资料页面
+  created() {
+    this.$watch(
+      () => this.$route.params.userName,
+      (newVal) => {
+        this.userName = newVal
+        this.getUserData(newVal)
+      }
+    )
+  },
   computed: {
     location() {
       if (this.user.location && !isNaN(this.user.location)) {
@@ -102,7 +113,7 @@ export default {
       vm.userName = to.params.userName
       vm.getUserData(vm.userName)
       // 持久化保存 防止用户刷新本页面导致传入的username丢失
-      vm.otherUser.username = to.params.userName
+      // vm.otherUser.username = to.params.userName
       vm.$nextTick(() => {})
     })
   },
@@ -110,7 +121,7 @@ export default {
     getUserData(userName, page) {
       this.loading.userData = true
       if (!userName) {
-        userName = this.otherUser.username
+        userName = this.otherUser.userInfo.username
       }
       if (!userName) {
         this.$message.error('要显示资料的用户名为空！')
@@ -119,6 +130,8 @@ export default {
       userApi.get_user(userName, page).then((res) => {
         this.loading.userData = false
         this.user = res.data.data
+        // 保存当前点开的用户资料信息
+        this.otherUser.userInfo = res.data.data
         this.imgList.push(this.user.image)
         this.posts = res.data.posts
         this.posts.forEach((item) => {
@@ -227,6 +240,13 @@ export default {
     },
     showDrawer() {
       this.drawer = !this.drawer
+    },
+    openChat() {
+      if (!this.currentUser.isLogin) {
+        loginReminder('快去登录再私信吧')
+        return
+      }
+      this.$router.push('/chat')
     }
   }
 }
@@ -244,9 +264,9 @@ export default {
 
       <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="skeletonThrottle">
         <template #default>
-          <el-row v-if="user.name">
+          <el-row v-if="user.nickname">
             <el-col :xs="6" :xl="4">昵称</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ user.nickname }}</el-col>
           </el-row>
           <el-row>
             <el-col :xs="6" :xl="4">账号</el-col>
@@ -288,12 +308,12 @@ export default {
         </template>
         <template #default>
           <el-row>
-            <el-col v-if="follow" :span="6">
+            <!-- <el-col v-if="follow" :span="6">
               <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
                 >取消关注</el-button
               >
               <el-button v-else :loading="loading.follow" @click="followUser">关注</el-button>
-            </el-col>
+            </el-col> -->
             <el-col :span="4"> </el-col>
             <el-col :span="6">
               <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
@@ -373,9 +393,21 @@ export default {
       </el-upload>
     </div>
   </van-action-sheet>
+
+  <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle" :row="1">     
+  <el-affix position="bottom" :offset="40" v-if="!isCurrentUser">
+    <div class=affix>
+      <el-button type="primary" round class="chat" @click="openChat">私信</el-button>
+      <div>
+        <el-button type="warning" round  class="follow" v-if="user.is_followed_by_current_user" @click="unFollowUser">取消关注</el-button>
+        <el-button type="warning" round  class="follow" v-else :loading="loading.follow" @click="followUser">关注</el-button>
+      </div>
+  </div>
+  </el-affix>
+  </el-skeleton>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .user-info {
   font-size: 0.9rem;
   color: #9d9d9d;
@@ -431,4 +463,17 @@ export default {
   flex-direction: column;
   gap: 10px;
 }
+.affix {
+  display: flex;
+  justify-content: space-between;
+  div, .chat {
+    width: 48%;
+    height: 40px;
+  }
+  .follow {
+    width: 100%;
+    height: 40px;
+  }
+}
+
 </style>

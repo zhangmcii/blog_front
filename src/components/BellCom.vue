@@ -67,7 +67,6 @@ export default {
       // this.$router.push(`/share/${item.postId}`)
     },
     initSocket() {
-      console.log('11')
       if (!this.currentUser.isLogin) {
         return
       }

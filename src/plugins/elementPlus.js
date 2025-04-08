@@ -4,7 +4,7 @@ import {
    * 为了方便演示平台将 element-plus 导出的所有组件引入，实际使用中如果你没用到哪个组件，将其注释掉就行
    * 导出来源：https://github.com/element-plus/element-plus/blob/dev/packages/element-plus/component.ts#L111-L211
    * */
-//   ElAffix,
+  ElAffix,
 //   ElAlert,
 //   ElAutocomplete,
 //   ElAutoResizer,
@@ -120,7 +120,7 @@ import {
 } from "element-plus";
 
 const components = [
-//   ElAffix,
+  ElAffix,
 //   ElAlert,
 //   ElAutocomplete,
 //   ElAutoResizer,

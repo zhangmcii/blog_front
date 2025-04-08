@@ -3,10 +3,10 @@ export default {
   sendMsg(params) {
     return $http.post('/msg', params)
   },
-  getMessageHistory(userId) {
+  getMessageHistory(userId ,currentPage) {
     let params = {}
     params['userId'] = userId
-    console.log('params', params)
+    params['page'] = currentPage
     return $http.get('/msg', { params: params })
   },
   markMessagesRead(ids) {
