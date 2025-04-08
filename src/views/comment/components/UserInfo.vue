@@ -9,7 +9,6 @@ const props = defineProps({ scope: Object, loading: Boolean, config: Object })
 const currentUser = useCurrentUserStore()
 
 function followUser() {
-  console.log('用户信息关注')
   userApi.follow(props.scope.uName).then((res) => {
     if (res.data.msg == 'success') {
       ElMessage.success('关注成功')
@@ -23,7 +22,6 @@ function followUser() {
   })
 }
 function unFollowUser() {
-  console.log('用户信息取消关注')
   userApi.unFollow(props.scope.uName).then((res) => {
     if (res.data.msg == 'success') {
       currentUser.delItemFollowed(props.scope.uName)

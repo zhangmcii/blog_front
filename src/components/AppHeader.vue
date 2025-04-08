@@ -121,8 +121,6 @@ export default {
       this.toggleMenu();
       disconnectSocket()
       this.currentUser.logOut()
-      console.log('name', this.currentUser.userInfo.username)
-      console.log('token', this.currentUser.userInfo.token)
       this.$message({
         message: '已退出',
         type: 'success',
@@ -144,7 +142,6 @@ export default {
       this.photo.Avatar = imageCfg.logOut
     },
     initImage(){
-      console.log('image', this.currentUser.userInfo)
       if(!this.currentUser.userInfo.image){
         this.photo.Avatar = imageCfg.logOut
         return 

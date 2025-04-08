@@ -63,7 +63,6 @@ export default {
         item.isRead = true
         notificationApi.markRead({ ids: [item.id] })
       }
-      console.log('标记跳转', item) 
       // this.$router.push(`/share/${item.postId}`)
     },
     initSocket() {

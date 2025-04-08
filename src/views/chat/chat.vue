@@ -68,9 +68,7 @@ function loadMore(finish) {
 }
 
 function submit(val, finish) {
-  let id = data.length
   let chat = {
-    id: ++id,
     content: val,
     uid: currentUser.userInfo.id,
     user: {

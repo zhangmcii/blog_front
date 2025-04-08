@@ -46,7 +46,8 @@ export default {
       followPerm: false,
       loading: {
         userData: false,
-        follow: false
+        follow: false,
+        skeleton: true
       },
       uploadData: upload,
       drawer: false,
@@ -103,6 +104,21 @@ export default {
         !this.isCurrentUser &&
         this.user.is_following_current_user
       )
+    },
+    isFollowEachOther() {
+      return (
+        this.currentUser.userInfo.username &&
+        !this.isCurrentUser &&
+        this.user.is_following_current_user &&
+        this.user.is_followed_by_current_user
+      )
+    },
+    isFollowOtherUser() {
+      return (
+        this.currentUser.userInfo.username &&
+        !this.isCurrentUser &&
+        this.user.is_followed_by_current_user
+      )
     }
   },
   mounted() {
@@ -138,6 +154,10 @@ export default {
           item.image = ''
         })
         this.posts_count = res.data.total
+        // 让chat和关注按钮出现时机与骨架屏同步
+        setTimeout(() => {
+          this.loading.skeleton = false
+        }, this.skeletonThrottle.trailing)
       })
     },
     editProfile() {
@@ -301,20 +321,12 @@ export default {
       <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
         <template #template>
           <div style="display: flex; justify-items: space-between; gap: 15px; height: 47px">
-            <el-skeleton-item variant="button" style="width: 20%; height: 30px; margin-top: 5px" />
             <el-skeleton-item variant="text" class="item" />
             <el-skeleton-item variant="text" class="item" />
           </div>
         </template>
         <template #default>
           <el-row>
-            <!-- <el-col v-if="follow" :span="6">
-              <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
-                >取消关注</el-button
-              >
-              <el-button v-else :loading="loading.follow" @click="followUser">关注</el-button>
-            </el-col> -->
-            <el-col :span="4"> </el-col>
             <el-col :span="6">
               <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
             </el-col>
@@ -394,17 +406,44 @@ export default {
     </div>
   </van-action-sheet>
 
-  <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle" :row="1">     
-  <el-affix position="bottom" :offset="40" v-if="!isCurrentUser">
-    <div class=affix>
-      <el-button type="primary" round class="chat" @click="openChat">私信</el-button>
-      <div>
-        <el-button type="warning" round  class="follow" v-if="user.is_followed_by_current_user" @click="unFollowUser">取消关注</el-button>
-        <el-button type="warning" round  class="follow" v-else :loading="loading.follow" @click="followUser">关注</el-button>
-      </div>
+  <div class="footer" v-if="!isCurrentUser && !loading.skeleton">
+    <el-button color="#d1edc4" round class="chat" @click="openChat">
+      <template #icon>
+        <el-icon><i-ep-ChatRound /></el-icon>
+      </template>
+      私信
+    </el-button>
+    <div>
+      <el-button
+        color="#faecd8"
+        round
+        class="follow"
+        v-if="isFollowOtherUser"
+        @click="unFollowUser"
+      >
+        <template #icon>
+          <el-icon>
+            <i-ep-Switch v-if="isFollowEachOther" />
+            <i-ep-Check v-else-if="isFollowOtherUser" />
+          </el-icon>
+        </template>
+        取消关注
+      </el-button>
+      <el-button
+        color="#faecd8"
+        round
+        class="follow"
+        v-else
+        :loading="loading.follow"
+        @click="followUser"
+      >
+        <template #icon>
+          <el-icon><i-ep-Plus /></el-icon>
+        </template>
+        关注
+      </el-button>
+    </div>
   </div>
-  </el-affix>
-  </el-skeleton>
 </template>
 
 <style scoped lang="scss">
@@ -463,10 +502,14 @@ export default {
   flex-direction: column;
   gap: 10px;
 }
-.affix {
+.footer {
+  position: fixed;
+  bottom: 10px;
+  width: 90%;
   display: flex;
   justify-content: space-between;
-  div, .chat {
+  div,
+  .chat {
     width: 48%;
     height: 40px;
   }
@@ -475,5 +518,4 @@ export default {
     height: 40px;
   }
 }
-
 </style>
