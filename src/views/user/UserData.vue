@@ -264,9 +264,9 @@ export default {
 
       <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="skeletonThrottle">
         <template #default>
-          <el-row v-if="user.name">
+          <el-row v-if="user.nickname">
             <el-col :xs="6" :xl="4">昵称</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ user.name }}</el-col>
+            <el-col :xs="8" :xl="10" :offset="2">{{ user.nickname }}</el-col>
           </el-row>
           <el-row>
             <el-col :xs="6" :xl="4">账号</el-col>
@@ -308,12 +308,12 @@ export default {
         </template>
         <template #default>
           <el-row>
-            <el-col v-if="follow" :span="6">
+            <!-- <el-col v-if="follow" :span="6">
               <el-button v-if="user.is_followed_by_current_user" @click="unFollowUser"
                 >取消关注</el-button
               >
               <el-button v-else :loading="loading.follow" @click="followUser">关注</el-button>
-            </el-col>
+            </el-col> -->
             <el-col :span="4"> </el-col>
             <el-col :span="6">
               <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
@@ -367,8 +367,6 @@ export default {
         :pager-count="5"
       />
     </SkeletonUtil>
-
-    <el-button @click="openChat" v-if="!isCurrentUser">私信</el-button>
   </PageHeadBack>
   <van-action-sheet v-model:show="drawer" cancel-text="取消">
     <photo-provider :photo-closable="true">
@@ -395,9 +393,21 @@ export default {
       </el-upload>
     </div>
   </van-action-sheet>
+
+  <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle" :row="1">     
+  <el-affix position="bottom" :offset="40" v-if="!isCurrentUser">
+    <div class=affix>
+      <el-button type="primary" round class="chat" @click="openChat">私信</el-button>
+      <div>
+        <el-button type="warning" round  class="follow" v-if="user.is_followed_by_current_user" @click="unFollowUser">取消关注</el-button>
+        <el-button type="warning" round  class="follow" v-else :loading="loading.follow" @click="followUser">关注</el-button>
+      </div>
+  </div>
+  </el-affix>
+  </el-skeleton>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .user-info {
   font-size: 0.9rem;
   color: #9d9d9d;
@@ -453,4 +463,17 @@ export default {
   flex-direction: column;
   gap: 10px;
 }
+.affix {
+  display: flex;
+  justify-content: space-between;
+  div, .chat {
+    width: 48%;
+    height: 40px;
+  }
+  .follow {
+    width: 100%;
+    height: 40px;
+  }
+}
+
 </style>
