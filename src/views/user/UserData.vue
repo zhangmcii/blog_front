@@ -333,7 +333,6 @@ export default {
             <el-col :span="6">
               <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
             </el-col>
-            <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
           </el-row>
         </template>
       </el-skeleton>
@@ -405,7 +404,7 @@ export default {
       </el-upload>
     </div>
   </van-action-sheet>
-
+  <div class="block" v-if="!isCurrentUser && !loading.skeleton"></div>
   <div class="footer" v-if="!isCurrentUser && !loading.skeleton">
     <el-button color="#d1edc4" round class="chat" @click="openChat">
       <template #icon>
@@ -502,10 +501,16 @@ export default {
   flex-direction: column;
   gap: 10px;
 }
+.block {
+  margin-bottom: 33px;
+}
 .footer {
   position: fixed;
   bottom: 10px;
-  width: 90%;
+  background-color: #ffffff;
+  padding: 10px;
+  height: 40px;
+  width: 86%;
   display: flex;
   justify-content: space-between;
   div,

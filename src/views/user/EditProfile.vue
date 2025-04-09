@@ -104,7 +104,7 @@ export default {
           style="max-width: 600px"
         >
           <el-form-item label="昵称">
-            <el-input v-model="formLabelAlign.name" />
+            <el-input v-model="formLabelAlign.nickname" />
           </el-form-item>
           <el-form-item label="城市">
             <el-input v-model="cityName" disabled />
