@@ -2,12 +2,16 @@
 import { computed } from 'vue'
 import { useLevel } from 'undraw-ui'
 import { useCurrentUserStore } from '@/stores/user'
+import { useOtherUserStore } from '@/stores/otherUser'
 import userApi from '@/api/user/userApi.js'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 const props = defineProps({ scope: Object, loading: Boolean, config: Object })
 
 const currentUser = useCurrentUserStore()
+const otherUser = useOtherUserStore()
 
+const router = useRouter()
 function followUser() {
   userApi.follow(props.scope.uName).then((res) => {
     if (res.data.msg == 'success') {
@@ -30,6 +34,10 @@ function unFollowUser() {
       this.$message.error(res.data.msg)
     }
   })
+}
+function chat(){
+  otherUser.userInfo = props.scope
+  router.push('/chat')
 }
 const isF = computed(() => {
   return currentUser.userInfo.followed.some((item) => {
@@ -94,7 +102,7 @@ const isF = computed(() => {
           <div class="card-btn" v-if="scope.uName !== currentUser.userInfo.username">
             <el-button v-if="isF" @click="unFollowUser">取消关注</el-button>
             <el-button v-else type="primary" @click="followUser">关注</el-button>
-            <el-button>发消息</el-button>
+            <el-button @click="chat">发消息</el-button>
           </div>
         </div>
       </div>

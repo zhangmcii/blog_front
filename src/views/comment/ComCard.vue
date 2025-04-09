@@ -95,7 +95,8 @@ const showInfo = (uid, finish) => {
         id: u.id,
         isFollowed:
           currentUser.userInfo.followed.findIndex((item) => item.uName == u.username) != -1,
-        uName: u.username
+        uName: u.username,
+        nickname: u.nickname,
       }
       loading.value = false
       finish(userInfo)
