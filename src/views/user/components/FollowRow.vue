@@ -4,7 +4,7 @@
       <el-avatar :src="follows.image" />
     </template>
     <template #title>
-      <div class="title-text">{{ follows.username }}</div>
+      <div class="title-text">{{ follows.nickname?follows.nickname:follows.username }}</div>
     </template>
     <template #right-icon v-if="showFollowButton">
       <van-icon

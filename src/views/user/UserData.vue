@@ -333,7 +333,6 @@ export default {
             <el-col :span="6">
               <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
             </el-col>
-            <el-col v-if="isFollowCurrentUser">已关注你了！</el-col>
           </el-row>
         </template>
       </el-skeleton>
