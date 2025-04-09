@@ -28,7 +28,7 @@
 // static文件放在public下,引入emoji.ts文件可以移动assets下引入,也可以自定义到指定位置
 // import emoji from '@/utils/emoji.js'
 
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { UToast, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
 import Operate from './components/CommentOperate.vue'
 import UserInfo from './components/UserInfo.vue'
@@ -96,7 +96,7 @@ const showInfo = (uid, finish) => {
         isFollowed:
           currentUser.userInfo.followed.findIndex((item) => item.uName == u.username) != -1,
         uName: u.username,
-        nickname: u.nickname,
+        nickname: u.nickname
       }
       loading.value = false
       finish(userInfo)
@@ -116,14 +116,16 @@ const submit = ({ content, parentId, finish }) => {
     loginReminder('快去登录再发布文章吧')
     return
   }
-  commentApi.submitComment(1, { body: content, parentCommentId: parentId }).then((res) => {
-    if (res.data.msg == 'success') {
-      finish(res.data.data.at(-1))
-      UToast({ message: '评论成功!', type: 'info' })
-    } else {
-      ElMessage.error(res.data.detail)
-    }
-  })
+  commentApi
+    .submitComment(props.postId, { body: content, parentCommentId: parentId })
+    .then((res) => {
+      if (res.data.msg == 'success') {
+        finish(res.data.data.at(-1))
+        UToast({ message: '评论成功!', type: 'info' })
+      } else {
+        ElMessage.error(res.data.detail)
+      }
+    })
 }
 
 // 点赞按钮事件
@@ -203,19 +205,43 @@ const remove = (comment) => {
   }, 200)
 }
 
-setTimeout(() => {
+let currentRequestId = 0
+function getComment() {
+  const requestId = ++currentRequestId
   commentApi.getComment(props.postId, query.current).then((res) => {
+    if (requestId !== currentRequestId) {
+      // 忽略非最新请求的结果
+      return
+    }
+
     if (res.data.msg == 'success') {
-      config.comments = res.data.data
+      config.comments = [...res.data.data]
       query.current++
       query.total = res.data.total
+
+      // 如果已经加载完所有评论，禁用滚动加载
+      if (query.current > Math.ceil(query.total / query.size)) {
+        disable.value = true
+      }
+    } else {
+      console.error('获取评论失败:', res.data.detail)
     }
   })
+}
 
-  // 已点赞的评论idssss
-  // 注意这里不能用`等于号`
-  config.user.likeIds = [...currentUser.userInfo.likeIds]
-}, 200)
+watch(
+  () => props.postId,
+  () => {
+    // 重置状态
+    config.comments = []
+    // 一定要重置页码。否则导致请求的页码不正确，返回的数据为空数组
+    query.current = 1
+    query.total = 0
+    disable.value = false
+
+    setTimeout(getComment, 200)
+  }
+)
 </script>
 
 <style lang="scss" scoped></style>

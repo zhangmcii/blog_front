@@ -31,6 +31,15 @@ export default {
       vm.getPostById(vm.postId)
     })
   },
+  created(){
+    this.$watch(
+      ()=>this.$route.params.id,
+      (newVal) => {
+        this.postId = Number(newVal)
+        this.getPostById(this.postId)
+      },
+    )
+  },
   methods: {
     getPostById(postId) {
       postApi.getPost(postId).then((res) => {
