@@ -13,9 +13,9 @@
       <template #avatar="scope">
         <el-avatar :src="scope.user.avatar" style="margin-top: 5px" />
       </template>
-      <!-- <template #operate="scope">
+      <template #operate="scope">
         <Operate :comment="scope" @remove="remove" />
-      </template> -->
+      </template>
       <template #card="scope">
         <UserInfo :scope="scope" :loading="loading" :config="config" />
       </template>
@@ -30,7 +30,7 @@
 
 import { reactive, ref } from 'vue'
 import { UToast, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
-// import Operate from './components/CommentOperate.vue'
+import Operate from './components/CommentOperate.vue'
 import UserInfo from './components/UserInfo.vue'
 import commentApi from '@/api/comment/commentApi.js'
 import praiseApi from '@/api/praise/praiseApi.js'
@@ -195,13 +195,13 @@ const sorted = (latest) => {
   }
 }
 
-// const commentRef = ref()
-// // 删除评论
-// const remove = (comment) => {
-//   setTimeout(() => {
-//     commentRef.value?.remove(comment)
-//   }, 200)
-// }
+const commentRef = ref()
+// 删除评论
+const remove = (comment) => {
+  setTimeout(() => {
+    commentRef.value?.remove(comment)
+  }, 200)
+}
 
 setTimeout(() => {
   commentApi.getComment(props.postId, query.current).then((res) => {

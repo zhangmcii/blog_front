@@ -28,7 +28,17 @@ const props = defineProps({ comment: Object })
 
 const emit = defineEmits(['remove'])
 
-
+function rawCopy(html) {
+  // 去除html标签
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(html, 'text/html')
+  let rawContent = doc.body.textContent || ''
+  // 去除回复评论的前缀
+  if (rawContent != '' && rawContent.startsWith('回复')) {
+    rawContent = rawContent.slice(2).trim()
+  }
+  copy(rawContent)
+}
 const onCommand = (command) => {
   switch (command) {
     case 'remove':
@@ -38,7 +48,7 @@ const onCommand = (command) => {
       UToast({ type: 'info', message: '举报成功: ' + props.comment.id })
       break
     case 'copy':
-      copy(props.comment.content)
+      rawCopy(props.comment.content)
   }
 }
 </script>
