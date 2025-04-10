@@ -111,11 +111,13 @@ const mentionSearch = (val) => {
   config.mention.data = currentUser.userInfo.followed.filter((v) => v.name.includes(val))
 }
 // 评论提交事件
-const submit = ({ content, parentId, finish }) => {
+const submit = ({ content, parentId, reply, finish }) => {
   if (!currentUser.isLogin) {
     loginReminder('快去登录再发布文章吧')
     return
   }
+  console.log('parentId',parentId)
+  console.log('reply',reply)
   commentApi
     .submitComment(props.postId, { body: content, parentCommentId: parentId })
     .then((res) => {
@@ -223,8 +225,6 @@ function getComment() {
       if (query.current > Math.ceil(query.total / query.size)) {
         disable.value = true
       }
-    } else {
-      console.error('获取评论失败:', res.data.detail)
     }
   })
 }
