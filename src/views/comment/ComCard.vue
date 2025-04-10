@@ -116,10 +116,10 @@ const submit = ({ content, parentId, reply, finish }) => {
     loginReminder('快去登录再发布文章吧')
     return
   }
-  console.log('parentId',parentId)
-  console.log('reply',reply)
+
+  const directParentId = reply === undefined ? null : reply.id
   commentApi
-    .submitComment(props.postId, { body: content, parentCommentId: parentId })
+    .submitComment(props.postId, { body: content, parentCommentId: directParentId })
     .then((res) => {
       if (res.data.msg == 'success') {
         finish(res.data.data.at(-1))
@@ -152,7 +152,7 @@ const like = (id, finish) => {
 }
 
 //请求回复分页
-const replyPage = ({ parentId, current, size, finish }) => {
+const replyPage = ({ parentId, current, finish }) => {
   commentApi.getReplyComment(parentId, current).then((res) => {
     if (res.data.msg == 'success') {
       let tmp = {
