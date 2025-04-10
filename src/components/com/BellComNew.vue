@@ -121,13 +121,12 @@ export default {
       return Array.from(map.values()).sort((a, b) => new Date(b.time) - new Date(a.time))
     },
     classify() {
-      this.classification.comment = this.notifications.filter((item) => item.type === '评论')
+      this.classification.comment = this.notifications.filter((item) => item.type === '评论' || item.type === '回复')
       this.classification.praise = this.notifications.filter((item) => item.type === '点赞')
       this.classification.at = this.notifications.filter((item) => item.type === '@')
       this.classification.chat = this.notifications.filter((item) => item.type === '聊天')
     },
     handleClick(tab, event) {
-      console.log(tab, event)
       this.activeName = tab.name
     }
   }
