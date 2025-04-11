@@ -96,9 +96,9 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     disconnectSocket() {
       if (this.socket) {
-        this.socket.disconnect()
         this.socket.off('connect')
         this.socket.off('connect_error')
+        this.socket.disconnect()
         this.socket = null
         if (import.meta.env.DEV) {
           console.log('前端主动断开WebSocket连接')
