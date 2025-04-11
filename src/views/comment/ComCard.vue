@@ -119,7 +119,7 @@ const submit = ({ content, parentId, reply, finish }) => {
 
   const directParentId = reply === undefined ? null : reply.id
   commentApi
-    .submitComment(props.postId, { body: content, parentCommentId: directParentId })
+    .submitComment(props.postId, { body: content, directParentId: directParentId })
     .then((res) => {
       if (res.data.msg == 'success') {
         finish(res.data.data.at(-1))

@@ -13,7 +13,7 @@ export default {
   // 获取评论的回复
   getReplyComment(parentCommentId, page) {
     let params = {}
-    params['parentId'] = parentCommentId
+    params['rootCommentId'] = parentCommentId
     params['page'] = page
     return $http.get(`${url_prefix}/reply_comments/`, { params: params })
   },
