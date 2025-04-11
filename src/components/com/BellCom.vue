@@ -1,5 +1,4 @@
 <script>
-import { connectSocket, disconnectSocket } from '@/utils/socket'
 import notificationApi from '@/api/notification/notificationApi.js'
 import { useCurrentUserStore } from '@/stores/user'
 import NotificationDetail from '@/components/com/NotificationDetail.vue'
@@ -9,7 +8,6 @@ export default {
   },
   data() {
     return {
-      socket: null,
       activeName: 'first',
       notifications: [],
       classification: {
@@ -53,10 +51,10 @@ export default {
   mounted() {
     this.initSocket()
   },
-  unmounted() {
-    if (this.socket) {
-      disconnectSocket()
-      this.socket = null
+  beforeMounted() {
+    this.currentUser.socket?.off('new_notification')
+    if (this.currentUser.socket) {
+      this.currentUser.disconnectSocket()
     }
   },
   methods: {
@@ -100,25 +98,26 @@ export default {
       if (!this.currentUser.isLogin) {
         return
       }
-      this.socket = connectSocket()
+      this.currentUser.connectSocket()
       this.initLoad()
-      this.socket.on('new_notification', (data) => {
-        const d = data
+      this.currentUser.socket.on('new_notification', this.receiveMessage)
+    },
+    receiveMessage(data) {
+      const d = data
         // 更新前端实时状态
-        this.notifications = [d, ...this.notifications]
-        const existData = this.currentUser.loadNotifications()
-        // 新数据与本地数据合并后去重
-        const mergedData = [d, ...existData].filter(
-          (item, index, self) => index === self.findIndex((t) => t.id === item.id)
-        )
-        this.currentUser.saveNotifications(mergedData)
-        if (mergedData.length > this.currentUser.notice.MAX_ITEM) {
-          this.currentUser.saveNotifications(mergedData.slice(0, 50))
-        }
-        if (import.meta.env.DEV) {
-          console.log('收到实时通知:', data)
-        }
-      })
+      this.notifications = [d, ...this.notifications]
+      const existData = this.currentUser.loadNotifications()
+      // 新数据与本地数据合并后去重
+      const mergedData = [d, ...existData].filter(
+        (item, index, self) => index === self.findIndex((t) => t.id === item.id)
+      )
+      this.currentUser.saveNotifications(mergedData)
+      if (mergedData.length > this.currentUser.notice.MAX_ITEM) {
+        this.currentUser.saveNotifications(mergedData.slice(0, 50))
+      }
+      if (import.meta.env.DEV) {
+        console.log('收到实时通知:', data)
+      }
     },
     mergeNotifications(localData, serverUnRead) {
       // 创建映射防止重复
@@ -176,7 +175,11 @@ export default {
                   @我的
                 </van-badge>
               </template>
-              <NotificationDetail :notifications="classification.at" @read="handleNoticeRead" @viewPost="toPost"/>
+              <NotificationDetail
+                :notifications="classification.at"
+                @read="handleNoticeRead"
+                @viewPost="toPost"
+              />
             </el-tab-pane>
             <el-tab-pane name="second">
               <template #label>
@@ -196,7 +199,11 @@ export default {
                   >赞</van-badge
                 >
               </template>
-              <NotificationDetail :notifications="classification.praise" @read="handleNoticeRead" @viewPost="toPost"/>
+              <NotificationDetail
+                :notifications="classification.praise"
+                @read="handleNoticeRead"
+                @viewPost="toPost"
+              />
             </el-tab-pane>
             <el-tab-pane name="fourth">
               <template #label>
@@ -204,7 +211,11 @@ export default {
                   私信
                 </van-badge>
               </template>
-              <NotificationDetail :notifications="classification.chat" @read="handleNoticeRead" @viewPost="toPost"/>
+              <NotificationDetail
+                :notifications="classification.chat"
+                @read="handleNoticeRead"
+                @viewPost="toPost"
+              />
             </el-tab-pane>
           </el-tabs>
         </div>

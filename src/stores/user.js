@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia'
+import { io } from 'socket.io-client'
+import requestUrl from '@/config/requestUrl.js'
 
 export const useCurrentUserStore = defineStore('currentUser', {
-  state: () => {
+  state() {
     return {
+      socket: null,
       userInfo: {
         id: '1',
         username: '',
@@ -39,7 +42,8 @@ export const useCurrentUserStore = defineStore('currentUser', {
     isCommentManage: (state) => state.userInfo.roleId >= 2,
     isConfirmed: (state) => state.userInfo.isConfirmed == true,
     isAdmin: (state) => state.userInfo.isAdmin == true,
-    priorityName: (state) => (state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username)
+    priorityName: (state) =>
+      state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username
   },
   actions: {
     addItemLikeIds(value) {
@@ -66,15 +70,45 @@ export const useCurrentUserStore = defineStore('currentUser', {
       this.$reset()
       localStorage.removeItem('blog')
       localStorage.removeItem('blogOtherUser')
+    },
+    connectSocket() {
+      if (!this.socket) {
+        this.socket = io(`${requestUrl.baseUrl}:${requestUrl.backendPort}`, {
+          auth: { Authorization: this.userInfo.token },
+          query: { token: this.userInfo.token },
+          transports: ['websocket'],
+          reconnectionAttempts: 5,
+          reconnectionDelay: 5000
+        })
+
+        // 监听连接成功事件
+        this.socket.on('connect', () => {
+          if (import.meta.env.DEV) {
+            console.log('已连接到WebSocket服务器')
+          }
+        })
+        this.socket.on('connect_error', (err) => {
+          if (import.meta.env.DEV) {
+            console.error('WebSocket连接失败:', err.message)
+          }
+        })
+      }
+    },
+    disconnectSocket() {
+      if (this.socket) {
+        this.socket.disconnect()
+        this.socket.off('connect')
+        this.socket.off('connect_error')
+        this.socket = null
+        if (import.meta.env.DEV) {
+          console.log('前端主动断开WebSocket连接')
+        }
+      }
     }
   },
   persist: {
-    enabled: true,
-    strategies: [
-      {
-        key: 'blog',
-        storage: localStorage
-      }
-    ]
+    key: 'blog',
+    storage: localStorage,
+    pick: ['userInfo', 'notice']
   }
 })
