@@ -20,11 +20,7 @@ export default {
     return {}
   },
   mounted() {},
-  methods: {
-    handleClick(item) {
-      this.$emit('read', item)
-    }
-  }
+  methods: {}
 }
 </script>
 
@@ -32,7 +28,7 @@ export default {
   <Scrollbar class="Scrollbar" v-if="notifications.length > 0">
     <ul class="notifications-list">
       <template v-for="item in notifications" :key="item.title">
-        <li class="notification-item" @click="handleClick(item)">
+        <li class="notification-item" @click="$emit('read', item)">
           <span v-if="!item.isRead" class="unread-dot"></span>
 
           <span class="avatar-container">
@@ -40,8 +36,11 @@ export default {
           </span>
 
           <div class="message-content">
-            <NotificationTitle :nItem="item"/>
-            <p class="notification-date">{{ item.time }}</p>
+            <NotificationTitle :nItem="item" />
+            <div class="message-footer">
+              <p class="notification-date">{{ item.time }}</p>
+              <a class="notification-post" @click.stop="$emit('viewPost', item)">查看原文</a>
+            </div>
           </div>
         </li>
       </template>
@@ -128,13 +127,20 @@ export default {
   overflow: hidden;
   margin: 0.25rem 0; /* my-1 = 4px */
 }
-
+.message-footer {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
 .notification-date {
   color: #6b7280;
   font-size: 0.75rem;
   line-height: 1rem;
 }
-
+.notification-post {
+  color: #409eff;
+  font-size: 0.75rem;
+}
 /* ----- */
 
 .notifications-container {

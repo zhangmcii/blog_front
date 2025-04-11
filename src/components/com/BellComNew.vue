@@ -36,6 +36,18 @@ export default {
   computed: {
     showDot() {
       return this.notifications.some((item) => !item.isRead)
+    },
+    atUnreadNum() {
+      return this.calculateUnreadCount('at')
+    },
+    commentUnreadNum() {
+      return this.calculateUnreadCount('comment')
+    },
+    praiseUnreadNum() {
+      return this.calculateUnreadCount('praise')
+    },
+    chatUnreadNum() {
+      return this.calculateUnreadCount('chat')
     }
   },
   mounted() {
@@ -79,6 +91,9 @@ export default {
         item.isRead = true
         notificationApi.markRead({ ids: [item.id] })
       }
+    },
+    toPost(item) {
+      this.handleNoticeRead(item)
       this.$router.push(`/share/${item.postId}`)
     },
     initSocket() {
@@ -121,13 +136,20 @@ export default {
       return Array.from(map.values()).sort((a, b) => new Date(b.time) - new Date(a.time))
     },
     classify() {
-      this.classification.comment = this.notifications.filter((item) => item.type === '评论' || item.type === '回复')
+      this.classification.comment = this.notifications.filter(
+        (item) => item.type === '评论' || item.type === '回复'
+      )
       this.classification.praise = this.notifications.filter((item) => item.type === '点赞')
       this.classification.at = this.notifications.filter((item) => item.type === '@')
       this.classification.chat = this.notifications.filter((item) => item.type === '聊天')
     },
     handleClick(tab, event) {
       this.activeName = tab.name
+    },
+    calculateUnreadCount(type) {
+      return this.classification[type].reduce((count, item) => {
+        return count + (item.isRead ? 0 : 1)
+      }, 0)
     }
   }
 }
@@ -150,30 +172,39 @@ export default {
           <el-tabs v-model="activeName" class="demo-tabs" :stretch="true" @tab-click="handleClick">
             <el-tab-pane name="first">
               <template #label>
-                <van-badge :dot="false"> @我的 </van-badge>
+                <van-badge :content="atUnreadNum" :show-zero="false" :offset="[8, 0]">
+                  @我的
+                </van-badge>
               </template>
-              <NotificationDetail :notifications="classification.at" @read="handleNoticeRead" />
+              <NotificationDetail :notifications="classification.at" @read="handleNoticeRead" @viewPost="toPost"/>
             </el-tab-pane>
             <el-tab-pane name="second">
               <template #label>
-                <van-badge :dot="false">评论 </van-badge>
+                <van-badge :content="commentUnreadNum" :show-zero="false" :offset="[8, 0]"
+                  >评论
+                </van-badge>
               </template>
               <NotificationDetail
                 :notifications="classification.comment"
                 @read="handleNoticeRead"
+                @viewPost="toPost"
               />
             </el-tab-pane>
             <el-tab-pane name="third">
               <template #label>
-                <van-badge :dot="false"> 赞 </van-badge>
+                <van-badge :content="praiseUnreadNum" :show-zero="false" :offset="[8, 0]"
+                  >赞</van-badge
+                >
               </template>
-              <NotificationDetail :notifications="classification.praise" @read="handleNoticeRead" />
+              <NotificationDetail :notifications="classification.praise" @read="handleNoticeRead" @viewPost="toPost"/>
             </el-tab-pane>
             <el-tab-pane name="fourth">
               <template #label>
-                <van-badge :dot="false"> 私信 </van-badge>
+                <van-badge :content="chatUnreadNum" :show-zero="false" :offset="[8, 0]">
+                  私信
+                </van-badge>
               </template>
-              <NotificationDetail :notifications="classification.chat" @read="handleNoticeRead" />
+              <NotificationDetail :notifications="classification.chat" @read="handleNoticeRead" @viewPost="toPost"/>
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -235,5 +266,8 @@ export default {
 button[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.praise {
+  font-size: 11px;
 }
 </style>
