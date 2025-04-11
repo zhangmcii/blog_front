@@ -229,3 +229,107 @@ scp /path/to/local_file username@server_ip:/path/to/remote_directory
 根因： mac直接直接独对boot.sh文件就无权限执行，打包成镜像在服务区上也无权限执行。所以在打镜像前，赋予boot.sh可执行权限
 解决： chmod +x boot.sh
 
+
+
+
+
+评论+通知模型+： 
+
+场景：  A发了文章，B评论， C回复了B， D回复了C。  
+结果：
+B的操作，会通知A
+C的操作，会通知A，B
+D的操作，会通知A，B，C
+
+
+前端：
+
+首页会从数据库拉取该用户所有未读的通知。统一对通知分为四类： @，评论，点赞，私信，随后传递到各组件中。
+
+如何对通知分类？
+1.筛选出@的用户
+	type=at
+2.筛选出评论文章还是评论回复？
+	3.1 type =“comment是评论文章
+	3.2 type=“reply”是评论回复
+3.筛选出文章点赞还是评论点赞？
+	筛选出type =“like”
+	2.1当commentId为None时，是文章点赞。
+	2.2当commentId，postId都不为None时，是评论点赞
+4.筛选出聊天
+	type=chat
+	只统计出同一对用户的未读的数量和最近的一条信息（前端预览需要）
+
+
+定义用户的评论分为三类：根评论， 一级回复， 其他回复
+￼
+
+根据undraw-ui评论组件， 从submit函数的回调函数中结构出reply变量。当你发起的是根评论，reply对象为undefined；当发起的是一级回复或其他回复时，reply.id为直接父评论id
+
+所以当用户发起
+根评论： 传递的directParentId字段为null
+一级评论或其他回复： 传递的directParentId字段就等于reply.id
+				
+
+
+
+后端：
+当用户发起了评论或回复，如何正确的通知到对应用户？
+1.接收到directParentId字段，根据directParentId查询数据库，得到直接父评论对象和根评论对象(因为所有的评论或回复都从属于一个根评论，要么是空值要么是其他评论对象罢了。)
+2.根据directParentId字段，判断这个评论是哪种类型？（根评论 或一级回复 或 其他回复）
+	2.1 根评论：    directParentCommentId =parentCommentId =None
+	2.2 一级回复：directParentComment != None && (directParentComment = parentComment)
+	2.3 其他回复：directParentComent != parentComment
+3.如果是
+3.1根评论： 
+    预执行：通知文章作者（产生一条通知）
+    当前不是文章作者：
+        通知文章作者 有人评论了你的文章
+3.3一级回复：
+    预执行：通知文章作者、根评论（产生两条通知）
+    当前不是文章作者：
+        通知文章作者 有人评论了你的文章
+    当前不是根评论用户：
+        通知根评论用户 有人回复了你的评论
+3.4其他回复:
+    预执行：通知文章作者、根评论用户、直接父评论用户（产生三条通知）
+    当前不是文章作者：
+        通知文章作者 有人评论了你的文章
+    当前用户不是根评论用户
+        通知根评论用户 有人回复了你的评论
+    当前用户不是直接父评论用户
+        通知直接父评论用户 有人回复了你的评论
+这样做的目的遵循一个原则，就是自己执行的操作不能通知自己。比如说A用户评论了B的文章，那么B用户会一定会收到一条通知： A评论了你的文章。  A用户作为触发方是不会收到通知的。
+
+
+
+
+
+
+mysql：
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id                             # 评论id
+    body                        # 评论内容
+    timestamp              # 时间戳
+    disabled                  # 是否禁用
+    author_id                # 用户id
+    post_id                    # 文章id
+    root_comment_id   # 根评论Id
+    direct_parent_id     # 直接父评论id
+
+
+class Notification(db.Model):
+    __tablename__ = 'notifications'
+    id                           # 通知id
+    type                      # 通知类型
+    is_read                 # 是否已读
+    created_at           # 创建时间
+    receiver_id           # 接收者（文章作者）
+    trigger_user_id    # 触发者（评论/点赞用户）
+    post_id                 # 文章id
+    comment_id         # 评论id
+
+
+

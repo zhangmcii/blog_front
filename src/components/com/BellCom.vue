@@ -1,5 +1,4 @@
 <script>
-import { connectSocket, disconnectSocket } from '@/utils/socket'
 import notificationApi from '@/api/notification/notificationApi.js'
 import { useCurrentUserStore } from '@/stores/user'
 import NotificationDetail from '@/components/com/NotificationDetail.vue'
@@ -9,7 +8,6 @@ export default {
   },
   data() {
     return {
-      socket: null,
       activeName: 'first',
       notifications: [],
       classification: {
@@ -36,15 +34,27 @@ export default {
   computed: {
     showDot() {
       return this.notifications.some((item) => !item.isRead)
+    },
+    atUnreadNum() {
+      return this.calculateUnreadCount('at')
+    },
+    commentUnreadNum() {
+      return this.calculateUnreadCount('comment')
+    },
+    praiseUnreadNum() {
+      return this.calculateUnreadCount('praise')
+    },
+    chatUnreadNum() {
+      return this.calculateUnreadCount('chat')
     }
   },
   mounted() {
     this.initSocket()
   },
-  unmounted() {
-    if (this.socket) {
-      disconnectSocket()
-      this.socket = null
+  beforeMounted() {
+    this.currentUser.socket?.off('new_notification')
+    if (this.currentUser.socket) {
+      this.currentUser.disconnectSocket()
     }
   },
   methods: {
@@ -79,31 +89,35 @@ export default {
         item.isRead = true
         notificationApi.markRead({ ids: [item.id] })
       }
+    },
+    toPost(item) {
+      this.handleNoticeRead(item)
       this.$router.push(`/share/${item.postId}`)
     },
     initSocket() {
       if (!this.currentUser.isLogin) {
         return
       }
-      this.socket = connectSocket()
+      this.currentUser.connectSocket()
       this.initLoad()
-      this.socket.on('new_notification', (data) => {
-        const d = data
+      this.currentUser.socket.on('new_notification', this.receiveMessage)
+    },
+    receiveMessage(data) {
+      const d = data
         // 更新前端实时状态
-        this.notifications = [d, ...this.notifications]
-        const existData = this.currentUser.loadNotifications()
-        // 新数据与本地数据合并后去重
-        const mergedData = [d, ...existData].filter(
-          (item, index, self) => index === self.findIndex((t) => t.id === item.id)
-        )
-        this.currentUser.saveNotifications(mergedData)
-        if (mergedData.length > this.currentUser.notice.MAX_ITEM) {
-          this.currentUser.saveNotifications(mergedData.slice(0, 50))
-        }
-        if (import.meta.env.DEV) {
-          console.log('收到实时通知:', data)
-        }
-      })
+      this.notifications = [d, ...this.notifications]
+      const existData = this.currentUser.loadNotifications()
+      // 新数据与本地数据合并后去重
+      const mergedData = [d, ...existData].filter(
+        (item, index, self) => index === self.findIndex((t) => t.id === item.id)
+      )
+      this.currentUser.saveNotifications(mergedData)
+      if (mergedData.length > this.currentUser.notice.MAX_ITEM) {
+        this.currentUser.saveNotifications(mergedData.slice(0, 50))
+      }
+      if (import.meta.env.DEV) {
+        console.log('收到实时通知:', data)
+      }
     },
     mergeNotifications(localData, serverUnRead) {
       // 创建映射防止重复
@@ -121,13 +135,20 @@ export default {
       return Array.from(map.values()).sort((a, b) => new Date(b.time) - new Date(a.time))
     },
     classify() {
-      this.classification.comment = this.notifications.filter((item) => item.type === '评论' || item.type === '回复')
+      this.classification.comment = this.notifications.filter(
+        (item) => item.type === '评论' || item.type === '回复'
+      )
       this.classification.praise = this.notifications.filter((item) => item.type === '点赞')
       this.classification.at = this.notifications.filter((item) => item.type === '@')
       this.classification.chat = this.notifications.filter((item) => item.type === '聊天')
     },
     handleClick(tab, event) {
       this.activeName = tab.name
+    },
+    calculateUnreadCount(type) {
+      return this.classification[type].reduce((count, item) => {
+        return count + (item.isRead ? 0 : 1)
+      }, 0)
     }
   }
 }
@@ -150,30 +171,51 @@ export default {
           <el-tabs v-model="activeName" class="demo-tabs" :stretch="true" @tab-click="handleClick">
             <el-tab-pane name="first">
               <template #label>
-                <van-badge :dot="false"> @我的 </van-badge>
+                <van-badge :content="atUnreadNum" :show-zero="false" :offset="[8, 0]">
+                  @我的
+                </van-badge>
               </template>
-              <NotificationDetail :notifications="classification.at" @read="handleNoticeRead" />
+              <NotificationDetail
+                :notifications="classification.at"
+                @read="handleNoticeRead"
+                @viewPost="toPost"
+              />
             </el-tab-pane>
             <el-tab-pane name="second">
               <template #label>
-                <van-badge :dot="false">评论 </van-badge>
+                <van-badge :content="commentUnreadNum" :show-zero="false" :offset="[8, 0]"
+                  >评论
+                </van-badge>
               </template>
               <NotificationDetail
                 :notifications="classification.comment"
                 @read="handleNoticeRead"
+                @viewPost="toPost"
               />
             </el-tab-pane>
             <el-tab-pane name="third">
               <template #label>
-                <van-badge :dot="false"> 赞 </van-badge>
+                <van-badge :content="praiseUnreadNum" :show-zero="false" :offset="[8, 0]"
+                  >赞</van-badge
+                >
               </template>
-              <NotificationDetail :notifications="classification.praise" @read="handleNoticeRead" />
+              <NotificationDetail
+                :notifications="classification.praise"
+                @read="handleNoticeRead"
+                @viewPost="toPost"
+              />
             </el-tab-pane>
             <el-tab-pane name="fourth">
               <template #label>
-                <van-badge :dot="false"> 私信 </van-badge>
+                <van-badge :content="chatUnreadNum" :show-zero="false" :offset="[8, 0]">
+                  私信
+                </van-badge>
               </template>
-              <NotificationDetail :notifications="classification.chat" @read="handleNoticeRead" />
+              <NotificationDetail
+                :notifications="classification.chat"
+                @read="handleNoticeRead"
+                @viewPost="toPost"
+              />
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -235,5 +277,8 @@ export default {
 button[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.praise {
+  font-size: 11px;
 }
 </style>

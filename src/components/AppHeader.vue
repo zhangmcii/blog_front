@@ -6,7 +6,7 @@
     <div class=marQuee>
         <MarQuee :text=daySentence :speed="0.7"/>
      </div>
-    <BellCom1 class="notification"/>
+    <BellCom class="notification"/>
     <div class="user-image" > 
     <van-popover v-model:show="showPopover" :show-arrow=false placement="bottom-end" :offset="[12,8]"  :actions="actions" @select="onSelect">
       <template #reference>
@@ -46,14 +46,13 @@ import daysApi from '@/api/days/daysApi.js'
 import emitter from '@/utils/emitter.js'
 import imageCfg from '@/config/image.js'
 import homeIcon from "@/asset/svg/homeIcon.svg?component";
-import {disconnectSocket} from '@/utils/socket'
-import BellCom1 from '@/components/com/BellComNew.vue'
+import BellCom from '@/components/com/BellCom.vue'
 export default {
   name: 'BurgerMenu',
   components: {
     MarQuee,
     homeIcon,
-    BellCom1
+    BellCom
   },
   data() {
     return {
@@ -119,7 +118,7 @@ export default {
     },
     log_out() {
       this.toggleMenu();
-      disconnectSocket()
+      this.currentUser.disconnectSocket()
       this.currentUser.logOut()
       this.$message({
         message: '已退出',
