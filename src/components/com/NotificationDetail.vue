@@ -39,7 +39,13 @@ export default {
             <NotificationTitle :nItem="item" />
             <div class="message-footer">
               <p class="notification-date">{{ item.time }}</p>
-              <a class="notification-post" @click.stop="$emit('viewPost', item)">查看原文</a>
+              <a
+                class="notification-post"
+                v-if="item.type === '私信'"
+                @click.stop="$emit('viewChat', item)"
+                >查看详情</a
+              >
+              <a class="notification-post" v-else @click.stop="$emit('viewPost', item)">查看原文</a>
             </div>
           </div>
         </li>
@@ -69,7 +75,7 @@ export default {
   cursor: pointer;
   align-items: flex-start;
   gap: 1.25rem; /* Tailwind gap-5 = 1.25rem */
-  border-top: 1px solid #e5e7eb; /* 假设边框颜色 */
+  border-bottom: 1px solid #e5e7eb; /* 假设边框颜色 */
   padding: 0.75rem; /* px-3 + py-3 = 12px */
   background: transparent;
   transition: background-color 0.2s;

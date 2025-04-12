@@ -6,6 +6,8 @@ export const useCurrentUserStore = defineStore('currentUser', {
   state() {
     return {
       socket: null,
+      activeChat: null,
+      heartbeatInterval: null,
       userInfo: {
         id: '1',
         username: '',
@@ -92,17 +94,60 @@ export const useCurrentUserStore = defineStore('currentUser', {
             console.error('WebSocket连接失败:', err.message)
           }
         })
+        // 初始化心跳定时器
+        this.heartbeatInterval = setInterval(() => {
+          if (this.socket?.connected) {
+            this.socket.emit('heartbeat')
+          }
+        }, 15000)
       }
     },
     disconnectSocket() {
       if (this.socket) {
         this.socket.off('connect')
         this.socket.off('connect_error')
-        this.socket.disconnect()
+        this.cleanup()
         this.socket = null
         if (import.meta.env.DEV) {
           console.log('前端主动断开WebSocket连接')
         }
+      }
+    },
+    cleanup() {
+      // 清理定时器
+      if (this.heartbeatInterval) {
+        clearInterval(this.heartbeatInterval)
+        this.heartbeatInterval = null
+      }
+
+      // 断开Socket连接
+      if (this.socket) {
+        this.socket.disconnect()
+        this.socket = null
+      }
+    },
+    enterChat(targetId) {
+      this.activeChat = targetId
+      this.socket.emit('enter_chat', { targetId: targetId })
+      console.log('进入聊天:', targetId)
+    },
+
+    sendMessage(chat, func) {
+      let content = chat.content
+      if (this.activeChat && content.trim()) {
+        this.socket.emit(
+          'send_message',
+          {
+            receiver_id: this.activeChat,
+            content: content.trim()
+          },
+          () => {
+            console.log('消息发送成功')
+            func(chat)
+            // 在这里执行发送成功后的逻辑
+          }
+        )
+        console.log('发送消息:', content.trim())
       }
     }
   },

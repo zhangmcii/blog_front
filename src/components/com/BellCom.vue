@@ -1,6 +1,7 @@
 <script>
 import notificationApi from '@/api/notification/notificationApi.js'
 import { useCurrentUserStore } from '@/stores/user'
+import { useOtherUserStore } from '@/stores/otherUser'
 import NotificationDetail from '@/components/com/NotificationDetail.vue'
 export default {
   components: {
@@ -20,7 +21,8 @@ export default {
   },
   setup() {
     const currentUser = useCurrentUserStore()
-    return { currentUser }
+    const otherUser = useOtherUserStore()
+    return { currentUser, otherUser }
   },
   watch: {
     notifications: {
@@ -94,6 +96,13 @@ export default {
       this.handleNoticeRead(item)
       this.$router.push(`/share/${item.postId}`)
     },
+    toChat(item) {
+      this.handleNoticeRead(item)
+      this.otherUser.userInfo.id = item.triggerId
+      this.otherUser.userInfo.nickname = item.triggerNickName
+      this.otherUser.userInfo.username = item.triggerUsername
+      this.$router.push('/chat')
+    },
     initSocket() {
       if (!this.currentUser.isLogin) {
         return
@@ -104,7 +113,7 @@ export default {
     },
     receiveMessage(data) {
       const d = data
-        // 更新前端实时状态
+      // 更新前端实时状态
       this.notifications = [d, ...this.notifications]
       const existData = this.currentUser.loadNotifications()
       // 新数据与本地数据合并后去重
@@ -140,9 +149,9 @@ export default {
       )
       this.classification.praise = this.notifications.filter((item) => item.type === '点赞')
       this.classification.at = this.notifications.filter((item) => item.type === '@')
-      this.classification.chat = this.notifications.filter((item) => item.type === '聊天')
+      this.classification.chat = this.notifications.filter((item) => item.type === '私信')
     },
-    handleClick(tab, event) {
+    handleClick(tab) {
       this.activeName = tab.name
     },
     calculateUnreadCount(type) {
@@ -215,6 +224,7 @@ export default {
                 :notifications="classification.chat"
                 @read="handleNoticeRead"
                 @viewPost="toPost"
+                @viewChat="toChat"
               />
             </el-tab-pane>
           </el-tabs>
@@ -243,9 +253,10 @@ export default {
   width: 170px;
 }
 .van-popover {
-  width: 330px;
+  width: 370px;
 }
 .container {
+  /* padding: 10px 20px 10px 20px; */
   padding: 10px;
 }
 .demo-tabs > .el-tabs__content {

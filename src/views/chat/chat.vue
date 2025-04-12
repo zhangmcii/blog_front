@@ -18,7 +18,7 @@
   所有尺寸： height:83vh
 -->
 <script setup>
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { UChat } from 'undraw-ui'
 import chatApi from '@/api/chat/chatApi.js'
 import emoji from '@/config/emoji.js'
@@ -38,16 +38,26 @@ const config = reactive({
   data: [],
   emoji: emoji // 可选
 })
-
 const query = reactive({
   current: 0, // 当前页数
   size: 15, // 页大小
-  total: 0 // 评论总数
+  total: 0, // 评论总数
+  real_time_receive: false
 })
-
+onMounted(() => {
+  currentUser.enterChat(otherUser.userInfo.id)
+  currentUser.socket.on('new_message', (msg) => {
+    console.log('接收消息', msg)
+    if (currentUser.activeChat === msg.sender_id) {
+      query.real_time_receive = true
+      config.data.push(msg)
+    }
+    query.real_time_receive = false
+  })
+})
 function loadMore(finish) {
   // 打开页面第一次加载
-  if(!query.current){
+  if (!query.current) {
     chatApi.getMessageHistory(otherUser.userInfo.id, 1).then((res) => {
       if (res.data.msg == 'success') {
         query.total = res.data.total
@@ -55,7 +65,7 @@ function loadMore(finish) {
         query.current = 2
       }
     })
-  }else if (query.current <= Math.ceil(query.total / query.size)) {
+  } else if (query.current <= Math.ceil(query.total / query.size)) {
     chatApi.getMessageHistory(otherUser.userInfo.id, query.current).then((res) => {
       if (res.data.msg == 'success') {
         query.current++
@@ -77,12 +87,19 @@ function submit(val, finish) {
     },
     createTime: new Date()
   }
-  chatApi.sendMsg({ userId: otherUser.userInfo.id, content: val }).then((res) => {
-    if (res.data.msg == 'success') {
-      finish(chat)
-    }
-  })
+  currentUser.sendMessage(chat, finish)
 }
+// 监听消息
+// function newMessage() {
+//   currentUser.socket.on('new_message', (msg) => {
+//     console.log('接收消息', msg)
+//     if (currentUser.activeChat === msg.sender_id) {
+//       query.real_time_receive = true
+//       real_data.data = [msg]
+//       loadMore()
+//     }
+//   })
+// }
 </script>
 
 <style lang="scss" scoped></style>
