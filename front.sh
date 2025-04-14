@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function front_to_remote(){
-    base_path=`pwd`
+    base_path="/e/project/vue-proj/responsive_new"
 
     # 对项目打包
     cd $base_path

@@ -47,7 +47,6 @@ const query = reactive({
 onMounted(() => {
   currentUser.enterChat(otherUser.userInfo.id)
   currentUser.socket.on('new_message', (msg) => {
-    console.log('接收消息', msg)
     if (currentUser.activeChat === msg.sender_id) {
       query.real_time_receive = true
       config.data.push(msg)

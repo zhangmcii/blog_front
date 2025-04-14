@@ -129,7 +129,9 @@ export const useCurrentUserStore = defineStore('currentUser', {
     enterChat(targetId) {
       this.activeChat = targetId
       this.socket.emit('enter_chat', { targetId: targetId })
-      console.log('进入聊天:', targetId)
+      if (import.meta.env.DEV) {
+        console.log('进入聊天:', targetId)
+      }
     },
 
     sendMessage(chat, func) {
@@ -142,12 +144,18 @@ export const useCurrentUserStore = defineStore('currentUser', {
             content: content.trim()
           },
           () => {
-            console.log('消息发送成功')
+            if (import.meta.env.DEV) {
+              console.log('消息发送成功')
+            }
+            
             func(chat)
             // 在这里执行发送成功后的逻辑
           }
         )
-        console.log('发送消息:', content.trim())
+        if (import.meta.env.DEV) {
+          console.log('发送消息:', content.trim())
+        }
+        
       }
     }
   },
