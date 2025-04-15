@@ -111,7 +111,7 @@ const mentionSearch = (val) => {
   config.mention.data = currentUser.userInfo.followed.filter((v) => v.name.includes(val))
 }
 // 评论提交事件
-const submit = ({ content, parentId, reply, finish }) => {
+const submit = ({ content, parentId, reply, finish, mentionList }) => {
   if (!currentUser.isLogin) {
     loginReminder('快去登录再发布文章吧')
     return
@@ -119,7 +119,7 @@ const submit = ({ content, parentId, reply, finish }) => {
 
   const directParentId = reply === undefined ? null : reply.id
   commentApi
-    .submitComment(props.postId, { body: content, directParentId: directParentId })
+    .submitComment(props.postId, { body: content, directParentId: directParentId, at: mentionList })
     .then((res) => {
       if (res.data.msg == 'success') {
         finish(res.data.data.at(-1))
