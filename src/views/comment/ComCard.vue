@@ -24,12 +24,9 @@
 </template>
 
 <script setup>
-// 下载表情包资源emoji.zip https://gitee.com/undraw/undraw-ui/releases/tag/v1.0.0
-// static文件放在public下,引入emoji.ts文件可以移动assets下引入,也可以自定义到指定位置
-// import emoji from '@/utils/emoji.js'
-
 import { reactive, ref, watch } from 'vue'
 import { UToast, UComment, UCommentScroll, UCommentNav } from 'undraw-ui'
+import emoji from '@/config/emoji.js'
 import Operate from './components/CommentOperate.vue'
 import UserInfo from './components/UserInfo.vue'
 import commentApi from '@/api/comment/commentApi.js'
@@ -44,7 +41,7 @@ const currentUser = useCurrentUserStore()
 const props = defineProps({ postId: Number })
 const config = reactive({
   user: {}, // 当前用户信息
-  // emoji: emoji, // 表情包数据
+  emoji: emoji, // 表情包数据
   comments: [], // 评论数据
   relativeTime: true, // 开启人性化时间
   show: {
