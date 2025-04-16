@@ -117,6 +117,13 @@ function setInterceptors(...instance) {
           router.push('/login')
           return Promise.reject(error)
         }
+        if (error.response.status === 429) {
+          ElMessage({
+            message: '操作太快了，慢点点~',
+            type: 'info'
+          })
+          return Promise.reject(error)
+        }
 
         if (error.response.status === 403) {
           router.push('/403')

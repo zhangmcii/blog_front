@@ -119,7 +119,7 @@ const submit = ({ content, parentId, reply, finish, mentionList }) => {
     .submitComment(props.postId, { body: content, directParentId: directParentId, at: mentionList })
     .then((res) => {
       if (res.data.msg == 'success') {
-        finish(res.data.data.at(-1))
+        finish(res.data.data.at(0))
         UToast({ message: '评论成功!', type: 'info' })
       } else {
         ElMessage.error(res.data.detail)
