@@ -1,5 +1,5 @@
 
-let prefix='/src/asset'
+let prefix='/static'
 
 let emoji = {
   faceList: [{ type: 'emoji', label: '😀' }, { label: `${prefix}/emoji/smile.webp` }],
