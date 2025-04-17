@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function front_to_remote(){
-    base_path="/e/project/vue-proj/responsive_new"
+    base_path="/Users/v/Documents/proj/blog/blog_front"
 
     # 对项目打包
     cd $base_path

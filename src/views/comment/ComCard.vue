@@ -8,6 +8,7 @@
       @mention-search="mentionSearch"
       @reply-page="replyPage"
       @show-info="showInfo"
+      class="UComment"
     >
       <u-comment-nav v-model="latest" @sorted="sorted"></u-comment-nav>
       <template #avatar="scope">
@@ -241,4 +242,8 @@ watch(
 )
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.UComment {
+  padding: 0px;
+}
+</style>

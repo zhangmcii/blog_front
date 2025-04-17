@@ -33,6 +33,11 @@ const routes = [
         component: () => import('../views/posts/PostShare.vue'),
       },
       {
+        path: '/pdetail',
+        name: 'pdetail',
+        component: () => import('../views/posts/postDetail.vue'),
+      },
+      {
         path: '/chat',
         name: 'chat',
         component: () => import('../views/chat/chat.vue'),
