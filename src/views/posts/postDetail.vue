@@ -1,7 +1,7 @@
 <template>
   <el-row class="head">
     <el-col :span="3">
-      <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
+      <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
     </el-col>
 
     <el-col :span="16" class="head-name">
@@ -13,40 +13,24 @@
     </el-col>
   </el-row>
 
-  <el-row class="text">
+  <!-- <el-row class="text">
     <el-text> 文字区 </el-text>
-  </el-row>
+  </el-row> -->
 
-  <!-- <div class="demo-image__lazy">
-    <el-image
-      v-for="(url, index) in urls"
-      :key="url"
-      :src="url"
-      lazy
-      :preview-src-list="urls"
-      :initial-index="index"
-      show-progress
-    >
-      <template #error>
-        <div class="image-slot">
-          <el-icon><i-ep-picture /></el-icon>
-        </div>
-      </template>
-    </el-image>
-  </div> -->
-
-  <el-row :gutter="1" class="images">
+  <!-- <el-row :gutter="1" class="images">
     <el-col :span="8" v-for="(url, index) in urls" :key="index">
       <el-image :src="url" lazy :preview-src-list="urls" />
     </el-col>
-  </el-row>
+  </el-row> -->
 
+  <Editor />
   <CommentCard :postId="1" />
 </template>
 
 <script>
 import date from '@/utils/date.js'
 import CommentCard from '@/views/comment/ComCard.vue'
+import Editor from './editor.vue'
 export default {
   name: 'BlogPost',
   props: {
@@ -70,7 +54,8 @@ export default {
     }
   },
   components: {
-    CommentCard
+    CommentCard,
+    Editor
   },
   data() {
     return {
@@ -93,13 +78,15 @@ export default {
       }
       return this.$dayjs(this.post.timestamp).fromNow()
     }
-  }
+  },
+  methods: {}
 }
 </script>
 
 <style scoped>
 .head {
   height: 40px;
+  margin-bottom: 10px;
 }
 .head-name,
 .head-time {
