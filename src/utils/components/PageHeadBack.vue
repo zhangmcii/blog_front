@@ -1,5 +1,9 @@
 <template>
-  <el-page-header @back="goBack" :title="title"> </el-page-header>
+  <el-page-header @back="goBack" :title="title">
+    <template #extra>
+      <slot name="action"></slot>
+    </template>
+  </el-page-header>
   <slot></slot>
 </template>
 <script>

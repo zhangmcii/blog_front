@@ -1,91 +1,98 @@
 <template>
-  <div class="container">
-    <el-input
-      v-model="textarea2"
-      :autosize="{ minRows: 4, maxRows: 10 }"
-      type="textarea"
-      placeholder="书写片段，温润流年..."
-      :input-style="inputStyle"
-    />
-    <div class="image-upload">
-      <input type="file" @change="previewImage" accept="image/*" />
-      <img src="" v-if="imageData" />
-    </div>
-    <div class="character-count">{{ characterCount }}/150</div>
-  </div>
+  <el-row class="head">
+    <el-col :span="3">
+      <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
+    </el-col>
+
+    <el-col :span="16" class="head-name">
+      {{ post.nick_name ? post.nick_name : post.author }}
+    </el-col>
+
+    <el-col :xs="4" :sm="3" :md="2" :lg="3" :xl="3" :push="2" class="head-time">
+      <el-text class="mx-1" size="small">{{ from_now }}</el-text>
+    </el-col>
+  </el-row>
+
+  <!-- <el-row class="text">
+    <el-text> 文字区 </el-text>
+  </el-row> -->
+
+  <!-- <el-row :gutter="1" class="images">
+    <el-col :span="8" v-for="(url, index) in urls" :key="index">
+      <el-image :src="url" lazy :preview-src-list="urls" />
+    </el-col>
+  </el-row> -->
+  <Editor />
 </template>
 
 <script>
+import date from '@/utils/date.js'
+// import CommentCard from '@/views/comment/ComCard.vue'
+import Editor from './editor.vue'
 export default {
+  name: 'BlogPost',
+  props: {
+    post: {
+      type: Object,
+      default() {
+        return {
+          id: 1,
+          body: '文章',
+          body_html: null,
+          timestamp: '2024-9-20 12:14:00',
+          author: '张三',
+          nick_name: '',
+          commentCount: 20,
+          disabled: false,
+          image: '/src/asset/image_1.ico',
+          praise_num: 0,
+          has_praised: false
+        }
+      }
+    }
+  },
+  components: {
+    // CommentCard,
+    Editor
+  },
   data() {
     return {
-      message: '',
-      imageData: null,
-      textarea2: '',
-      inputStyle: {
-        width: '100%',
-        marginBottom: '10px',
-        borderColor: '#ffffff',
-        boxShadow: '0 0 0 0 #ffffff'
-      }
+      urls: [
+        'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+        'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+        'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
+        'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
+        'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
+        'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg',
+        'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg'
+      ]
     }
   },
   computed: {
-    characterCount() {
-      return this.message.length
+    from_now() {
+      if (date.isYesterday(this.post.timestamp)) {
+        let time = this.$dayjs(this.post.timestamp).format('HH:mm')
+        return `昨天 ${time}`
+      }
+      return this.$dayjs(this.post.timestamp).fromNow()
     }
   },
-  methods: {
-    previewImage(event) {
-      const file = event.target.files[0]
-      if (file) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          this.imageData = e.target.result
-        }
-        reader.readAsDataURL(file)
-      }
-    }
-  }
+  methods: {}
 }
 </script>
 
-<style>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.el-textarea__inner {
-  /* 去掉去除右下角默认小图标 */
-  resize: none;
-  /* 隐藏滚动条 */
-  overflow: hidden;
-}
-.image-upload {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  border: 1px dashed #ccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+<style scoped>
+.head {
+  height: 40px;
   margin-bottom: 10px;
 }
-
-.image-upload input {
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
+.head-name,
+.head-time {
+  display: flex;
+  align-items: center;
 }
 
-.image-upload img {
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.character-count {
-  text-align: right;
+.text {
+  margin: 10px 0px 10px 0px;
 }
 </style>

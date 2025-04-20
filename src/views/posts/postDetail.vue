@@ -1,35 +1,9 @@
 <template>
-  <el-row class="head">
-    <el-col :span="3">
-      <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
-    </el-col>
-
-    <el-col :span="16" class="head-name">
-      {{ post.nick_name ? post.nick_name : post.author }}
-    </el-col>
-
-    <el-col :xs="4" :sm="3" :md="2" :lg="3" :xl="3" :push="2" class="head-time">
-      <el-text class="mx-1" size="small">{{ from_now }}</el-text>
-    </el-col>
-  </el-row>
-
-  <!-- <el-row class="text">
-    <el-text> 文字区 </el-text>
-  </el-row> -->
-
-  <!-- <el-row :gutter="1" class="images">
-    <el-col :span="8" v-for="(url, index) in urls" :key="index">
-      <el-image :src="url" lazy :preview-src-list="urls" />
-    </el-col>
-  </el-row> -->
-
   <Editor />
-  <CommentCard :postId="1" />
 </template>
 
 <script>
 import date from '@/utils/date.js'
-import CommentCard from '@/views/comment/ComCard.vue'
 import Editor from './editor.vue'
 export default {
   name: 'BlogPost',
@@ -54,7 +28,7 @@ export default {
     }
   },
   components: {
-    CommentCard,
+    // CommentCard,
     Editor
   },
   data() {
@@ -96,8 +70,5 @@ export default {
 
 .text {
   margin: 10px 0px 10px 0px;
-}
-.el-image {
-  /* height: 111.66px; */
 }
 </style>
