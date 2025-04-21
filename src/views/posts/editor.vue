@@ -15,8 +15,6 @@
         ref="uploadRef"
         v-model:file-list="fileList"
         list-type="picture-card"
-        :action="uploadUrl"
-        :headers="{ Authorization: `UpToken ${uploadToken}` }"
         :on-change="handleChange"
         :on-error="handleUploadError"
         :on-preview="handlePictureCardPreview"
@@ -91,12 +89,35 @@ export default {
       console.log('文件', uploadFile)
       console.log('文件列表', uploadFiles)
     },
+    beforePicUpload(fileList) {
+      console.log('beforePicUpload')
+      for (const file of fileList) {
+        const limitPic =
+          file.raw.type === 'image/png' ||
+          file.raw.type === 'image/jpg' ||
+          file.raw.type === 'image/jpeg'
+        if (!limitPic) {
+          this.$message.warning('请上传格式为png/jpg/jpeg的图片')
+          return false
+        }
+      }
+      return true
+    },
     async uploadFiles() {
+      if (!this.beforePicUpload(this.fileList)) {
+        return
+      }
+      const domin = 'sv1puyfmn.hd-bkt.clouddn.com'
       this.uploading = true
       try {
-        const putExtra = {}
+        const putExtra = {
+          customVars: {
+            'x:blog_text': this.content
+          }
+        }
         const config = {
-          region: qiniu.region.z0 // 根据你的存储区域选择
+          // 存储区域
+          region: qiniu.region.z0
         }
         for (const file of this.fileList) {
           const observable = qiniu.upload(file.raw, file.name, this.uploadToken, putExtra, config)
@@ -110,7 +131,7 @@ export default {
               },
               complete(res) {
                 console.log('Upload complete:', res)
-                const imageUrl = `http://suv95zgla.hd-bkt.clouddn.com/${res.key}`
+                const imageUrl = `http://${domin}/${res.key}`
                 self.imageUrls.push(imageUrl)
                 resolve()
               }
@@ -169,3 +190,9 @@ export default {
   /* overflow: hidden; */
 }
 </style>
+<!-- imageMogr2/quality/80 -->
+
+<!-- "{"callback_url":"http://172.18.66.95:8082/upload_callback","callback_bodyType":"application/json",
+"callback_body":"filename=\"pic2.jpeg\"\u0026filesize=9176\u0026blog_text=\"这是一张好看的图片\"","token":"","err_code":502,"error":"Post
+\"http://172.18.66.95:8082/upload_callback\": dial tcp 172.18.66.95:8082: connect: no route to
+host","hash":"FuzKjRDBMYPzs_8BS-zZeOM_sUy0","key":"pic2.jpeg"}" -->
