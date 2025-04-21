@@ -10,12 +10,13 @@ export default {
   publish_post(post) {
     return $http.post('/', post)
   },
-  
-  getPost(id){
+  getPost(id) {
     return $http.get(`${url_prefix}/posts/${id}`)
   },
   editPost(id, post) {
     return $http.put(`${url_prefix}/posts/${id}`, post)
   },
-
+  publishRichPost(post) {
+    return $http.post('/rich_post', post)
+  }
 }

@@ -26,13 +26,13 @@
       >
         <el-icon><i-ep-Plus /></el-icon>
       </el-upload>
-      <el-button @click="uploadFiles" :disabled="uploading">上传图片</el-button>
+      <el-button :disabled="uploading"  @click="submitBlog">上传图片</el-button>
       <el-dialog v-model="dialogVisible">
         <img w-full :src="dialogImageUrl" alt="Preview Image" />
       </el-dialog>
     </div>
     <template #action>
-      <el-button type="primary" class="w-full" @click="submit">发布</el-button>
+      <!-- <el-button type="primary" class="w-full" @click="submitBlog">发布</el-button> -->
     </template>
   </PageHeadBack>
 </template>
@@ -41,6 +41,7 @@
 import * as qiniu from 'qiniu-js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import uploadApi from '@/api/upload/uploadApi.js'
+import postApi from '@/api/posts/postApi.js'
 export default {
   name: 'BlogPost',
   props: {},
@@ -54,6 +55,7 @@ export default {
       uploadToken: '',
       imageUrls: [],
       uploading: false,
+      imageKey: [],
 
       inputStyle: {
         width: '100%',
@@ -107,14 +109,11 @@ export default {
       if (!this.beforePicUpload(this.fileList)) {
         return
       }
-      const domin = 'sv1puyfmn.hd-bkt.clouddn.com'
+      const domin = import.meta.env.VITE_QINIU_DOMAIN
+      console.log('获取的域名', domin)
       this.uploading = true
       try {
-        const putExtra = {
-          customVars: {
-            'x:blog_text': this.content
-          }
-        }
+        const putExtra = {}
         const config = {
           // 存储区域
           region: qiniu.region.z0
@@ -131,8 +130,10 @@ export default {
               },
               complete(res) {
                 console.log('Upload complete:', res)
+                self.imageKey.push(res.key)
                 const imageUrl = `http://${domin}/${res.key}`
                 self.imageUrls.push(imageUrl)
+                console.log('resolve')
                 resolve()
               }
             })
@@ -146,17 +147,18 @@ export default {
       }
     },
     async submitBlog() {
-      // try {
-      //   const blogData = {
-      //     title: this.title,
-      //     content: this.content,
-      //     image_urls: this.imageUrls
-      //   }
-      //   // const response = await axios.post('/save_blog', blogData)
-      //   // this.successMessage = response.data.message
-      // } catch (error) {
-      //   console.error('Save blog failed:', error)
-      // }
+      try {
+        await this.uploadFiles()
+        postApi
+          .publishRichPost({ content: this.content, imageUrls: this.imageKey })
+          .then((response) => {
+            if (response.data.msg === 'success') {
+              this.$message.success('发布成功')
+            }
+          })
+      } catch (error) {
+        console.error('Submit blog failed:', error)
+      }
     },
 
     handleRemove(uploadFile, uploadFiles) {

@@ -32,4 +32,22 @@ function loginReminder(message) {
     .catch(() => {})
 }
 
-export { copy, loginReminder }
+async function retry(func, maxRetries = 3, delay = 1000, ...args) {
+  let retries = 0
+  while (retries < maxRetries) {
+    try {
+      const result = await func(...args)
+      return result
+    } catch (error) {
+      retries++
+      if (retries < maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      } else {
+        // 达到最大重试次数，抛出最后一次的错误
+        throw error
+      }
+    }
+  }
+}
+
+export { copy, loginReminder, retry }

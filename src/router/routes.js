@@ -50,6 +50,11 @@ const routes = [
         meta: { requireAuth: true }
       },
       {
+        path: '/preview',
+        name: 'preview',
+        component: () => import('../views/posts/preview.vue'),
+      },
+      {
         path: '/follow/:action/:userName',
         name: 'follow',
         component: () => import('../views/user/FollowList.vue')
