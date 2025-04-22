@@ -119,13 +119,13 @@ export default {
   mounted() {},
   methods: {
     share() {
-      this.$router.push(`/share/${this.post.id}`)
+      this.$router.push(`/postDetail/${this.post.id}`)
     },
     edit() {
       this.$router.push(`/editPost/${this.post.id}`)
     },
     comment() {
-      this.$router.push(`/share/${this.post.id}`)
+      this.$router.push(`/postDetail/${this.post.id}`)
     },
     praise() {
       if (!this.currentUser.isLogin) {

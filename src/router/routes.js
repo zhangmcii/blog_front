@@ -28,14 +28,14 @@ const routes = [
         meta: { roles: ['admin'] }
       },
       {
-        path: '/share/:id',
-        name: 'share',
-        component: () => import('../views/posts/PostDetailNew.vue'),
+        path: '/postDetail/:id',
+        name: 'detail',
+        component: () => import('../views/posts/PostDetail.vue'),
       },
       {
         path: '/pubImage',
-        name: 'pdetail',
-        component: () => import('../views/posts/publish/PostImage.vue'),
+        name: 'pubImage',
+        component: () => import('../views/posts/publish/PublishImage.vue'),
       },
       {
         path: '/chat',
@@ -48,11 +48,6 @@ const routes = [
         name: 'editPost',
         component: () => import('../views/posts/PostEdit.vue'),
         meta: { requireAuth: true }
-      },
-      {
-        path: '/preview',
-        name: 'preview',
-        component: () => import('../views/posts/components/PostPreview.vue'),
       },
       {
         path: '/follow/:action/:userName',

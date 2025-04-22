@@ -16,7 +16,6 @@
         v-model:file-list="fileList"
         list-type="picture-card"
         :on-preview="handlePictureCardPreview"
-        :on-remove="handleRemove"
         :auto-upload="false"
         :limit="9"
         :on-exceed="handleExceed"
@@ -29,7 +28,14 @@
       </el-dialog>
     </div>
     <template #action>
-      <el-button type="primary" class="w-full" size="small" :disabled="uploading"  @click="submitBlog">发布</el-button>
+      <el-button
+        type="primary"
+        class="w-full"
+        size="small"
+        :disabled="uploading"
+        @click="submitBlog"
+        >发布</el-button
+      >
     </template>
   </PageHeadBack>
 </template>
@@ -107,7 +113,13 @@ export default {
         for (const file of this.fileList) {
           // uuid保证存储的文件名唯一
           const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
-          const observable = qiniu.upload(file.raw, uniqueFileName, this.uploadToken, putExtra, config)
+          const observable = qiniu.upload(
+            file.raw,
+            uniqueFileName,
+            this.uploadToken,
+            putExtra,
+            config
+          )
           await new Promise((resolve, reject) => {
             // 保存 this 上下文
             const self = this
@@ -134,6 +146,11 @@ export default {
       }
     },
     async submitBlog() {
+      const loadingInstance = this.$loading({
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       try {
         await this.uploadFiles()
         postApi
@@ -141,24 +158,24 @@ export default {
           .then((response) => {
             if (response.data.msg === 'success') {
               this.$message.success('发布成功')
+              this.content = ''
+              this.fileList = []
+              this.$router.push('/posts')
             }
+            loadingInstance.close()
           })
       } catch (error) {
         console.error('Submit blog failed:', error)
+        loadingInstance.close()
       }
-    },
-
-    handleRemove(uploadFile, uploadFiles) {
-      console.log(uploadFile, uploadFiles)
     },
     handlePictureCardPreview(uploadFile) {
       this.dialogImageUrl = uploadFile.url
       this.dialogVisible = true
     },
     handleExceed() {
-      console.log('超过了')
       this.$message.info('最多只能上传9张图片')
-    },
+    }
   }
 }
 </script>
@@ -176,4 +193,3 @@ export default {
   /* overflow: hidden; */
 }
 </style>
-

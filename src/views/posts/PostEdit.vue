@@ -56,7 +56,7 @@ export default {
         if (res.data.msg == 'success') {
           this.loading = false
           this.$message.success('修改成功')
-          this.$router.push(`/share/${this.postId}`)
+          this.$router.push(`/postDetail/${this.postId}`)
         } else {
           this.loading = false
           this.$message.success('修改失败')
@@ -71,7 +71,7 @@ export default {
           this.$message.success('修改成功')
           this.post.body = this.rich_content.body
           this.post.body_html = this.rich_content.bodyHtml
-          this.$router.push(`/share/${this.postId}`)
+          this.$router.push(`/postDetail/${this.postId}`)
         } else {
           this.loading = false
           this.$message.success('修改失败')

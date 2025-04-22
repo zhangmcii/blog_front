@@ -1,5 +1,6 @@
 <script>
-import PostCard from './PostCard.vue'
+import PostPreview from '@/views/posts/components/PostPreview.vue'
+import PostImage from '@/views/posts/components/PostImage.vue'
 import postApi from '@/api/posts/postApi.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { GradientText } from 'vue-amazing-ui'
@@ -8,10 +9,11 @@ import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import PostPublish from './PostPublish.vue'
 export default {
   components: {
-    PostCard,
+    PostPreview,
+    PostImage,
     PostPublish,
     GradientText,
-    SkeletonUtil,
+    SkeletonUtil
   },
   data() {
     return {
@@ -23,13 +25,13 @@ export default {
         publishPost: false,
         card: false
       },
-      showEmoji:false,
+      showEmoji: false,
       // 延迟渲染会导致与空页面闪烁
-      throttle:{
+      throttle: {
         // leading: 200,
         // trailing: 200,
         // initVal: true
-      },
+      }
     }
   },
   setup() {
@@ -91,16 +93,18 @@ export default {
         :throttle="throttle"
         :cardStyle="{ marginBottom: '10px' }"
       >
-        <PostCard
+        <PostPreview
           v-for="item in posts"
           :key="item.id"
           :post="item"
-          :showEdit="false"
-          :showShare="false"
-          :cardStyle="{ marginBottom: '10px' }"
-          @click="$router.push(`/share/${item.id}`)"
+          :containerStyle="{ marginBottom: '10px' }"
+          @click="$router.push(`/postDetail/${item.id}`)"
           v-slide-in
-        />
+        >
+          <template #image>
+            <PostImage :post_images="item.post_images" @click.stop="" />
+          </template>
+        </PostPreview>
       </SkeletonUtil>
     </el-tab-pane>
     <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.isLogin">
@@ -114,16 +118,18 @@ export default {
         :throttle="throttle"
         :cardStyle="{ marginBottom: '10px' }"
       >
-        <PostCard
+        <PostPreview
           v-for="item in posts"
           :key="item.id"
           :post="item"
-          :showEdit="false"
-          :showShare="false"
-          :cardStyle="{ marginBottom: '10px' }"
-          @click="$router.push(`/share/${item.id}`)"
+          :containerStyle="{ marginBottom: '10px' }"
+          @click="$router.push(`/postDetail/${item.id}`)"
           v-slide-in
-        />
+        >
+          <template #image>
+            <PostImage :post_images="item.post_images" @click.stop="" />
+          </template>
+        </PostPreview>
       </SkeletonUtil>
     </el-tab-pane>
   </el-tabs>
@@ -152,5 +158,4 @@ export default {
   font-size: 32px;
   font-weight: 600;
 }
-
 </style>

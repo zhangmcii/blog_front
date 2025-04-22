@@ -364,7 +364,7 @@ export default {
         :key="item"
         :post="item"
         :showImage="false"
-        @click="$router.push(`/share/${item.id}`)"
+        @click="$router.push(`/postDetail/${item.id}`)"
         v-slide-in
       />
 

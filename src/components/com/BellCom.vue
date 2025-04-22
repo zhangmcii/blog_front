@@ -94,7 +94,7 @@ export default {
     },
     toPost(item) {
       this.handleNoticeRead(item)
-      this.$router.push(`/share/${item.postId}`)
+      this.$router.push(`/postDetail/${item.postId}`)
     },
     toChat(item) {
       this.handleNoticeRead(item)

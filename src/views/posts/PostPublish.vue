@@ -93,20 +93,24 @@ export default {
   <ButtonClick
     class="custom-button"
     content="发布"
+    size="small"
     :disabled="!content && !rich_content.body"
     :loading="loading"
     @do-search="publish"
   >
-    <el-icon><i-ep-Pointer /></el-icon>
+    <el-icon><i-ep-Pointer/></el-icon>
   </ButtonClick>
+  <div class="switch">
+  <el-button size="small" @click="$router.push('/pubImage')">图文 </el-button>
   <el-switch
     v-model="activeRichEditor"
     inline-prompt
     inactive-text="普通编辑器"
     active-text="富文本编辑器"
   />
+</div>
 </template>
-<style scoped>
+<style lang="scss" scoped>
 :deep(.el-card__body) {
   padding: 5px;
 }
@@ -116,9 +120,12 @@ export default {
 .custom-button {
   margin: 10px 0px;
 }
-.el-switch {
+.switch {
   margin-top: 10px;
   float: right;
+  .el-switch {
+    margin-left: 10px;
+  }
 }
 .v-enter-active {
   transition: opacity 0.3s ease;
