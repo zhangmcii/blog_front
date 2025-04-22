@@ -151,7 +151,7 @@ export default {
 }
 
 .text {
-  margin: 20px 0px 10px 5px;
+  margin: 10px 0px 10px 5px;
   .el-text {
     color: #303133;
     font-size: 0.875rem;
