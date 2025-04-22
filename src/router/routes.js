@@ -30,12 +30,12 @@ const routes = [
       {
         path: '/share/:id',
         name: 'share',
-        component: () => import('../views/posts/PostShare.vue'),
+        component: () => import('../views/posts/PostDetailNew.vue'),
       },
       {
-        path: '/pdetail',
+        path: '/pubImage',
         name: 'pdetail',
-        component: () => import('../views/posts/postDetail.vue'),
+        component: () => import('../views/posts/publish/PostImage.vue'),
       },
       {
         path: '/chat',
@@ -52,7 +52,7 @@ const routes = [
       {
         path: '/preview',
         name: 'preview',
-        component: () => import('../views/posts/preview.vue'),
+        component: () => import('../views/posts/components/PostPreview.vue'),
       },
       {
         path: '/follow/:action/:userName',

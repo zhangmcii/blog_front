@@ -15,8 +15,6 @@
         ref="uploadRef"
         v-model:file-list="fileList"
         list-type="picture-card"
-        :on-change="handleChange"
-        :on-error="handleUploadError"
         :on-preview="handlePictureCardPreview"
         :on-remove="handleRemove"
         :auto-upload="false"
@@ -26,13 +24,12 @@
       >
         <el-icon><i-ep-Plus /></el-icon>
       </el-upload>
-      <el-button :disabled="uploading"  @click="submitBlog">上传图片</el-button>
       <el-dialog v-model="dialogVisible">
         <img w-full :src="dialogImageUrl" alt="Preview Image" />
       </el-dialog>
     </div>
     <template #action>
-      <!-- <el-button type="primary" class="w-full" @click="submitBlog">发布</el-button> -->
+      <el-button type="primary" class="w-full" size="small" :disabled="uploading"  @click="submitBlog">发布</el-button>
     </template>
   </PageHeadBack>
 </template>
@@ -42,6 +39,7 @@ import * as qiniu from 'qiniu-js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import uploadApi from '@/api/upload/uploadApi.js'
 import postApi from '@/api/posts/postApi.js'
+import { v4 as uuidv4 } from 'uuid'
 export default {
   name: 'BlogPost',
   props: {},
@@ -51,7 +49,6 @@ export default {
   data() {
     return {
       content: '',
-      uploadUrl: '',
       uploadToken: '',
       imageUrls: [],
       uploading: false,
@@ -77,22 +74,12 @@ export default {
       try {
         const response = await uploadApi.get_upload_token()
         this.uploadToken = response.data.upload_token
-        this.uploadUrl = 'https://upload.qiniup.com'
         console.log('获取上传凭证成功:', this.uploadToken)
       } catch (error) {
         console.error('Failed to get upload token:', error)
       }
     },
-    handleUploadError(error) {
-      console.error('Upload failed:', error)
-      this.uploading = false
-    },
-    handleChange(uploadFile, uploadFiles) {
-      console.log('文件', uploadFile)
-      console.log('文件列表', uploadFiles)
-    },
     beforePicUpload(fileList) {
-      console.log('beforePicUpload')
       for (const file of fileList) {
         const limitPic =
           file.raw.type === 'image/png' ||
@@ -110,7 +97,6 @@ export default {
         return
       }
       const domin = import.meta.env.VITE_QINIU_DOMAIN
-      console.log('获取的域名', domin)
       this.uploading = true
       try {
         const putExtra = {}
@@ -119,7 +105,9 @@ export default {
           region: qiniu.region.z0
         }
         for (const file of this.fileList) {
-          const observable = qiniu.upload(file.raw, file.name, this.uploadToken, putExtra, config)
+          // uuid保证存储的文件名唯一
+          const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
+          const observable = qiniu.upload(file.raw, uniqueFileName, this.uploadToken, putExtra, config)
           await new Promise((resolve, reject) => {
             // 保存 this 上下文
             const self = this
@@ -133,7 +121,6 @@ export default {
                 self.imageKey.push(res.key)
                 const imageUrl = `http://${domin}/${res.key}`
                 self.imageUrls.push(imageUrl)
-                console.log('resolve')
                 resolve()
               }
             })
@@ -172,9 +159,6 @@ export default {
       console.log('超过了')
       this.$message.info('最多只能上传9张图片')
     },
-    submit() {
-      console.log('发布', this.content, this.fileList)
-    }
   }
 }
 </script>
@@ -192,9 +176,4 @@ export default {
   /* overflow: hidden; */
 }
 </style>
-<!-- imageMogr2/quality/80 -->
 
-<!-- "{"callback_url":"http://172.18.66.95:8082/upload_callback","callback_bodyType":"application/json",
-"callback_body":"filename=\"pic2.jpeg\"\u0026filesize=9176\u0026blog_text=\"这是一张好看的图片\"","token":"","err_code":502,"error":"Post
-\"http://172.18.66.95:8082/upload_callback\": dial tcp 172.18.66.95:8082: connect: no route to
-host","hash":"FuzKjRDBMYPzs_8BS-zZeOM_sUy0","key":"pic2.jpeg"}" -->
