@@ -2,10 +2,10 @@
  prop只接受文章的json
 -->
 <script>
-import date from '@/utils/date.js'
 import praise from '@/api/praise/praiseApi.js'
 import { loginReminder } from '@/utils/common.js'
 import PostAction from '@/views/posts/components/PostAction.vue'
+import PostHeader from '@/views/posts/components/PostHeader.vue'
 export default {
   props: {
     post: {
@@ -37,7 +37,8 @@ export default {
     }
   },
   components: {
-    PostAction
+    PostAction,
+    PostHeader
   },
   data() {
     return {
@@ -60,15 +61,7 @@ export default {
       immediate: true
     }
   },
-  computed: {
-    from_now() {
-      if (date.isYesterday(this.post.timestamp)) {
-        let time = this.$dayjs(this.post.timestamp).format('HH:mm')
-        return `昨天 ${time}`
-      }
-      return this.$dayjs(this.post.timestamp).fromNow()
-    }
-  },
+  computed: {},
   methods: {
     comment() {
       this.$router.push(`/postDetail/${this.post.id}`)
@@ -93,22 +86,7 @@ export default {
 
 <template>
   <div :style="containerStyle">
-    <el-row class="head">
-      <el-col :span="3">
-        <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
-      </el-col>
-
-      <el-col :span="15" class="head-name">
-        <el-text @click.stop="$router.push(`/user/${post.author}`)">{{
-          post.nick_name ? post.nick_name : post.author
-        }}</el-text>
-      </el-col>
-
-      <el-col :xs="4" :sm="3" :md="2" :lg="3" :xl="3" :push="2" class="head-time">
-        <el-text size="small">{{ from_now }}</el-text>
-      </el-col>
-    </el-row>
-
+    <PostHeader :post="post" />
     <el-row class="text">
       <el-text line-clamp="4">{{ post.body }}</el-text>
     </el-row>
@@ -120,26 +98,12 @@ export default {
     <div class="block"></div>
   </div>
 </template>
-<style lang="scss" scoped >
+<style lang="scss" scoped>
 // 用户名13px  时间12px  文字14px  图片121px
 .block {
   width: 100%;
   height: 5px;
   background-color: #f5f7fa;
-}
-.head {
-  height: 40px;
-  margin: 0px 0px 10px 0px;
-}
-.head-name,
-.head-time {
-  display: flex;
-  align-items: center;
-}
-.head-name {
-  .el-text {
-    font-size: 13px;
-  }
 }
 .text {
   margin: 10px 0px 10px 5px;

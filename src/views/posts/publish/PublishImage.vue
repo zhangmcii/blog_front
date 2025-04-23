@@ -92,6 +92,11 @@ export default {
     },
     beforePicUpload(fileList) {
       for (const file of fileList) {
+        const isImage = file.type.startsWith('image/')
+        if (!isImage) {
+          this.$message.error('只能上传图片文件！')
+          return false
+        }
         const limitPic =
           file.raw.type === 'image/png' ||
           file.raw.type === 'image/jpg' ||
@@ -120,13 +125,7 @@ export default {
           const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
           const key = folder + uniqueFileName
           console.log('key:', key)
-          const observable = qiniu.upload(
-            file.raw,
-            key,
-            this.uploadToken,
-            putExtra,
-            config
-          )
+          const observable = qiniu.upload(file.raw, key, this.uploadToken, putExtra, config)
           await new Promise((resolve, reject) => {
             // 保存 this 上下文
             const self = this

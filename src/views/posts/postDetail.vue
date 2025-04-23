@@ -3,15 +3,16 @@ import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import PostImage from '@/views/posts/components/PostImage.vue'
 import PostAction from '@/views/posts/components/PostAction.vue'
 import CommentCard from '@/views/comment/ComCard.vue'
+import PostHeader from '@/views/posts/components/PostHeader.vue'
 import postApi from '@/api/posts/postApi.js'
-import date from '@/utils/date.js'
 
 export default {
   components: {
     PageHeadBack,
     CommentCard,
     PostImage,
-    PostAction
+    PostAction,
+    PostHeader
   },
   data() {
     return {
@@ -51,13 +52,6 @@ export default {
     )
   },
   computed: {
-    from_now() {
-      if (date.isYesterday(this.post.timestamp)) {
-        let time = this.$dayjs(this.post.timestamp).format('HH:mm')
-        return `昨天 ${time}`
-      }
-      return this.$dayjs(this.post.timestamp).fromNow()
-    },
     postUrls() {
       const urls = []
       const domain = import.meta.env.VITE_QINIU_DOMAIN
@@ -82,48 +76,19 @@ export default {
 
 <template>
   <PageHeadBack>
-    <el-row class="head">
-      <el-col :span="3">
-        <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
-      </el-col>
-
-      <el-col :span="15" class="head-name">
-        <el-text @click.stop="$router.push(`/user/${post.author}`)">{{
-          post.nick_name ? post.nick_name : post.author
-        }}</el-text>
-      </el-col>
-
-      <el-col :xs="4" :sm="3" :md="2" :lg="3" :xl="3" :push="2" class="head-time">
-        <el-text class="mx-1" size="small">{{ from_now }}</el-text>
-      </el-col>
-    </el-row>
-
+    <PostHeader :post="post" />
     <el-row class="text">
       <el-text>{{ post.body }}</el-text>
     </el-row>
     <PostImage :post_images="post.post_images" />
 
-    <PostAction :post="post" :showShare="true"/>
+    <PostAction :post="post" :showShare="true" />
     <CommentCard :post-id="postId" />
   </PageHeadBack>
 </template>
 <style scoped lang="scss">
 .el-button {
   margin-top: 10px;
-}
-.head {
-  height: 40px;
-  margin: 15px 0px 10px 0px;
-}
-.head-name,
-.head-time {
-  display: flex;
-  align-items: center;
-}
-.head-name {
-  .el-text {
-    font-size: 13px;
-  }
 }
 .text {
   margin: 10px 0px 10px 5px;

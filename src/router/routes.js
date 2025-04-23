@@ -13,7 +13,7 @@ const routes = [
       {
         path: '/user/:userName',
         name: 'user',
-        component: () => import('../views/user/UserData.vue')
+        component: () => import('../views/user/UserDataNew.vue')
       },
       {
         path: '/editProfile/:id',
