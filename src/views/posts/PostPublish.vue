@@ -69,7 +69,9 @@ export default {
 </script>
 
 <template>
-  <h4>你在想什么？</h4>
+  <div class="text-title">
+    <el-text>你在想什么？</el-text>
+  </div>
   <Transition mode="out-in">
     <RichText
       ref="rickText"
@@ -98,19 +100,22 @@ export default {
     :loading="loading"
     @do-search="publish"
   >
-    <el-icon><i-ep-Pointer/></el-icon>
+    <el-icon><i-ep-Pointer /></el-icon>
   </ButtonClick>
   <div class="switch">
-  <el-button size="small" @click="$router.push('/pubImage')">图文 </el-button>
-  <el-switch
-    v-model="activeRichEditor"
-    inline-prompt
-    inactive-text="普通编辑器"
-    active-text="富文本编辑器"
-  />
-</div>
+    <el-button size="small" @click="$router.push('/pubImage')">图文 </el-button>
+    <el-switch
+      v-model="activeRichEditor"
+      inline-prompt
+      inactive-text="普通编辑器"
+      active-text="富文本编辑器"
+    />
+  </div>
 </template>
 <style lang="scss" scoped>
+.text-title {
+  margin: 10px 0px 10px 0px;
+}
 :deep(.el-card__body) {
   padding: 5px;
 }

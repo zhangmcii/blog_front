@@ -46,7 +46,7 @@ export default {
 <style lang="scss" scoped>
 .preview {
   width: 370px;
-  margin: 0px 0px 50px 0px;
+  margin: 0px 0px 15px 0px;
 }
 .el-image {
   width: 100%;

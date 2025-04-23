@@ -221,7 +221,7 @@ export default {
   justify-content: space-between;
 }
 .home {
-  margin: 8px 0px 0px 10px;
+  margin: 8px 0px 0px 17px;
 }
 .marQuee {
   margin: 3px 0px 0px 0px;
@@ -231,7 +231,7 @@ export default {
   margin: 11px 10px 0px 0px;
 }
 .user-image {
-  margin: 8px 10px 0px 0px;
+  margin: 8px 20px 0px 0px;
 }
 .van-cell {
   width: 200px;

@@ -43,6 +43,7 @@
 <script>
 import * as qiniu from 'qiniu-js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import { useCurrentUserStore } from '@/stores/user'
 import uploadApi from '@/api/upload/uploadApi.js'
 import postApi from '@/api/posts/postApi.js'
 import { v4 as uuidv4 } from 'uuid'
@@ -70,6 +71,10 @@ export default {
       dialogImageUrl: '',
       fileList: []
     }
+  },
+  setup() {
+    const currentUser = useCurrentUserStore()
+    return { currentUser }
   },
   computed: {},
   mounted() {
@@ -111,11 +116,13 @@ export default {
           region: qiniu.region.z0
         }
         for (const file of this.fileList) {
-          // uuid保证存储的文件名唯一
+          const folder = `user_image/user_${this.currentUser.userInfo.id}/article/`
           const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
+          const key = folder + uniqueFileName
+          console.log('key:', key)
           const observable = qiniu.upload(
             file.raw,
-            uniqueFileName,
+            key,
             this.uploadToken,
             putExtra,
             config
@@ -169,6 +176,9 @@ export default {
         loadingInstance.close()
       }
     },
+    // async submitBlog() {
+    //   await this.uploadFiles()
+    // },
     handlePictureCardPreview(uploadFile) {
       this.dialogImageUrl = uploadFile.url
       this.dialogVisible = true

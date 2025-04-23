@@ -32,6 +32,9 @@ body {
   height: 45px;
   padding:0px;
 }
+.el-main{
+  padding: 10px 20px 0px 20px;
+}
 /* 45px header高度
      3vh 是随机添加的
   */
