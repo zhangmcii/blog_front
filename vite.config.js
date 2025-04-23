@@ -37,6 +37,6 @@ export default ({ mode }) => {
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
         }
       }
-    }
+    },
   }
 }
