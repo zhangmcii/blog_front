@@ -40,9 +40,6 @@ export default {
   <el-row :gutter="4" class="preview">
     <el-col :span="8" v-for="(url, index) in postUrls" :key="index">
       <el-image :src="url" lazy fit="cover" :preview-src-list="postUrls" :initial-index="index">
-        <template #placeholder>
-          <div class="image-slot">Loading<span class="dot">...</span></div>
-        </template>
         <template #error>
           <div class="image-slot">
             <el-icon><i-ep-picture /></el-icon>
@@ -70,11 +67,6 @@ export default {
     background: var(--el-fill-color-light);
     color: var(--el-text-color-secondary);
     font-size: 14px;
-    .dot {
-      animation: dot 2s infinite steps(3, start);
-      overflow: hidden;
-    }
-
     .el-icon {
       font-size: 30px;
     }
