@@ -36,7 +36,7 @@ import userApi from '@/api/user/userApi.js'
 import imageCfg from '@/config/image.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
-import { loginReminder } from '@/utils/common.js'
+import { loginReminder, getAvatarsUrl } from '@/utils/common.js'
 
 const currentUser = useCurrentUserStore()
 const props = defineProps({ postId: Number })
@@ -53,7 +53,7 @@ const config = reactive({
   page: true, // 开启分页
   mention: {
     // 开启提交功能
-    data: currentUser.userInfo.followed,
+    data: currentUser.getFollowed(),
     alias: {
       username: 'name'
     },
@@ -65,7 +65,7 @@ config.user = {
   id: currentUser.userInfo.id,
   username: currentUser.priorityName,
   // level: 6,
-  avatar: currentUser.userInfo.image ? currentUser.userInfo.image : imageCfg.logOut,
+  avatar: currentUser.userInfo.image ? getAvatarsUrl(currentUser.userInfo.image) : imageCfg.logOut,
   // 评论id数组 建议:存储方式用户id和文章id和评论id组成关系,根据用户id和文章id来获取对应点赞评论id,然后加入到数组中返回
   // 存储已点赞的评论id
   likeIds: []
@@ -85,7 +85,7 @@ const showInfo = (uid, finish) => {
       userInfo = {
         username: u.name ? u.name : u.username,
         level: 6,
-        avatar: u.image,
+        avatar: getAvatarsUrl(u.image),
         like: u.praised_count,
         attention: u.followed_count,
         follower: u.followers_count,
@@ -106,7 +106,7 @@ const showInfo = (uid, finish) => {
 
 // 提交触发搜索: 模拟请求接口返回搜索用户数据
 const mentionSearch = (val) => {
-  config.mention.data = currentUser.userInfo.followed.filter((v) => v.name.includes(val))
+  config.mention.data = currentUser.getFollowed().filter((v) => v.name.includes(val))
 }
 // 评论提交事件
 const submit = ({ content, parentId, reply, finish, mentionList }) => {
@@ -176,7 +176,9 @@ const more = () => {
   if (query.current <= Math.ceil(query.total / query.size)) {
     commentApi.getComment(props.postId, query.current).then((res) => {
       if (res.data.msg == 'success') {
-        config.comments.push(...res.data.data)
+        const c = addressUrl(res.data.data)
+        config.comments.push(...c)
+        // config.comments.push(...res.data.data)
         query.current++
       }
     })
@@ -215,7 +217,9 @@ function getComment() {
     }
 
     if (res.data.msg == 'success') {
-      config.comments = [...res.data.data]
+      const c = addressUrl(res.data.data)
+      config.comments = [...c]
+      // config.comments = [...res.data.data]
       query.current++
       query.total = res.data.total
 
@@ -226,7 +230,17 @@ function getComment() {
     }
   })
 }
-
+function addressUrl(array) {
+  return array.map((item) => {
+    item.user.avatar = getAvatarsUrl(item.user.avatar)
+    if (item.reply.total) {
+      item.reply.list.map((replyItem) => {
+        replyItem.user.avatar = getAvatarsUrl(replyItem.user.avatar)
+      })
+    }
+    return item
+  })
+}
 watch(
   () => props.postId,
   () => {

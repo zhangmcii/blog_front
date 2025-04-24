@@ -11,10 +11,9 @@ import { areaList } from '@vant/area-data'
 import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import emitter from '@/utils/emitter.js'
-import upload from '@/config/postImageToken.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import { showConfirmDialog } from 'vant'
-import { loginReminder } from '@/utils/common.js'
+import { loginReminder, getAvatarsUrl } from '@/utils/common.js'
 import uploadApi from '@/api/upload/uploadApi.js'
 import { v4 as uuidv4 } from 'uuid'
 import * as qiniu from 'qiniu-js'
@@ -28,6 +27,7 @@ export default {
   data() {
     return {
       userName: '',
+      // 存储此页用户数据
       user: {
         username: '张三',
         name: '赫赫',
@@ -133,8 +133,8 @@ export default {
         this.user.is_followed_by_current_user
       )
     },
-    userAvatars(){
-        return 'http://'+import.meta.env.VITE_QINIU_DOMAIN+'/'+this.user.image+'-slim'
+    userAvatars() {
+      return getAvatarsUrl(this.user.image)
     }
   },
   mounted() {
@@ -257,8 +257,7 @@ export default {
         this.$message.error('图像的大小不能超过1MB!')
         return false
       }
-
-      const folder = `user_image/user_${this.currentUser.userInfo.id}/avatars/`
+      const folder = this.currentUser.uploadAvatarsBaseUrl
       const uniqueFileName = `${uuidv4()}.${rawFile.name.split('.').pop()}`
       const key = folder + uniqueFileName
       console.log('key:', key)
@@ -267,16 +266,15 @@ export default {
       return true
     },
     handleAvatarSuccess(response) {
-      //   const url = response.data.links.url
       const domin = import.meta.env.VITE_QINIU_DOMAIN
       const imageUrl = `http://${domin}/${response.key}`
       image.saveImageUrl({ image: response.key }).then((res) => {
         if (res.data.msg == 'success') {
-          this.user.image = imageUrl
-          this.imgList.push(this.user.image)
-          // 换图像成功后，更新本地image字段
-          this.currentUser.userInfo.image = `http://${domin}/${res.data.image}`
-          emitter.emit('image', imageUrl)
+          this.user.image = response.key
+          this.currentUser.userInfo.image = res.data.image
+          // 保存完整url到预览图像中
+          this.imgList.push(imageUrl)
+          emitter.emit('image', response.key)
           this.$message.success('图像上传成功')
         } else {
           this.$message.error('图像上传失败')

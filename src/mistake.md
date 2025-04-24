@@ -383,6 +383,37 @@ user_image/user_${this.currentUser.userInfo.id}/comments/*.png      评论图片
 安全设置：
 对于敏感的用户图片，如私人相册，将储存桶设置为私有，听过生成带签名的URL来控制访问权限 (目前无此需求)
 
+# 图片url写在哪儿？
+1.直接写在各文件中
+  不好管理
+2.写在配置文件中
+  由于URL会包含用户id,必须引入pinia变量才能获取，造成代码耦合
+3.写在工具函数中
+  由于URL会包含用户id,必须引入pinia变量才能获取，造成代码耦合，依赖性强
+4.写在在pinia的计算属性中(更优雅)
+
+
+# pinia的userInfo存入key，还是存入完整URL
+后端只存储key,并且只放回key。
+前端pinia中只保存key, 所有用到图像的地方由getAvatarsUrl()统一拼接url
+
+渲染用户图像url分为两类：
+1.当前用户图像 --> 直接从pinia读取(目前pinia只保存key)
+2.其他用户图像 --> 后端传入的key,拼接渲染
+
+-->文章页图像: 调用getAvatarsUrl()拼接
+-->用户资料图像： 调用getAvatarsUrl()拼接
+-->页头图像： 根据pinia中的image,目前认为是完整url
+-->用户上传后图像：数据库只保存key，拼接完整URL给user.image展示；
+    把key保存进pinia；触发image事件，携带key
+    [只有预览URL保存完整的URL，其他变量都只保存key]
+-->关注页图像： 调用getAvatarsUrl()拼接
+-->评论输入框旁边和评论点击图像时： 调用getAvatarsUrl()拼接
+-->评论回复中的图像：加一个深度遍历函数，进行拼接
+
+
+-->评论框中的@： 在pinia的getFollowed()函数中进行拼接处理
+-->文章页图像：根据传入的key自动拼接渲染完整URL
 
 
 

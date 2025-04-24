@@ -1,5 +1,7 @@
 <script>
 import date from '@/utils/date.js'
+import { getAvatarsUrl } from '@/utils/common.js'
+
 export default {
   props: {
     post: {
@@ -36,7 +38,7 @@ export default {
       return this.$dayjs(this.post.timestamp).fromNow()
     },
     userAvatars() {
-      return 'http://' + import.meta.env.VITE_QINIU_DOMAIN + '/' + this.post.image + '-slim'
+      return getAvatarsUrl(this.post.image)
     }
   },
   methods: {}

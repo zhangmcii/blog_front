@@ -105,6 +105,8 @@ import emitter from '@/utils/emitter.js'
 import imageCfg from '@/config/image.js'
 import homeIcon from '@/asset/svg/homeIcon.svg?component'
 import BellCom from '@/components/com/BellCom.vue'
+import { getAvatarsUrl } from '@/utils/common.js'
+
 export default {
   name: 'BurgerMenu',
   components: {
@@ -147,7 +149,7 @@ export default {
     this.initImage()
     this.daySentence = daysApi.fetchQuote()
     emitter.on('image', (url) => {
-      this.photo.Avatar = url
+      this.photo.Avatar = getAvatarsUrl(url)
     })
   },
   created() {
@@ -199,7 +201,7 @@ export default {
         this.photo.Avatar = imageCfg.logOut
         return
       }
-      this.photo.Avatar = this.currentUser.userInfo.image
+      this.photo.Avatar = getAvatarsUrl(this.currentUser.userInfo.image)
     },
     onSelect(action) {
       if (action.text == '登录') {

@@ -50,4 +50,8 @@ async function retry(func, maxRetries = 3, delay = 1000, ...args) {
   }
 }
 
-export { copy, loginReminder, retry }
+function getAvatarsUrl(key) {
+  return `http://${import.meta.env.VITE_QINIU_DOMAIN}/${key}-slim`
+}
+
+export { copy, loginReminder, retry, getAvatarsUrl }

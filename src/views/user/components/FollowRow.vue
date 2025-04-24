@@ -1,10 +1,10 @@
 <template>
   <van-cell :border="false" :to="`/user/${follows.username}`">
     <template #icon>
-      <el-avatar :src="follows.image" />
+      <el-avatar :src="userAvatars" />
     </template>
     <template #title>
-      <div class="title-text">{{ follows.nickname?follows.nickname:follows.username }}</div>
+      <div class="title-text">{{ follows.nickname ? follows.nickname : follows.username }}</div>
     </template>
     <template #right-icon v-if="showFollowButton">
       <van-icon
@@ -37,8 +37,9 @@
 
 <script>
 import userApi from '@/api/user/userApi.js'
-import { showConfirmDialog } from 'vant';
+import { showConfirmDialog } from 'vant'
 import { useCurrentUserStore } from '@/stores/user'
+import { getAvatarsUrl } from '@/utils/common.js'
 
 export default {
   props: {
@@ -57,16 +58,15 @@ export default {
       type: String,
       default: 'fan'
     },
-    showFollowButton:{
-       type:Boolean,
-       default:true
+    showFollowButton: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['remove'],
   data() {
     return {
-      isFollowed:
-        this.tabAction == 'fan' ? this.follows.is_following : true,
+      isFollowed: this.tabAction == 'fan' ? this.follows.is_following : true,
       isMutualFollow: false
     }
   },
@@ -82,6 +82,11 @@ export default {
       this.isMutualFollow = true
     } else {
       this.isMutualFollow = false
+    }
+  },
+  computed: {
+    userAvatars() {
+      return getAvatarsUrl(this.follows.image)
     }
   },
   methods: {
@@ -119,18 +124,17 @@ export default {
             this.$message.success('已取消关注')
             if (this.tabAction == 'followed') {
               this.$emit('remove', this.follows.username)
-            }else{
+            } else {
               this.isFollowed = false
               this.isMutualFollow = false
             }
-            
           } else {
             this.$message.error(res.data.msg)
           }
           return res
         })
       }
-    },
+    }
   }
 }
 </script>
@@ -145,5 +149,4 @@ export default {
 .icon {
   line-height: 40px;
 }
-
 </style>

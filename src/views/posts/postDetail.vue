@@ -21,7 +21,7 @@ export default {
         body: '文章',
         body_html: null,
         timestamp: '2024-9-20 12:14:00',
-        author: '--',
+        author: '秩名',
         nick_name: '',
         commentCount: 20,
         disabled: false,
@@ -30,10 +30,7 @@ export default {
         has_praised: false,
         post_images: []
       },
-      postId: -1,
-
-      praiseNum: 0,
-      hasPraised: false
+      postId: -1
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -51,17 +48,7 @@ export default {
       }
     )
   },
-  computed: {
-    postUrls() {
-      const urls = []
-      const domain = import.meta.env.VITE_QINIU_DOMAIN
-      this.post.post_images.forEach((key) => {
-        const imageUrl = `http://${domain}/${key}-slim`
-        urls.push(imageUrl)
-      })
-      return urls
-    }
-  },
+  computed: {},
   methods: {
     getPostById(postId) {
       postApi.getPost(postId).then((res) => {

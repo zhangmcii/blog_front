@@ -15,9 +15,8 @@ export default {
   computed: {
     postUrls() {
       // const urls = []
-      // const domain = import.meta.env.VITE_QINIU_DOMAIN
       // this.post_images.forEach((key) => {
-      //   const imageUrl = `http://${domain}/${key}-slim`
+      //   const imageUrl = `http://${import.meta.env.VITE_QINIU_DOMAIN}/${key}-slim`
       //   urls.push(imageUrl)
       // })
       const urls = [
