@@ -35,9 +35,6 @@ export default {
       }
       return this.$dayjs(this.post.timestamp).fromNow()
     },
-    userAvatars() {
-      return 'http://' + import.meta.env.VITE_QINIU_DOMAIN + '/' + this.post.image + '-slim'
-    }
   },
   methods: {}
 }
@@ -46,7 +43,7 @@ export default {
 <template>
   <el-row class="head">
     <el-col :span="3">
-      <el-avatar :src="userAvatars" @click.stop="$router.push(`/user/${post.author}`)" />
+      <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
     </el-col>
 
     <el-col :span="15" class="head-name">

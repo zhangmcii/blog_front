@@ -11,7 +11,6 @@ import { areaList } from '@vant/area-data'
 import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import emitter from '@/utils/emitter.js'
-import upload from '@/config/postImageToken.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import { showConfirmDialog } from 'vant'
 import { loginReminder } from '@/utils/common.js'
@@ -133,9 +132,7 @@ export default {
         this.user.is_followed_by_current_user
       )
     },
-    userAvatars(){
-        return 'http://'+import.meta.env.VITE_QINIU_DOMAIN+'/'+this.user.image+'-slim'
-    }
+
   },
   mounted() {
     this.getPermission(1)
@@ -165,7 +162,7 @@ export default {
         this.user = res.data.data
         // 保存当前点开的用户资料信息
         this.otherUser.userInfo = res.data.data
-        this.imgList.push(this.userAvatars)
+        this.imgList.push(this.user.image)
         this.posts = res.data.posts
         this.posts.forEach((item) => {
           item.image = ''
@@ -258,7 +255,7 @@ export default {
         return false
       }
 
-      const folder = `user_image/user_${this.currentUser.userInfo.id}/avatars/`
+      const folder = this.currentUser.uploadAvatarsBaseUrl
       const uniqueFileName = `${uuidv4()}.${rawFile.name.split('.').pop()}`
       const key = folder + uniqueFileName
       console.log('key:', key)
@@ -311,7 +308,7 @@ export default {
 
 <template>
   <PageHeadBack>
-    <el-avatar size="large" :src="userAvatars" @click="showDrawer" />
+    <el-avatar size="large" :src="user.image" @click="showDrawer" />
     <el-card class="user-info" shadow="never">
       <template #header>
         <div class="card-header">

@@ -50,4 +50,19 @@ async function retry(func, maxRetries = 3, delay = 1000, ...args) {
   }
 }
 
-export { copy, loginReminder, retry }
+function randomNum(minNum, maxNum) {
+  switch (arguments.length) {
+    case 1:
+      return parseInt(`${Math.random() * minNum + 1}`, 10)
+    case 2:
+      return parseInt(`${Math.random() * (maxNum - minNum + 1) + minNum}`, 10)
+    default:
+      return 0
+  }
+}
+
+function isNode() {
+  return typeof window === 'undefined'
+}
+
+export { copy, loginReminder, retry, randomNum, isNode }

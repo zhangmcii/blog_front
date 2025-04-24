@@ -92,7 +92,7 @@ export default {
     },
     beforePicUpload(fileList) {
       for (const file of fileList) {
-        const isImage = file.type.startsWith('image/')
+        const isImage = file.raw.type.startsWith('image/')
         if (!isImage) {
           this.$message.error('只能上传图片文件！')
           return false
@@ -121,7 +121,8 @@ export default {
           region: qiniu.region.z0
         }
         for (const file of this.fileList) {
-          const folder = `user_image/user_${this.currentUser.userInfo.id}/article/`
+          const folder = this.currentUser.uploadArticlesBaseUrl
+          console.log('folder:', folder)
           const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
           const key = folder + uniqueFileName
           console.log('key:', key)
@@ -152,6 +153,13 @@ export default {
       }
     },
     async submitBlog() {
+      if (this.content === '') {
+        this.$message.error('内容不能为空')
+        return
+      } else if (this.fileList.length === 0) {
+        this.$message.error('图片不能为空')
+        return
+      }
       const loadingInstance = this.$loading({
         lock: true,
         text: 'Loading',

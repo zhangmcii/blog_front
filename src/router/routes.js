@@ -136,6 +136,11 @@ const routes = [
     name: 'clear',
     component: () => import('../views/login/Clear.vue')
   },
+  {
+    path: '/start',
+    name: 'start',
+    component: () => import('../views/start/index.vue'),
+  },
 ]
 
 export default routes

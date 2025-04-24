@@ -44,7 +44,12 @@ export const useCurrentUserStore = defineStore('currentUser', {
     isConfirmed: (state) => state.userInfo.isConfirmed == true,
     isAdmin: (state) => state.userInfo.roleId == 3,
     priorityName: (state) =>
-      state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username
+      state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username,
+    // 图片上传目录
+    uploadArticlesBaseUrl: (state) => `user_image/user_${state.userInfo.id}/articles/`,
+    uploadAvatarsBaseUrl: (state) => `user_image/user_${state.userInfo.id}/avatars/`,
+    uploadBackgroundBaseUrl: (state) => `user_image/user_${state.userInfo.id}/background/`,
+    uploadCommentsBaseUrl: (state) => `user_image/user_${state.userInfo.id}/comments/`
   },
   actions: {
     addItemLikeIds(value) {
@@ -146,7 +151,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
             if (import.meta.env.DEV) {
               console.log('消息发送成功')
             }
-            
+
             func(chat)
             // 在这里执行发送成功后的逻辑
           }
@@ -154,7 +159,6 @@ export const useCurrentUserStore = defineStore('currentUser', {
         if (import.meta.env.DEV) {
           console.log('发送消息:', content.trim())
         }
-        
       }
     }
   },
