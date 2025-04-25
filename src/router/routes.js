@@ -117,11 +117,6 @@ const routes = [
       },
     ]
   },
-
-  {
-    path: '/',
-    redirect: '/posts'
-  },
   // 登陆页面
   {
     path: '/login',
@@ -137,9 +132,9 @@ const routes = [
     component: () => import('../views/login/Clear.vue')
   },
   {
-    path: '/start',
+    path: '/',
     name: 'start',
-    component: () => import('../views/start/index.vue'),
+    component: () => import('../views/start/BlogIndex.vue'),
   },
 ]
 

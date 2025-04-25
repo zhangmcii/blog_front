@@ -2,9 +2,7 @@
 import {GLOBAL_CONFIG} from "@/config";
 import { randomNum } from "@/utils/common";
 import { onMounted, ref } from "vue";
-// import LocalLogo from "@/asset/logo.svg";
 import LocalLogo from '@/asset/logo.svg?component'
-import { useHead } from "@unhead/vue";
 
 defineOptions({
   name: "CenterLogo",
@@ -25,18 +23,6 @@ const slogan = ref("");
 const isLoading = ref(true);
 const isLoaded = ref(false);
 const initialAnimationDone = ref(false);
-
-if (GLOBAL_CONFIG.LOGO_URL) {
-  useHead({
-    link: [
-      {
-        rel: "preload",
-        href: GLOBAL_CONFIG.LOGO_URL,
-        as: "image",
-      },
-    ],
-  });
-}
 
 /**
  * 加载背景图片
@@ -75,7 +61,7 @@ onMounted(() => {
   loadBackground();
   setTimeout(() => {
     finishLoading();
-  }, 3000);
+  }, 2000);
 });
 </script>
 
@@ -92,10 +78,6 @@ onMounted(() => {
   >
     <div :class="['img-shadow', { 'img-shadow-show': bgLoaded }]"></div>
     <div class="inner" style="cursor: pointer" @click="goToBlog">
-      <!-- <img
-        :class="['main-logo', { 'main-logo-top': touchable }]"
-        :src="LocalLogo"
-      /> -->
       <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]"/>
       <div :class="['hello', { hello_bottom: touchable }]">
         <div>{{ slogan }}</div>
@@ -147,7 +129,7 @@ onMounted(() => {
   .inner {
     position: relative;
     .main-logo {
-      height: 7rem;
+      height: 6rem;
       position: absolute;
       transform: translate(-50%, -50%);
       transition: all 1s;
@@ -162,7 +144,7 @@ onMounted(() => {
       text-align: center;
       position: absolute;
       transform: translate(-50%, -50%);
-      font-size: 1.5rem;
+      font-size: 21px;
       opacity: 0;
       top: 100px;
       transition: all 1s;
@@ -171,7 +153,7 @@ onMounted(() => {
       opacity: 1;
       top: 3.5rem;
       .hello_bottom_text {
-        font-size: var(--regular-font-size);
+        font-size: 14px;
         margin-top: 0.5rem;
         padding-top: 0.5rem;
         border-top: 1px solid #fff;

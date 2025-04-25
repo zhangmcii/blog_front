@@ -1,6 +1,4 @@
 <script setup >
-import { useHead } from "@unhead/vue";
-import {GLOBAL_CONFIG} from "@/config.js";
 import { onMounted, ref, watch } from "vue";
 import BanTouchMask from "./BanTouchMask.vue";
 import CenterLogo from "./CenterLogo.vue";
@@ -17,11 +15,10 @@ const backgroundLoaded = ref(false);
 useMobileVhCssVar();
 
 // 控制着中间字按钮的出现时机 。需要比加载完成时间延后一点，才会有浮动效果
-
 onMounted(() => {
   setTimeout(() => {
     animationEnd.value = true;
-  }, 3500);
+  }, 2500);
 });
 
 watch([backgroundLoaded, animationEnd], () => {
@@ -30,19 +27,7 @@ watch([backgroundLoaded, animationEnd], () => {
   }
 });
 
-useHead({
-  title: GLOBAL_CONFIG.TKD.title,
-  meta: [
-    {
-      name: "description",
-      content: GLOBAL_CONFIG.TKD.description,
-    },
-    {
-      name: "keywords",
-      content: GLOBAL_CONFIG.TKD.keywords,
-    },
-  ],
-});
+
 </script>
 
 <template>

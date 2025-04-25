@@ -28,8 +28,6 @@ import vSlideIn from '@/directives/vSlideIn.js'
 import { UIcon } from 'undraw-ui'
 import 'undraw-ui/dist/style.css'
 
-import { createHead } from '@unhead/vue/client'
-const head = createHead()
 
 const app = createApp(App)
 app.directive('slide-in',vSlideIn)
@@ -41,6 +39,5 @@ app.use(useVant)
 app.use(router)
 app.use(pinia)
 app.use(vue3PhotoPreview)
-app.use(head)
 app.component('u-icon', UIcon)
 app.mount('#app')

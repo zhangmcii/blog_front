@@ -1,3 +1,6 @@
+import bgIndex from '@/asset/bg_index.jpg'
+import requestUrl from '@/config/requestUrl.js'
+
 /** Website 分类配置 */
 const WEBSITE_SORTS = [
   {
@@ -59,7 +62,7 @@ const GLOBAL_CONFIG = {
   /**
    * 个人博客链接
    */
-  BLOG_URL: "https://blog.esunr.xyz",
+  BLOG_URL: requestUrl.baseUrl + ':' + requestUrl.frontPort + '/posts',
   /**
    * 指定中心 LOGO 图片地址
    */
@@ -71,7 +74,8 @@ const GLOBAL_CONFIG = {
   /**
    * 背景图片地址
    */
-  BACKGROUND_IMG_URL: "https://api.dujin.org/bing/1920.php",
+  // BACKGROUND_IMG_URL: "https://api.dujin.org/bing/1920.php",
+  BACKGROUND_IMG_URL: bgIndex,
   /**
    * ICP 备案号，留空不显示
    */
