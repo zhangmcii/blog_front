@@ -14,11 +14,11 @@ const backgroundLoaded = ref(false);
 
 useMobileVhCssVar();
 
-// 控制着中间字按钮的出现时机 。需要比加载完成时间延后一点，才会有浮动效果
+// 控制着中间字按钮的出现时机。需要比加载完成时间延后一点，才会有浮动效果
 onMounted(() => {
   setTimeout(() => {
     animationEnd.value = true;
-  }, 2500);
+  }, 1300);
 });
 
 watch([backgroundLoaded, animationEnd], () => {

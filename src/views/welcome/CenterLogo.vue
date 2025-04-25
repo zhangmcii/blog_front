@@ -47,21 +47,10 @@ function randomSlogan() {
   const slogans = GLOBAL_CONFIG.SLOGANS;
   slogan.value = slogans[randomNum(0, slogans.length - 1)];
 }
-function handleLogoEnterEnd() {
-  console.log("handleLogoEnterEnd");
-  initialAnimationDone.value = true;
-}
-function finishLoading() {
-  isLoading.value = false;
-  isLoaded.value = true;
-}
 
 onMounted(() => {
   randomSlogan();
   loadBackground();
-  setTimeout(() => {
-    finishLoading();
-  }, 2000);
 });
 </script>
 
@@ -70,18 +59,15 @@ onMounted(() => {
     :class="[
       'logo-area',
       { 'is-blur': drawerVisible },
-      { spin: isLoading && initialAnimationDone },
-      { expanded: isLoaded },
     ]"
     :style="{ background: `url(${GLOBAL_CONFIG.BACKGROUND_IMG_URL})` }"
-    @animationend="handleLogoEnterEnd"
   >
     <div :class="['img-shadow', { 'img-shadow-show': bgLoaded }]"></div>
     <div class="inner" style="cursor: pointer" @click="goToBlog">
       <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]"/>
       <div :class="['hello', { hello_bottom: touchable }]">
         <div>{{ slogan }}</div>
-        <div class="hello_bottom_text">点击以访问 {{ GLOBAL_CONFIG.BLOG_NAME }}</div>
+        <div class="hello_bottom_text"> <div class="slide-up">访问 Blog</div></div>
       </div>
     </div>
   </div>
@@ -98,18 +84,11 @@ onMounted(() => {
   display: flex;
   border-radius: 100%;
   /* 初始展开动画 */
-  animation: logoEnter 1.2s forwards;
+  animation: logoEnter 1.2s;
+  animation-fill-mode: forwards;
+  transition: all 0.8s;
   &.is-blur {
     filter: blur(5px);
-  }
-  // 加载旋转动画
-  &.spin {
-    animation: spin 1s infinite, maintainSize 0s forwards;
-  }
-  // 完成扩展动画
-  &.expanded {
-    animation: expand 0.5s forwards;
-    transition: all 0.3s;
   }
   .img-shadow {
     content: "";
@@ -157,6 +136,10 @@ onMounted(() => {
         margin-top: 0.5rem;
         padding-top: 0.5rem;
         border-top: 1px solid #fff;
+        .slide-up{
+          margin-top:15px;
+          animation: float 4s infinite ease-in-out;
+        }
       }
     }
   }
