@@ -69,7 +69,7 @@ export default {
     </el-row>
     <PostImage :post_images="post.post_images" />
 
-    <PostAction :post="post" :showShare="true" />
+    <PostAction :post="post" :showShare="true" :showEdit="true"/>
     <CommentCard :post-id="postId" />
   </PageHeadBack>
 </template>

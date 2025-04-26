@@ -30,6 +30,10 @@ export default {
     showShare: {
       type: Boolean,
       default: false
+    },
+    showEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -89,6 +93,9 @@ export default {
         }
       })
     },
+    edit() {
+      this.$router.push(`/editPost/${this.post.id}`)
+    },
     shareSelect(option) {
       if (option.name === '复制链接') {
         copy(`${requestUrl.baseUrl}:${requestUrl.frontPort}/postDetail/${this.post.id}`)
@@ -103,6 +110,27 @@ export default {
 
 <template>
   <el-row justify="end" class="footer">
+    <el-col
+      :xs="4"
+      :sm="4"
+      :md="2"
+      :lg="2"
+      :xl="2"
+      v-if="showEdit && post.author == currentUser.userInfo.username"
+    >
+      <van-icon name="edit" @click.stop="edit" :size="iconSize" />
+    </el-col>
+    <el-col
+      :xs="4"
+      :sm="4"
+      :md="2"
+      :lg="2"
+      :xl="2"
+      v-else-if="showEdit && currentUser.userInfo.isAdmin == 'true'"
+    >
+      <van-icon name="edit" @click.stop="edit" :size="iconSize" color="red" />
+    </el-col>
+
     <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="showShare && !isUserRoute">
       <van-icon name="share-o" @click.stop="show = !show" :size="iconSize" />
     </el-col>
