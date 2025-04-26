@@ -28,9 +28,9 @@ import vSlideIn from '@/directives/vSlideIn.js'
 import { UIcon } from 'undraw-ui'
 import 'undraw-ui/dist/style.css'
 
+
 const app = createApp(App)
 app.directive('slide-in',vSlideIn)
-
 
 app.config.globalProperties.$dayjs = dayjs
 app.config.globalProperties.$message = ElMessage

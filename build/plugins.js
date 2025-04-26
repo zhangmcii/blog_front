@@ -25,7 +25,7 @@ export function getPluginsList(VITE_COMPRESSION) {
     Icons({
       autoInstall: true
     }),
-    AppLoading('loading.html'),
+    AppLoading(),
     configCompressPlugin(VITE_COMPRESSION),
     svgLoader()
   ]

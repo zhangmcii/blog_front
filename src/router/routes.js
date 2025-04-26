@@ -30,12 +30,12 @@ const routes = [
       {
         path: '/postDetail/:id',
         name: 'detail',
-        component: () => import('../views/posts/PostDetail.vue'),
+        component: () => import('../views/posts/PostDetail.vue')
       },
       {
         path: '/pubImage',
         name: 'pubImage',
-        component: () => import('../views/posts/publish/PublishImage.vue'),
+        component: () => import('../views/posts/publish/PublishImage.vue')
       },
       {
         path: '/chat',
@@ -114,14 +114,10 @@ const routes = [
         path: '/500',
         name: 'networkError',
         component: () => import('../views/error/NetError.vue')
-      },
+      }
     ]
   },
-
-  {
-    path: '/',
-    redirect: '/posts'
-  },
+  { path: '/', redirect: '/welcome' },
   // 登陆页面
   {
     path: '/login',
@@ -136,6 +132,11 @@ const routes = [
     name: 'clear',
     component: () => import('../views/login/Clear.vue')
   },
+  {
+    path: '/welcome',
+    name: 'welcome',
+    component: () => import('../views/welcome/BlogIndex.vue')
+  }
 ]
 
 export default routes
