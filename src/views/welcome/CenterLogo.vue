@@ -1,80 +1,73 @@
-<script  setup>
-import {GLOBAL_CONFIG} from "@/config";
-import { randomNum } from "@/utils/common";
-import { onMounted, ref } from "vue";
+<script setup>
+import { GLOBAL_CONFIG } from '@/config/welcomeCfg.js'
+import { randomNum } from '@/utils/common'
+import { onMounted, ref } from 'vue'
 import LocalLogo from '@/asset/logo.svg?component'
 
 defineOptions({
-  name: "CenterLogo",
-});
+  name: 'CenterLogo'
+})
 
 defineProps({
   drawerVisible: Boolean,
   touchable: Boolean
-});
+})
 
 const emit = defineEmits({
   backgroundLoaded: []
-});
+})
 
-const bgLoaded = ref(false);
-const slogan = ref("");
-
-const isLoading = ref(true);
-const isLoaded = ref(false);
-const initialAnimationDone = ref(false);
+const bgLoaded = ref(false)
+const slogan = ref('')
 
 /**
  * 加载背景图片
  */
 function loadBackground() {
-  var img = new Image();
-  img.src = GLOBAL_CONFIG.BACKGROUND_IMG_URL;
-  img.addEventListener("load", () => {
-    bgLoaded.value = true;
-    emit("backgroundLoaded");
-  });
+  var img = new Image()
+  img.src = GLOBAL_CONFIG.BACKGROUND_IMG_URL
+  img.addEventListener('load', () => {
+    bgLoaded.value = true
+    emit('backgroundLoaded')
+  })
 }
 
 /**
  * 前往我的博客
  */
 function goToBlog() {
-  window.location.href = GLOBAL_CONFIG.BLOG_URL;
+  window.location.href = GLOBAL_CONFIG.BLOG_URL
 }
 
 function randomSlogan() {
-  const slogans = GLOBAL_CONFIG.SLOGANS;
-  slogan.value = slogans[randomNum(0, slogans.length - 1)];
+  const slogans = GLOBAL_CONFIG.SLOGANS
+  slogan.value = slogans[randomNum(0, slogans.length - 1)]
 }
 
 onMounted(() => {
-  randomSlogan();
-  loadBackground();
-});
+  randomSlogan()
+  loadBackground()
+})
 </script>
 
 <template>
   <div
-    :class="[
-      'logo-area',
-      { 'is-blur': drawerVisible },
-    ]"
+    :class="['logo-area', { 'is-blur': drawerVisible }]"
     :style="{ background: `url(${GLOBAL_CONFIG.BACKGROUND_IMG_URL})` }"
   >
     <div :class="['img-shadow', { 'img-shadow-show': bgLoaded }]"></div>
     <div class="inner" style="cursor: pointer" @click="goToBlog">
-      <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]"/>
+      <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]" />
       <div :class="['hello', { hello_bottom: touchable }]">
         <div>{{ slogan }}</div>
-        <div class="hello_bottom_text"> <div class="slide-up">访问 Blog</div></div>
+        <div class="hello_bottom_text"><div class="slide-up">访问 Blog</div></div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@import url("@/asset/css/animate.scss");
+@import url('@/asset/css/animate.scss');
 .logo-area {
   background-size: cover !important;
   background-position: center !important;
@@ -91,7 +84,7 @@ onMounted(() => {
     filter: blur(5px);
   }
   .img-shadow {
-    content: "";
+    content: '';
     width: 100%;
     height: 100%;
     position: absolute;
@@ -136,8 +129,8 @@ onMounted(() => {
         margin-top: 0.5rem;
         padding-top: 0.5rem;
         border-top: 1px solid #fff;
-        .slide-up{
-          margin-top:15px;
+        .slide-up {
+          margin-top: 15px;
           animation: float 4s infinite ease-in-out;
         }
       }

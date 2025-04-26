@@ -1,7 +1,7 @@
-<script  setup>
+<script setup>
 defineOptions({
-  name: "BanTouchMask",
-});
+  name: 'BanTouchMask'
+})
 
 defineProps({
   touchable: Boolean

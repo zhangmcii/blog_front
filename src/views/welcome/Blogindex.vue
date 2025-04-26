@@ -1,33 +1,31 @@
-<script setup >
-import { onMounted, ref, watch } from "vue";
-import BanTouchMask from "./BanTouchMask.vue";
-import CenterLogo from "./CenterLogo.vue";
-import useMobileVhCssVar from "./hooks/useMobileVhCssVar";
+<script setup>
+import { onMounted, ref, watch } from 'vue'
+import BanTouchMask from './BanTouchMask.vue'
+import CenterLogo from './CenterLogo.vue'
+import useMobileVhCssVar from './hooks/useMobileVhCssVar'
 
 defineOptions({
-  name: "App",
-});
+  name: 'App'
+})
 
-const animationEnd = ref(false);
-const drawerVisible = ref(false);
-const backgroundLoaded = ref(false);
+const animationEnd = ref(false)
+const drawerVisible = ref(false)
+const backgroundLoaded = ref(false)
 
-useMobileVhCssVar();
+useMobileVhCssVar()
 
-// 控制着中间字按钮的出现时机。需要比加载完成时间延后一点，才会有浮动效果
+// 控制着中间字按钮的出现时机。
 onMounted(() => {
   setTimeout(() => {
-    animationEnd.value = true;
-  }, 1300);
-});
+    animationEnd.value = true
+  }, 1300)
+})
 
 watch([backgroundLoaded, animationEnd], () => {
   if (backgroundLoaded.value && animationEnd.value) {
-    document.body.style.backgroundColor = "rgba(0,0,0,0.8)";
+    document.body.style.backgroundColor = 'rgba(0,0,0,0.8)'
   }
-});
-
-
+})
 </script>
 
 <template>
