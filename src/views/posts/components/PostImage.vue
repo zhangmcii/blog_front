@@ -37,38 +37,47 @@ export default {
 </script>
 
 <template>
-  <el-row :gutter="4" class="preview">
-    <el-col :span="8" v-for="(url, index) in postUrls" :key="index">
-      <el-image :src="url" lazy fit="cover" :preview-src-list="postUrls" :initial-index="index">
-        <template #error>
-          <div class="image-slot">
-            <el-icon><i-ep-picture /></el-icon>
-          </div>
-        </template>
-      </el-image>
-    </el-col>
-  </el-row>
+  <div class="container">
+    <div class="preview">
+      <photo-provider :photo-closable="true" :should-transition="true">
+        <photo-consumer v-for="(url, index) in postUrls" :intro="url" :key="url" :src="url">
+          <el-image :src="url" lazy fit="cover">
+            <template #error>
+              <div class="image-slot">
+                <el-icon><i-ep-picture /></el-icon>
+              </div>
+            </template>
+          </el-image>
+        </photo-consumer>
+      </photo-provider>
+    </div>
+  </div>
 </template>
 <style lang="scss" scoped>
-.preview {
+.container {
   width: 370px;
-  margin: 0px 0px 15px 0px;
-}
-.el-image {
-  width: 100%;
-  height: 121px;
-  margin-left: 5px;
-  .image-slot {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 每行 3 列 */
+    gap: 5px; /* 图片之间的间距 */
     width: 100%;
-    height: 100%;
-    background: var(--el-fill-color-light);
-    color: var(--el-text-color-secondary);
-    font-size: 14px;
-    .el-icon {
-      font-size: 30px;
+    margin: 0 auto; /* 居中对齐 */
+    .el-image {
+      width: 100%;
+      aspect-ratio: 1; /* 保持图片为正方形 */
+      .image-slot {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        background: var(--el-fill-color-light);
+        color: var(--el-text-color-secondary);
+        font-size: 14px;
+        .el-icon {
+          font-size: 30px;
+        }
+      }
     }
   }
 }

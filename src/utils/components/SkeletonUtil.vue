@@ -28,6 +28,10 @@ export default {
       default() {
         return {}
       }
+    },
+    useNew: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -38,7 +42,7 @@ export default {
 </script>
 
 <template>
-  <el-skeleton animated :loading="loading" :count="count" :throttle="throttle">
+  <el-skeleton v-if="!useNew" animated :loading="loading" :count="count" :throttle="throttle">
     <template #template>
       <el-card shadow="hover" :style="cardStyle">
         <div class="skeleton-container">
@@ -57,8 +61,34 @@ export default {
     </template>
     <slot></slot>
   </el-skeleton>
+
+  <!-- 适配新版首页文章预览界面 -->
+  <el-skeleton animated :loading="loading" :count="count" :throttle="throttle" v-else>
+    <template #template>
+      <div class="container">
+        <div class="container-head">
+          <div class="container-head-left">
+            <el-skeleton-item
+              variant="circle"
+              style="--el-skeleton-circle-size: 40px"
+              v-if="showAvatar"
+            />
+            <el-skeleton-item variant="text" style="width: 60%" />
+          </div>
+          <el-skeleton-item variant="text" style="width: 15%" />
+        </div>
+
+        <div class="container-content">
+          <el-skeleton-item variant="text" style="width: 40%" />
+          <el-skeleton-item variant="text" v-for="item in row - 2" :key="item" />
+          <el-skeleton-item variant="text" style="width: 60%" />
+        </div>
+      </div>
+    </template>
+    <slot></slot>
+  </el-skeleton>
 </template>
-<style scoped>
+<style lang="scss" scoped>
 :deep(.el-card__body) {
   padding: 5px 20px;
 }
@@ -71,5 +101,29 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  .container-head {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .container-head-left {
+      display: flex;
+      justify-content: space-between;
+      width: 30%;
+      align-items: center;
+    }
+  }
+  .container-content {
+    width: 100%;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 </style>

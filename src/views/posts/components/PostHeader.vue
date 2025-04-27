@@ -46,7 +46,7 @@ export default {
       <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
     </el-col>
 
-    <el-col :span="15" class="head-name">
+    <el-col :span="16" class="head-name">
       <el-text @click.stop="$router.push(`/user/${post.author}`)">{{
         post.nick_name ? post.nick_name : post.author
       }}</el-text>

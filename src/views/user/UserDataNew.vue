@@ -264,7 +264,6 @@ export default {
       return true
     },
     handleAvatarSuccess(response) {
-      //   const url = response.data.links.url
       const domin = import.meta.env.VITE_QINIU_DOMAIN
       const imageUrl = `http://${domin}/${response.key}`
       image.saveImageUrl({ image: response.key }).then((res) => {
@@ -409,6 +408,7 @@ export default {
             :hide-on-single-page="true"
             :pager-count="5"
           />
+          <el-empty :image-size="200" description="生活总归带点荒谬"  v-if="posts.length === 0" />
         </SkeletonUtil>
       </el-tab-pane>
     </el-tabs>

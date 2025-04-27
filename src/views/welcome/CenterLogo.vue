@@ -60,7 +60,7 @@ onMounted(() => {
       <!-- <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]" /> -->
       <div :class="['hello', { hello_bottom: touchable }]">
         <div>{{ slogan }}</div>
-        <div class="hello_bottom_text"><div class="slide-up">访问 Blog</div></div>
+        <div class="hello_bottom_text"><div class="slide-up">访问 随想阁楼</div></div>
       </div>
     </div>
   </div>
