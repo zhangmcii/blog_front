@@ -284,7 +284,7 @@ export default {
     },
     handlePreview() {
       return true
-    }, 
+    },
     showDrawer() {
       this.drawer = !this.drawer
     },
@@ -408,7 +408,7 @@ export default {
             :hide-on-single-page="true"
             :pager-count="5"
           />
-          <el-empty :image-size="200" description="生活总归带点荒谬"  v-if="posts.length === 0" />
+          <el-empty :image-size="200" description="生活总归带点荒谬" v-if="posts.length === 0" />
         </SkeletonUtil>
       </el-tab-pane>
     </el-tabs>
@@ -559,5 +559,12 @@ export default {
     width: 100%;
     height: 40px;
   }
+}
+:deep(.el-statistic__head) {
+  font-size: 0.9rem;
+}
+.el-statistic {
+  width: 30px;
+  text-align: center;
 }
 </style>
