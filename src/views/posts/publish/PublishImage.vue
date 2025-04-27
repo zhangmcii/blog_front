@@ -115,9 +115,6 @@ export default {
       return true
     },
     async uploadFiles() {
-      if (!this.beforePicUpload(this.fileList)) {
-        return
-      }
       const domin = import.meta.env.VITE_QINIU_DOMAIN
       this.uploading = true
       try {
@@ -162,6 +159,9 @@ export default {
         return
       } else if (this.fileList.length === 0) {
         this.$message.error('图片不能为空')
+        return
+      }
+      if (!this.beforePicUpload(this.fileList)) {
         return
       }
       const loadingInstance = this.$loading({

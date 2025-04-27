@@ -83,6 +83,8 @@ export default {
           <el-skeleton-item variant="text" v-for="item in row - 2" :key="item" />
           <el-skeleton-item variant="text" style="width: 60%" />
         </div>
+
+        <div class="block"></div>
       </div>
     </template>
     <slot></slot>
@@ -125,5 +127,11 @@ export default {
     flex-direction: column;
     gap: 10px;
   }
+}
+.block {
+  width: 100%;
+  height: 5px;
+  background-color: #f5f7fa;
+  margin: 5px 0px;
 }
 </style>
