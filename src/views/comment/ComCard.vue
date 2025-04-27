@@ -126,6 +126,11 @@ const submit = ({ content, parentId, reply, finish, mentionList }) => {
         ElMessage.error(res.data.detail)
       }
     })
+    .catch((error) => {
+      if (error.response.status === 429) {
+        ElMessage.info('操作太快了，慢点点~')
+      }
+    })
 }
 
 // 点赞按钮事件

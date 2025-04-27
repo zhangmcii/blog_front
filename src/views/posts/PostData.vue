@@ -7,6 +7,8 @@ import { GradientText } from 'vue-amazing-ui'
 import 'vue-amazing-ui/es/gradienttext/GradientText.css'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import PostPublish from './PostPublish.vue'
+import emitter from '@/utils/emitter.js'
+
 export default {
   components: {
     PostPreview,
@@ -40,6 +42,9 @@ export default {
   },
   mounted() {
     this.getPosts(this.currentPage, this.activeName)
+    emitter.on('newPost', (post) => {
+      this.posts.unshift(...post)
+    })
   },
   methods: {
     changeTab(tabName) {

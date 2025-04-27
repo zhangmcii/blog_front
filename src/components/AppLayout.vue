@@ -11,7 +11,7 @@ import 'vue-amazing-ui/es/scrollbar/Scrollbar.css'
     </el-header>
     <el-divider />
     <el-main>
-      <Scrollbar ref="scrollbar" class="Scrollbar">
+      <Scrollbar ref="scrollbar" class="Scrollbar" style="--scrollbar-color: rgba(0, 0, 0, 0)">
         <router-view v-slot="{ Component, route }">
           <keep-alive>
             <component v-if="route.meta.keepAlive" :is="Component" :key="route.name" />

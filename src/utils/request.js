@@ -118,10 +118,6 @@ function setInterceptors(...instance) {
           return Promise.reject(error)
         }
         if (error.response.status === 429) {
-          ElMessage({
-            message: '操作太快了，慢点点~',
-            type: 'info'
-          })
           return Promise.reject(error)
         }
 

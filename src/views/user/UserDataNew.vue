@@ -68,7 +68,8 @@ export default {
         leading: 300,
         trailing: 300,
         initVal: true
-      }
+      },
+      activeName: 'first'
     }
   },
   setup() {
@@ -131,8 +132,7 @@ export default {
         !this.isCurrentUser &&
         this.user.is_followed_by_current_user
       )
-    },
-
+    }
   },
   mounted() {
     this.getPermission(1)
@@ -285,7 +285,7 @@ export default {
     },
     handlePreview() {
       return true
-    },
+    }, 
     showDrawer() {
       this.drawer = !this.drawer
     },
@@ -309,110 +309,111 @@ export default {
 <template>
   <PageHeadBack>
     <el-avatar size="large" :src="user.image" @click="showDrawer" />
-    <el-card class="user-info" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span>个人信息</span>
-        </div>
-      </template>
+    <el-tabs v-model="activeName" class="demo-tabs" stretch>
+      <el-tab-pane label="资料" name="first">
+        <el-card class="user-info" shadow="never">
+          <template #header>
+            <div class="card-header">
+              <span>个人信息</span>
+              <el-button round size="small" v-if="isCurrentUser" @click="editProfile"
+                >编辑资料</el-button
+              >
+              <el-button
+                type="danger"
+                round
+                size="small"
+                v-if="currentUser.isAdmin"
+                @click="editProfileAdmin"
+                >编辑资料 [管理员]</el-button
+              >
+            </div>
+          </template>
 
-      <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="skeletonThrottle">
-        <template #default>
-          <el-row v-if="user.nickname">
-            <el-col :xs="6" :xl="4">昵称</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ user.nickname }}</el-col>
-          </el-row>
-          <el-row>
-            <el-col :xs="6" :xl="4">账号</el-col>
-            <el-col :xs="16" :xl="10" :offset="2">{{ user.username }}</el-col>
-          </el-row>
-          <el-row v-if="user.email">
-            <el-col :xs="6" :xl="4">电子邮件</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
-          </el-row>
-          <el-row v-if="user.location">
-            <el-col :xs="6" :xl="4">城市</el-col>
-            <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
-          </el-row>
-          <el-row v-if="user.about_me">
-            <el-col :xs="6" :xl="4">签名</el-col>
-            <el-col :xs="16" :xl="10" :offset="2">{{ user.about_me }}</el-col>
-          </el-row>
-          <el-row>
-            <el-col :xs="6" :xl="4">生日</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
-          </el-row>
+          <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="skeletonThrottle">
+            <template #default>
+              <el-row v-if="user.nickname">
+                <el-col :xs="6" :xl="4">昵称</el-col>
+                <el-col :xs="8" :xl="10" :offset="2">{{ user.nickname }}</el-col>
+              </el-row>
+              <el-row>
+                <el-col :xs="6" :xl="4">账号</el-col>
+                <el-col :xs="16" :xl="10" :offset="2">{{ user.username }}</el-col>
+              </el-row>
+              <el-row v-if="user.email">
+                <el-col :xs="6" :xl="4">电子邮件</el-col>
+                <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
+              </el-row>
+              <el-row v-if="user.location">
+                <el-col :xs="6" :xl="4">城市</el-col>
+                <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
+              </el-row>
+              <el-row v-if="user.about_me">
+                <el-col :xs="6" :xl="4">签名</el-col>
+                <el-col :xs="16" :xl="10" :offset="2">{{ user.about_me }}</el-col>
+              </el-row>
+              <el-row>
+                <el-col :xs="6" :xl="4">生日</el-col>
+                <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
+              </el-row>
 
-          <el-row>
-            <el-col :xs="6" :xl="4">上线时间</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
-          </el-row>
-        </template>
-      </el-skeleton>
-    </el-card>
+              <el-row>
+                <el-col :xs="6" :xl="4">上线时间</el-col>
+                <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
+              </el-row>
+            </template>
+          </el-skeleton>
+        </el-card>
 
-    <el-card shadow="never">
-      <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
-        <template #template>
-          <div style="display: flex; justify-items: space-between; gap: 15px; height: 47px">
-            <el-skeleton-item variant="text" class="item" />
-            <el-skeleton-item variant="text" class="item" />
-          </div>
-        </template>
-        <template #default>
-          <el-row>
-            <el-col :span="6">
-              <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
-            </el-col>
-            <el-col :span="6">
-              <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
-            </el-col>
-          </el-row>
-        </template>
-      </el-skeleton>
-    </el-card>
-
-    <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
-      <template #template>
         <el-card shadow="never">
-          <el-skeleton-item variant="button" style="width: 30%; height: 30px" />
+          <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
+            <template #template>
+              <div style="display: flex; justify-items: space-between; gap: 15px; height: 47px">
+                <el-skeleton-item variant="text" class="item" />
+                <el-skeleton-item variant="text" class="item" />
+              </div>
+            </template>
+            <template #default>
+              <el-row>
+                <el-col :span="6">
+                  <el-statistic
+                    title="粉丝"
+                    :value="user.followers_count"
+                    @click="followerDetail"
+                  />
+                </el-col>
+                <el-col :span="6">
+                  <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
+                </el-col>
+              </el-row>
+            </template>
+          </el-skeleton>
         </el-card>
-      </template>
-      <template #default>
-        <el-card shadow="never" v-if="isCurrentUser || currentUser.isAdmin">
-          <el-row justify="space-between">
-            <el-col v-if="isCurrentUser" :xs="9" :xl="6">
-              <el-button @click="editProfile">编辑资料</el-button>
-            </el-col>
-            <el-col v-if="currentUser.isAdmin" :xs="12" :xl="12">
-              <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
-            </el-col>
-          </el-row>
-        </el-card>
-      </template>
-    </el-skeleton>
+      </el-tab-pane>
+      <el-tab-pane label="文章" name="second">
+        <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
+          <PostCard
+            v-for="item in posts"
+            :key="item"
+            :post="item"
+            :showImage="false"
+            @click="$router.push(`/postDetail/${item.id}`)"
+            v-slide-in
+          />
 
-    <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
-      <PostCard
-        v-for="item in posts"
-        :key="item"
-        :post="item"
-        :showImage="false"
-        @click="$router.push(`/postDetail/${item.id}`)"
-        v-slide-in
-      />
-
-      <el-pagination
-        v-model:current-page="currentPage"
-        :page-size="10"
-        layout="total, prev, pager, next"
-        :total="posts_count"
-        @current-change="handleCurrentChange"
-        :hide-on-single-page="true"
-        :pager-count="5"
-      />
-    </SkeletonUtil>
+          <el-pagination
+            v-model:current-page="currentPage"
+            :page-size="10"
+            layout="total, prev, pager, next"
+            :total="posts_count"
+            @current-change="handleCurrentChange"
+            :hide-on-single-page="true"
+            :pager-count="5"
+          />
+        </SkeletonUtil>
+      </el-tab-pane>
+    </el-tabs>
   </PageHeadBack>
+
   <van-action-sheet v-model:show="drawer" cancel-text="取消">
     <photo-provider :photo-closable="true">
       <photo-consumer v-for="(src, index) in imgList" :intro="src" :key="src" :src="src">
@@ -490,6 +491,8 @@ export default {
   padding: 10px;
 }
 .card-header {
+  display: flex;
+  justify-content: space-between;
   color: #000000;
 }
 .user-info .el-row {

@@ -26,6 +26,9 @@
       <el-dialog v-model="dialogVisible">
         <img w-full :src="dialogImageUrl" alt="Preview Image" />
       </el-dialog>
+      <div class="note">
+        <el-text size="small">(图文 每日发布次数限定2次)</el-text>
+      </div>
     </div>
     <template #action>
       <el-button
@@ -47,6 +50,8 @@ import { useCurrentUserStore } from '@/stores/user'
 import uploadApi from '@/api/upload/uploadApi.js'
 import postApi from '@/api/posts/postApi.js'
 import { v4 as uuidv4 } from 'uuid'
+import emitter from '@/utils/emitter.js'
+
 export default {
   name: 'BlogPost',
   props: {},
@@ -122,10 +127,8 @@ export default {
         }
         for (const file of this.fileList) {
           const folder = this.currentUser.uploadArticlesBaseUrl
-          console.log('folder:', folder)
           const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
           const key = folder + uniqueFileName
-          console.log('key:', key)
           const observable = qiniu.upload(file.raw, key, this.uploadToken, putExtra, config)
           await new Promise((resolve, reject) => {
             // 保存 this 上下文
@@ -174,18 +177,23 @@ export default {
               this.$message.success('发布成功')
               this.content = ''
               this.fileList = []
+              emitter.emit('newPost', response.data.data)
               this.$router.push('/posts')
             }
             loadingInstance.close()
+          })
+          .catch((error) => {
+            loadingInstance.close()
+            if (error.response.status === 429) {
+              uploadApi.del_image(this.imageKey)
+              this.$message.info('今天的发布次数已达上限～')
+            }
           })
       } catch (error) {
         console.error('Submit blog failed:', error)
         loadingInstance.close()
       }
     },
-    // async submitBlog() {
-    //   await this.uploadFiles()
-    // },
     handlePictureCardPreview(uploadFile) {
       this.dialogImageUrl = uploadFile.url
       this.dialogVisible = true
@@ -208,5 +216,8 @@ export default {
   resize: none;
   /* 隐藏滚动条 */
   /* overflow: hidden; */
+}
+.note {
+  padding: 5px;
 }
 </style>
