@@ -2,7 +2,7 @@
 import { GLOBAL_CONFIG } from '@/config/welcomeCfg.js'
 import { randomNum } from '@/utils/common'
 import { onMounted, ref } from 'vue'
-import LocalLogo from '@/asset/logo.svg?component'
+// import LocalLogo from '@/asset/logo.svg?component'
 
 defineOptions({
   name: 'CenterLogo'
@@ -57,7 +57,7 @@ onMounted(() => {
   >
     <div :class="['img-shadow', { 'img-shadow-show': bgLoaded }]"></div>
     <div class="inner" style="cursor: pointer" @click="goToBlog">
-      <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]" />
+      <!-- <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]" /> -->
       <div :class="['hello', { hello_bottom: touchable }]">
         <div>{{ slogan }}</div>
         <div class="hello_bottom_text"><div class="slide-up">访问 Blog</div></div>
