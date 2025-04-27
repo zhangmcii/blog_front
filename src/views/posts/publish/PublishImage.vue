@@ -31,14 +31,9 @@
       </div>
     </div>
     <template #action>
-      <el-button
-        type="primary"
-        class="w-full"
-        size="small"
-        :disabled="uploading"
-        @click="submitBlog"
-        >发布</el-button
-      >
+      <ButtonClick content="发布" size="small" :disabled="ban_pub" @do-search="submitBlog">
+        <el-icon><i-ep-Pointer /></el-icon>
+      </ButtonClick>
     </template>
   </PageHeadBack>
 </template>
@@ -46,6 +41,7 @@
 <script>
 import * as qiniu from 'qiniu-js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import ButtonClick from '@/utils/components/ButtonClick.vue'
 import { useCurrentUserStore } from '@/stores/user'
 import uploadApi from '@/api/upload/uploadApi.js'
 import postApi from '@/api/posts/postApi.js'
@@ -56,7 +52,8 @@ export default {
   name: 'BlogPost',
   props: {},
   components: {
-    PageHeadBack
+    PageHeadBack,
+    ButtonClick
   },
   data() {
     return {
@@ -81,7 +78,11 @@ export default {
     const currentUser = useCurrentUserStore()
     return { currentUser }
   },
-  computed: {},
+  computed: {
+    ban_pub() {
+      return this.content === '' || this.fileList.length === 0
+    }
+  },
   mounted() {
     this.getUploadToken()
   },

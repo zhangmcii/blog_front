@@ -18,9 +18,9 @@ export default {
     return {
       post: {
         id: 1,
-        body: '文章',
+        body: '',
         body_html: null,
-        timestamp: '2024-9-20 12:14:00',
+        timestamp: '',
         author: '--',
         nick_name: '',
         commentCount: 20,

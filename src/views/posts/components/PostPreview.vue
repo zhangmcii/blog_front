@@ -15,7 +15,7 @@ export default {
           id: 1,
           body: '文章',
           body_html: null,
-          timestamp: '2024-9-20 12:14:00',
+          timestamp: '',
           author: '张三',
           nick_name: '',
           commentCount: 20,
