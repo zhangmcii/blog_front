@@ -105,7 +105,6 @@ export default {
             <PostImage :post_images="item.post_images" @click.stop="" />
           </template>
         </PostPreview>
-        <el-divider v-if="posts_count !== 0">无更多内容了</el-divider>
       </SkeletonUtil>
     </el-tab-pane>
     <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.isLogin">
@@ -126,7 +125,6 @@ export default {
             <PostImage :post_images="item.post_images" @click.stop="" />
           </template>
         </PostPreview>
-        <el-divider v-if="posts_count !== 0">无更多内容了</el-divider>
       </SkeletonUtil>
     </el-tab-pane>
   </el-tabs>

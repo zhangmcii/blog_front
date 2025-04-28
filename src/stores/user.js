@@ -35,7 +35,8 @@ export const useCurrentUserStore = defineStore('currentUser', {
         // NOTIFICATION_KEY: `user_notifications_${userInfo.id}`,
         NOTIFICATION_KEY: `user_notifications_1}`,
         MAX_ITEM: 50
-      }
+      },
+      devUploadBaseUrl: 'dev/'
     }
   },
   getters: {
@@ -46,10 +47,22 @@ export const useCurrentUserStore = defineStore('currentUser', {
     priorityName: (state) =>
       state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username,
     // 图片上传目录
-    uploadArticlesBaseUrl: (state) => `user_image/user_${state.userInfo.id}/articles/`,
-    uploadAvatarsBaseUrl: (state) => `user_image/user_${state.userInfo.id}/avatars/`,
-    uploadBackgroundBaseUrl: (state) => `user_image/user_${state.userInfo.id}/background/`,
-    uploadCommentsBaseUrl: (state) => `user_image/user_${state.userInfo.id}/comments/`
+    uploadArticlesBaseUrl: (state) =>
+      import.meta.env.DEV == true
+        ? state.devUploadBaseUrl
+        : `user_image/user_${state.userInfo.id}/articles/`,
+    uploadAvatarsBaseUrl: (state) =>
+      import.meta.env.DEV == true
+        ? state.devUploadBaseUrl
+        : `user_image/user_${state.userInfo.id}/avatars/`,
+    uploadBackgroundBaseUrl: (state) =>
+      import.meta.env.DEV == true
+        ? state.devUploadBaseUrl
+        : `user_image/user_${state.userInfo.id}/background/`,
+    uploadCommentsBaseUrl: (state) =>
+      import.meta.env.DEV == true
+        ? state.devUploadBaseUrl
+        : `user_image/user_${state.userInfo.id}/comments/`
   },
   actions: {
     addItemLikeIds(value) {

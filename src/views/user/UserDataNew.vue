@@ -258,8 +258,6 @@ export default {
       const folder = this.currentUser.uploadAvatarsBaseUrl
       const uniqueFileName = `${uuidv4()}.${rawFile.name.split('.').pop()}`
       const key = folder + uniqueFileName
-      console.log('key:', key)
-      console.log('token:', this.uploadData.token)
       this.uploadData.key = key
       return true
     },
@@ -298,7 +296,6 @@ export default {
     getUploadToken() {
       uploadApi.get_upload_token().then((res) => {
         this.uploadData.token = res.data.upload_token
-        console.log('获取上传凭证成功:', this.uploadData.token)
       })
     }
   }
