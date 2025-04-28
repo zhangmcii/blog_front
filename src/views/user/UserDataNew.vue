@@ -17,12 +17,14 @@ import { loginReminder } from '@/utils/common.js'
 import uploadApi from '@/api/upload/uploadApi.js'
 import { v4 as uuidv4 } from 'uuid'
 import * as qiniu from 'qiniu-js'
+import Interest from '@/views/user/components/Interest.vue'
 
 export default {
   components: {
     PostCard,
     PageHeadBack,
-    SkeletonUtil
+    SkeletonUtil,
+    Interest
   },
   data() {
     return {
@@ -324,7 +326,6 @@ export default {
               >
             </div>
           </template>
-
           <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="skeletonThrottle">
             <template #default>
               <el-row v-if="user.nickname">
@@ -384,6 +385,8 @@ export default {
             </template>
           </el-skeleton>
         </el-card>
+
+        <Interest/>
       </el-tab-pane>
       <el-tab-pane label="文章" name="second">
         <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">

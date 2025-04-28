@@ -1,7 +1,7 @@
 <script>
 import userApi from '@/api/user/userApi.js'
 import authApi from '@/api/auth/authApi.js'
-import image from '@/api/user/image.js'
+import imageApi from '@/api/user/imageApi.js'
 import date from '@/utils/date.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
@@ -239,7 +239,7 @@ export default {
     },
     handleAvatarSuccess(response) {
       const url = response.data.links.url
-      image.saveImageUrl({ image: url }).then((res) => {
+      imageApi.saveImageUrl({ image: url }).then((res) => {
         if (res.data.msg == 'success') {
           this.user.image = url
           this.imgList.push(this.user.image)

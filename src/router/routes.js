@@ -114,7 +114,12 @@ const routes = [
         path: '/500',
         name: 'networkError',
         component: () => import('../views/error/NetError.vue')
-      }
+      },
+      {
+        path: '/interest',
+        name: 'interest',
+        component: () => import('../views/user/upload1.vue')
+      },
     ]
   },
   { path: '/', redirect: '/welcome' },
