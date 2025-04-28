@@ -5,6 +5,8 @@ import ButtonClick from '@/utils/components/ButtonClick.vue'
 import { areaList } from '@vant/area-data'
 import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import { useCurrentUserStore } from '@/stores/user'
+
 export default {
   components: {
     ButtonClick,
@@ -25,7 +27,8 @@ export default {
     }
   },
   setup() {
-    return { areaList }
+    const currentUser = useCurrentUserStore()
+    return { areaList, currentUser }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -52,7 +55,7 @@ export default {
             this.cityName = cityUtil.getCodeToName(location, this.areaList)
           }
           this.originalForm = JSON.stringify(res.data.data)
-          this.formLabelAlign = res.data.data
+          this.formLabelAlign = {...res.data.data}
           this.isLoading = false
         }
       })
@@ -62,7 +65,8 @@ export default {
       editApi.editProfile(this.formLabelAlign).then((res) => {
         this.loading = false
         this.isChange = false
-        if (res.data.data == 'success') {
+        if (res.data.msg == 'success') {
+          this.currentUser.userInfo= {...this.currentUser.userInfo, ...this.formLabelAlign}
           this.$message.success('修改成功')
           this.$router.push(`/user/${this.formLabelAlign.username}`)
         } else {
@@ -80,7 +84,11 @@ export default {
 
 <template>
   <PageHeadBack>
-    <el-skeleton :loading="isLoading" animated :throttle="{ leading: 300, trailing: 300, initVal: true }">
+    <el-skeleton
+      :loading="isLoading"
+      animated
+      :throttle="{ leading: 300, trailing: 300, initVal: true }"
+    >
       <template #template>
         <el-skeleton-item variant="h3" style="width: 20%" />
         <el-skeleton-item style="width: 100%; height: 25px" class="form-name" />

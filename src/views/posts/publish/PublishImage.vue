@@ -88,13 +88,8 @@ export default {
   },
   methods: {
     async getUploadToken() {
-      try {
-        const response = await uploadApi.get_upload_token()
-        this.uploadToken = response.data.upload_token
-        console.log('获取上传凭证成功:', this.uploadToken)
-      } catch (error) {
-        console.error('Failed to get upload token:', error)
-      }
+      const response = await uploadApi.get_upload_token()
+      this.uploadToken = response.data.upload_token
     },
     beforePicUpload(fileList) {
       for (const file of fileList) {
@@ -137,7 +132,6 @@ export default {
                 reject(err)
               },
               complete(res) {
-                console.log('Upload complete:', res)
                 self.imageKey.push(res.key)
                 const imageUrl = `http://${domin}/${res.key}`
                 self.imageUrls.push(imageUrl)
@@ -149,7 +143,6 @@ export default {
       } catch (error) {
         console.error('Upload failed:', error)
       } finally {
-        console.log('上传完成的图片', this.imageUrls)
         this.uploading = false
       }
     },
@@ -191,7 +184,6 @@ export default {
             }
           })
       } catch (error) {
-        console.error('Submit blog failed:', error)
         loadingInstance.close()
       }
     },

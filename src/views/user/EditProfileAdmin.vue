@@ -80,7 +80,7 @@ export default {
       editApi.editProfileAdmin(this.formLabelAlign).then((res) => {
         this.loading = false
         this.isChange = false
-        if (res.data.data == 'success') {
+        if (res.data.msg == 'success') {
           this.$message.success('修改成功')
           this.$router.push(`/user/${this.formLabelAlign.username}`)
         } else {
