@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { io } from 'socket.io-client'
 import requestUrl from '@/config/requestUrl.js'
+import imageCfg from '@/config/image.js'
 
 export const useCurrentUserStore = defineStore('currentUser', {
   state() {
@@ -46,6 +47,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
     isAdmin: (state) => state.userInfo.roleId == 3,
     priorityName: (state) =>
       state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username,
+    avatarsUrl: (state) => (state.userInfo.image ? state.userInfo.image : imageCfg.logOut),
     // 图片上传目录
     uploadArticlesBaseUrl: (state) =>
       import.meta.env.DEV == true

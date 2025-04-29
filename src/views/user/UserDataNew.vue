@@ -262,11 +262,11 @@ export default {
       const domin = import.meta.env.VITE_QINIU_DOMAIN
       const imageUrl = `http://${domin}/${response.key}`
       image.saveImageUrl({ image: response.key }).then((res) => {
+        // 换图像成功后，更新本地image字段
         if (res.data.msg == 'success') {
+          this.currentUser.userInfo = {...this.currentUser.userInfo, ...{image:res.data.image}}
           this.user.image = imageUrl
           this.imgList.push(this.user.image)
-          // 换图像成功后，更新本地image字段
-          this.currentUser.userInfo.image = `http://${domin}/${res.data.image}`
           emitter.emit('image', imageUrl)
           this.$message.success('图像上传成功')
         } else {

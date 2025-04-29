@@ -17,7 +17,7 @@
         @select="onSelect"
       >
         <template #reference>
-          <el-avatar :size="32" :src="photo.Avatar" @error="errorImage" />
+          <el-avatar :size="32" :src="currentUser.avatarsUrl" @error="errorImage" />
         </template>
         <template #default v-if="currentUser.isLogin">
           <van-cell
@@ -26,7 +26,7 @@
             title-style="margin-left:10px"
           >
             <template #icon>
-              <el-avatar :src="photo.Avatar" :size="47" />
+              <el-avatar :src="currentUser.avatarsUrl" :size="47" />
             </template>
           </van-cell>
           <van-cell
