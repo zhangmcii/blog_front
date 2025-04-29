@@ -34,42 +34,39 @@ export default {
         return `昨天 ${time}`
       }
       return this.$dayjs(this.post.timestamp).fromNow()
-    },
+    }
   },
   methods: {}
 }
 </script>
 
 <template>
-  <el-row class="head">
-    <el-col :span="3">
+  <el-row class="head" justify="space-between" align="middle">
+    <div class="head-name">
       <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
-    </el-col>
-
-    <el-col :span="16" class="head-name">
       <el-text @click.stop="$router.push(`/user/${post.author}`)">{{
         post.nick_name ? post.nick_name : post.author
       }}</el-text>
-    </el-col>
-
-    <el-col :xs="4" :sm="3" :md="2" :lg="3" :xl="3" :push="2" class="head-time">
-      <el-text size="small">{{ from_now }}</el-text>
-    </el-col>
+    </div>
+    <div>
+      <el-text size="small" class="head-time">{{ from_now }}</el-text>
+    </div>
   </el-row>
 </template>
-<style scoped>
+<style lang="scss" scoped>
 .head {
   height: 40px;
   margin: 0px 0px 10px 0px;
 }
-.head-name,
-.head-time {
+.head-name {
   display: flex;
   align-items: center;
-}
-.head-name {
   .el-text {
+    margin-left: 5px;
     font-size: 13px;
   }
+}
+.head-time {
+  margin-right: 1px;
 }
 </style>
