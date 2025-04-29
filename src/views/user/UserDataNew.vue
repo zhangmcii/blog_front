@@ -5,11 +5,12 @@ import image from '@/api/user/image.js'
 import date from '@/utils/date.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
-import PostCard from '../posts/PostCard.vue'
 import dayjs from 'dayjs'
 import { areaList } from '@vant/area-data'
 import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import PostPreview from '@/views/posts/components/PostPreview.vue'
+import PostImage from '@/views/posts/components/PostImage.vue'
 import emitter from '@/utils/emitter.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import { showConfirmDialog } from 'vant'
@@ -20,9 +21,10 @@ import * as qiniu from 'qiniu-js'
 
 export default {
   components: {
-    PostCard,
     PageHeadBack,
-    SkeletonUtil
+    SkeletonUtil,
+    PostPreview,
+    PostImage
   },
   data() {
     return {
@@ -142,8 +144,6 @@ export default {
     next((vm) => {
       vm.userName = to.params.userName
       vm.getUserData(vm.userName)
-      // 持久化保存 防止用户刷新本页面导致传入的username丢失
-      // vm.otherUser.username = to.params.userName
       vm.$nextTick(() => {})
     })
   },
@@ -164,9 +164,6 @@ export default {
         this.otherUser.userInfo = res.data.data
         this.imgList.push(this.user.image)
         this.posts = res.data.posts
-        this.posts.forEach((item) => {
-          item.image = ''
-        })
         this.posts_count = res.data.total
         // 让chat和关注按钮出现时机与骨架屏同步
         setTimeout(() => {
@@ -387,15 +384,18 @@ export default {
       </el-tab-pane>
       <el-tab-pane label="文章" name="second">
         <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
-          <PostCard
+          <PostPreview
             v-for="item in posts"
-            :key="item"
+            :key="item.id"
             :post="item"
-            :showImage="false"
+            :containerStyle="{ marginBottom: '10px' }"
             @click="$router.push(`/postDetail/${item.id}`)"
             v-slide-in
-          />
-
+          >
+            <template #image>
+              <PostImage :post_images="item.post_images" @click.stop="" />
+            </template>
+          </PostPreview>
           <el-pagination
             v-model:current-page="currentPage"
             :page-size="10"
