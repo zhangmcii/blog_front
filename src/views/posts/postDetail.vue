@@ -4,6 +4,7 @@ import PostImage from '@/views/posts/components/PostImage.vue'
 import PostAction from '@/views/posts/components/PostAction.vue'
 import CommentCard from '@/views/comment/ComCard.vue'
 import PostHeader from '@/views/posts/components/PostHeader.vue'
+import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import postApi from '@/api/posts/postApi.js'
 
 export default {
@@ -12,7 +13,8 @@ export default {
     CommentCard,
     PostImage,
     PostAction,
-    PostHeader
+    PostHeader,
+    SkeletonUtil
   },
   data() {
     return {
@@ -30,7 +32,8 @@ export default {
         has_praised: false,
         post_images: []
       },
-      postId: -1
+      postId: -1,
+      loading: false
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -51,10 +54,12 @@ export default {
   computed: {},
   methods: {
     getPostById(postId) {
+      this.loading = true
       postApi.getPost(postId).then((res) => {
         if (res.data.msg == 'success') {
           this.post = res.data.data
         }
+        this.loading = false
       })
     }
   }
@@ -63,13 +68,17 @@ export default {
 
 <template>
   <PageHeadBack>
-    <PostHeader :post="post" />
-    <el-row class="text">
-      <el-text>{{ post.body }}</el-text>
-    </el-row>
-    <PostImage :post_images="post.post_images" />
+    <SkeletonUtil :loading="loading" :row="3" :count=1 :useNew="true">
+      <div>
+        <PostHeader :post="post" />
+        <el-row class="text">
+          <el-text>{{ post.body }}</el-text>
+        </el-row>
+        <PostImage :post_images="post.post_images" />
 
-    <PostAction :post="post" :showShare="true" :showEdit="true"/>
+        <PostAction :post="post" :showShare="true" :showEdit="true" />
+      </div>
+    </SkeletonUtil>
     <CommentCard :post-id="postId" />
   </PageHeadBack>
 </template>

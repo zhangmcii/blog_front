@@ -1,27 +1,49 @@
 <template>
-  <u-comment-scroll :disable="disable" @more="more">
-    <u-comment
-      ref="commentRef"
-      :config="config"
-      @submit="submit"
-      @like="like"
-      @mention-search="mentionSearch"
-      @reply-page="replyPage"
-      @show-info="showInfo"
-      class="UComment"
-    >
-      <u-comment-nav v-model="latest" @sorted="sorted"></u-comment-nav>
-      <template #avatar="scope">
-        <el-avatar :src="scope.user.avatar" style="margin-top: 5px" />
-      </template>
-      <template #operate="scope">
-        <Operate :comment="scope" @remove="remove" />
-      </template>
-      <template #card="scope">
-        <UserInfo :scope="scope" :loading="loading" :config="config" />
-      </template>
-    </u-comment>
-  </u-comment-scroll>
+  <el-skeleton
+    :loading="skeletonLoading"
+    animated
+    class="skeleton"
+    :rows="3"
+    :row-width="['100%', '100%', '100%']"
+  >
+    <template #default>
+      <u-comment-scroll :disable="disable" @more="more">
+        <u-comment
+          ref="commentRef"
+          :config="config"
+          @submit="submit"
+          @like="like"
+          @mention-search="mentionSearch"
+          @reply-page="replyPage"
+          @show-info="showInfo"
+          class="UComment"
+        >
+          <u-comment-nav v-model="latest" @sorted="sorted"></u-comment-nav>
+          <template #avatar="scope">
+            <el-avatar :src="scope.user.avatar" style="margin-top: 5px" />
+          </template>
+          <template #operate="scope">
+            <Operate :comment="scope" @remove="remove" />
+          </template>
+          <template #card="scope">
+            <UserInfo :scope="scope" :loading="loading" :config="config" />
+          </template>
+        </u-comment>
+      </u-comment-scroll>
+    </template>
+    <template #template>
+      <div class="skeleton">
+        <el-skeleton-item variant="h1" style="width: 15%" />
+        <div class="skeletton-input">
+          <el-skeleton-item variant="circle" style="--el-skeleton-circle-size: 50px" />
+          <el-skeleton-item variant="text" style="width: 80%; height: 72px" />
+        </div>
+        <el-skeleton-item variant="text" style="width: 100%" />
+        <el-skeleton-item variant="text" style="width: 100%" />
+        <el-skeleton-item variant="text" style="width: 100%" />
+      </div>
+    </template>
+  </el-skeleton>
 </template>
 
 <script setup>
@@ -70,6 +92,8 @@ config.user = {
   // 存储已点赞的评论id
   likeIds: []
 }
+
+const skeletonLoading = ref(true)
 
 // 用户信息是否加载
 const loading = ref(false)
@@ -215,6 +239,7 @@ function getComment() {
   const requestId = ++currentRequestId
   commentApi.getComment(props.postId, query.current).then((res) => {
     if (requestId !== currentRequestId) {
+      skeletonLoading.value = false
       // 忽略非最新请求的结果
       return
     }
@@ -229,6 +254,7 @@ function getComment() {
         disable.value = true
       }
     }
+    skeletonLoading.value = false
   })
 }
 
@@ -241,7 +267,7 @@ watch(
     query.current = 1
     query.total = 0
     disable.value = false
-
+    skeletonLoading.value = true
     setTimeout(getComment, 200)
   }
 )
@@ -250,5 +276,13 @@ watch(
 <style lang="scss" scoped>
 .UComment {
   padding: 0px;
+}
+.skeleton {
+  padding-top: 20px;
+  .skeletton-input {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0px 40px 0px;
+  }
 }
 </style>
