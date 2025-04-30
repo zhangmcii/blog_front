@@ -1,4 +1,3 @@
-import bgIndex from '@/asset/bg_index.jpg'
 import requestUrl from '@/config/requestUrl.js'
 
 /** Website 分类配置 */
@@ -75,7 +74,8 @@ const GLOBAL_CONFIG = {
    * 背景图片地址
    */
   // BACKGROUND_IMG_URL: "https://api.dujin.org/bing/1920.php",
-  BACKGROUND_IMG_URL: bgIndex,
+  // BACKGROUND_IMG_URL: bgIndex,
+  BACKGROUND_IMG_URL: 'http://sv1puyfmn.hd-bkt.clouddn.com/user_image/bg_index.jpg-slim',
   /**
    * ICP 备案号，留空不显示
    */
