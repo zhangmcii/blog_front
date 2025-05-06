@@ -52,17 +52,25 @@ export default {
   name: 'RegisterPage',
   data() {
     var validateUser = (rule, value, callback) => {
+      const reg = /^[a-zA-Z0-9_@.\-]{3,16}$/
       if (value === '') {
         callback(new Error('请输入用户名'))
+      } else if (value.length < 3) {
+        callback(new Error('账号长度不能少于3个字符'))
+      } else if (!reg.test(value)) {
+        callback(new Error('账号只能包含大小写字母、数字和_@.-字符'))
       } else {
         callback()
       }
     }
     var validatePass = (rule, value, callback) => {
+      const reg = /^[a-zA-Z0-9_@.\-]{3,16}$/
       if (value === '') {
         callback(new Error('请输入密码'))
       } else if (value.length < 3) {
-        callback(new Error('密码长度不能少于3个字符'))
+        callback(new Error('密码长度应该在3到16个字符之间'))
+      } else if (!reg.test(value)) {
+        callback(new Error('密码只能包含大小写字母、数字和_@.-字符'))
       } else {
         callback()
       }
