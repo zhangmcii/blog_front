@@ -35,7 +35,7 @@ const routes = [
       {
         path: '/pubImage',
         name: 'pubImage',
-        component: () => import('../views/posts/publish/PublishImage.vue')
+        component: () => import('../views/posts/publish/PublishImageNew.vue')
       },
       {
         path: '/chat',

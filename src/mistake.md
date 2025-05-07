@@ -389,4 +389,8 @@ user_image/user_${this.currentUser.userInfo.id}/comments/*.png      评论图片
 
 
 
+# Base64编码
 
+应用：常用于传输图片或音频文件。
+
+定义：Base64，就是包括小写字母a-z、大写字母A-Z、数字0-9、符号"+"、"/"一共64个字符的字符集，（任何符号都可以转换成这个字符集中的字符，这个转换过程就叫做base64编码

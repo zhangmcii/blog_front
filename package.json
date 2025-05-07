@@ -19,6 +19,7 @@
     "canvas-confetti": "^1.9.3",
     "dayjs": "^1.11.13",
     "element-plus": "^2.9.5",
+    "lrz": "^4.9.41",
     "mitt": "^3.0.1",
     "nodemon": "^3.1.7",
     "pinia": "^2.2.2",
