@@ -13,7 +13,7 @@ const routes = [
       {
         path: '/user/:userName',
         name: 'user',
-        component: () => import('../views/user/UserDataNew.vue')
+        component: () => import('../views/user/UserData.vue')
       },
       {
         path: '/editProfile/:id',
@@ -35,7 +35,7 @@ const routes = [
       {
         path: '/pubImage',
         name: 'pubImage',
-        component: () => import('../views/posts/publish/PublishImageNew.vue')
+        component: () => import('../views/posts/publish/PublishImage.vue')
       },
       {
         path: '/chat',

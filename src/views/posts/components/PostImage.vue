@@ -1,7 +1,7 @@
 <script>
 export default {
   props: {
-    post_images: {
+    postImages: {
       type: Array,
       default() {
         return []
@@ -16,7 +16,7 @@ export default {
     postUrls() {
       const urls = []
       const domain = import.meta.env.VITE_QINIU_DOMAIN
-      this.post_images.forEach((key) => {
+      this.postImages.forEach((key) => {
         const imageUrl = `http://${domain}/${key}-slim`
         urls.push(imageUrl)
       })

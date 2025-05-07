@@ -13,16 +13,20 @@
       />
       <el-upload
         ref="uploadRef"
-        v-model:file-list="fileList"
+        v-model:file-list="originalFiles"
         list-type="picture-card"
-        :on-preview="handlePictureCardPreview"
         :auto-upload="false"
-        :limit="9"
+        :before-upload="() => false"
+        :on-change="handleFileChange"
+        :on-preview="handlePictureCardPreview"
+        :on-remove="handleFileRemove"
         :on-exceed="handleExceed"
+        :limit="9"
         multiple
       >
         <el-icon><i-ep-Plus /></el-icon>
       </el-upload>
+
       <el-dialog v-model="dialogVisible">
         <img w-full :src="dialogImageUrl" alt="Preview Image" />
       </el-dialog>
@@ -39,14 +43,15 @@
 </template>
 
 <script>
-import * as qiniu from 'qiniu-js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 import { useCurrentUserStore } from '@/stores/user'
 import uploadApi from '@/api/upload/uploadApi.js'
 import postApi from '@/api/posts/postApi.js'
-import { v4 as uuidv4 } from 'uuid'
 import emitter from '@/utils/emitter.js'
+import { v4 as uuidv4 } from 'uuid'
+import * as qiniu from 'qiniu-js'
+import lrz from 'lrz'
 
 export default {
   name: 'BlogPost',
@@ -71,7 +76,12 @@ export default {
       },
       dialogVisible: false,
       dialogImageUrl: '',
-      fileList: []
+      // 原始文件
+      originalFiles: [],
+      // 压缩后的文件
+      compressedImages: [],
+      // 默认压缩比率为80%
+      compressedRatio: 80
     }
   },
   setup() {
@@ -80,8 +90,11 @@ export default {
   },
   computed: {
     ban_pub() {
-      return this.content === '' || this.fileList.length === 0
+      return this.content === '' || this.originalFiles.length === 0
     }
+  },
+  created() {
+    this.debounceCompress = this.debounce(this.compressImages, 100)
   },
   mounted() {
     this.getUploadToken()
@@ -91,11 +104,77 @@ export default {
       const response = await uploadApi.get_upload_token()
       this.uploadToken = response.data.upload_token
     },
+    debounce(func, wait) {
+      let timeout
+      return function (...args) {
+        const context = this
+        clearTimeout(timeout)
+        timeout = setTimeout(() => {
+          func.apply(context, args)
+        }, wait)
+      }
+    },
+    handleFileChange(file, fileList) {
+      if (!this.beforePicUpload([file])) {
+        return
+      }
+      // 确保只添加新的文件
+      // const newFiles = fileList.map((f) => f.raw).filter((f) => !this.originalFiles.includes(f))
+      const newFiles = fileList.filter((f) => !this.originalFiles.some((of) => of.uid === f.uid))
+      this.originalFiles = [...this.originalFiles, ...newFiles]
+      // console.log('文件列表:', this.originalFiles)
+      this.debounceCompress()
+    },
+
+    async compressImages() {
+      const compressionRatio = this.compressedRatio / 100
+
+      // 找出未压缩的文件
+      const uncompressedFiles = this.originalFiles.filter(
+        (file) => !this.compressedImages.some((img) => img.uid === file.uid)
+      )
+
+      for (const file of uncompressedFiles) {
+        const rawFile = file.raw
+        const compressedFile = await lrz(rawFile, { quality: compressionRatio })
+
+        // console.log('压缩后的文件:', compressedFile)
+        // console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
+
+        // 将 base64 转换为 Blob
+        const byteString = atob(compressedFile.base64.split(',')[1])
+        const mimeString = compressedFile.base64.split(',')[0].split(':')[1].split(';')[0]
+        const arrayBuffer = new ArrayBuffer(byteString.length)
+        const uintArray = new Uint8Array(arrayBuffer)
+        for (let i = 0; i < byteString.length; i++) {
+          uintArray[i] = byteString.charCodeAt(i)
+        }
+        const blob = new Blob([arrayBuffer], { type: mimeString })
+
+        this.compressedImages.push({
+          src: compressedFile.base64,
+          blob, // 保存 Blob 对象
+          name: rawFile.name,
+          uid: rawFile.uid,
+          sizeInfo: `压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`
+        })
+      }
+    },
+    handleFileRemove(file, fileList) {
+      // 删除原始文件
+      this.originalFiles = this.originalFiles.filter((f) => f.uid !== file.uid)
+      // 删除压缩文件
+      this.compressedImages = this.compressedImages.filter((img) => img.uid !== file.uid)
+
+      // console.log('文件已删除:', file.name)
+      // console.log('当前原始文件列表:', this.originalFiles)
+      // console.log('当前压缩文件列表:', this.compressedImages)
+    },
     beforePicUpload(fileList) {
       for (const file of fileList) {
         const isImage = file.raw.type.startsWith('image/')
         if (!isImage) {
-          this.$message.error('只能上传图片文件！')
+          this.$message.error('只能上传图片格式文件！')
           return false
         }
         const limitPic =
@@ -118,11 +197,11 @@ export default {
           // 存储区域
           region: qiniu.region.z0
         }
-        for (const file of this.fileList) {
+        for (const file of this.compressedImages) {
           const folder = this.currentUser.uploadArticlesBaseUrl
           const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
           const key = folder + uniqueFileName
-          const observable = qiniu.upload(file.raw, key, this.uploadToken, putExtra, config)
+          const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
           await new Promise((resolve, reject) => {
             // 保存 this 上下文
             const self = this
@@ -150,11 +229,11 @@ export default {
       if (this.content === '') {
         this.$message.error('内容不能为空')
         return
-      } else if (this.fileList.length === 0) {
+      } else if (this.originalFiles.length === 0) {
         this.$message.error('图片不能为空')
         return
       }
-      if (!this.beforePicUpload(this.fileList)) {
+      if (!this.beforePicUpload(this.originalFiles)) {
         return
       }
       const loadingInstance = this.$loading({
@@ -170,7 +249,7 @@ export default {
             if (response.data.msg === 'success') {
               this.$message.success('发布成功')
               this.content = ''
-              this.fileList = []
+              this.originalFiles = []
               emitter.emit('newPost', response.data.data)
               this.$router.push('/posts')
             }
@@ -212,5 +291,8 @@ export default {
 }
 .note {
   padding: 5px;
+}
+img {
+  width: 100%;
 }
 </style>
