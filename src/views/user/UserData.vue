@@ -5,22 +5,26 @@ import image from '@/api/user/image.js'
 import date from '@/utils/date.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
-import PostCard from '../posts/PostCard.vue'
 import dayjs from 'dayjs'
 import { areaList } from '@vant/area-data'
 import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import PostPreview from '@/views/posts/components/PostPreview.vue'
+import PostImage from '@/views/posts/components/PostImage.vue'
 import emitter from '@/utils/emitter.js'
-import upload from '@/config/postImageToken.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import { showConfirmDialog } from 'vant'
 import { loginReminder } from '@/utils/common.js'
+import uploadApi from '@/api/upload/uploadApi.js'
+import { v4 as uuidv4 } from 'uuid'
+import * as qiniu from 'qiniu-js'
 
 export default {
   components: {
-    PostCard,
     PageHeadBack,
-    SkeletonUtil
+    SkeletonUtil,
+    PostPreview,
+    PostImage
   },
   data() {
     return {
@@ -49,14 +53,25 @@ export default {
         follow: false,
         skeleton: true
       },
-      uploadData: upload,
+
+      uploadUrl: 'http://upload.qiniu.com',
+      uploadData: {
+        key: '',
+        token: '',
+        putExtra: {},
+        config: {
+          region: qiniu.region.z0
+        }
+      },
+
       drawer: false,
       imgList: [],
       skeletonThrottle: {
         leading: 300,
         trailing: 300,
         initVal: true
-      }
+      },
+      activeName: 'first'
     }
   },
   setup() {
@@ -123,13 +138,12 @@ export default {
   },
   mounted() {
     this.getPermission(1)
+    this.getUploadToken()
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.userName = to.params.userName
       vm.getUserData(vm.userName)
-      // 持久化保存 防止用户刷新本页面导致传入的username丢失
-      // vm.otherUser.username = to.params.userName
       vm.$nextTick(() => {})
     })
   },
@@ -150,9 +164,6 @@ export default {
         this.otherUser.userInfo = res.data.data
         this.imgList.push(this.user.image)
         this.posts = res.data.posts
-        this.posts.forEach((item) => {
-          item.image = ''
-        })
         this.posts_count = res.data.total
         // 让chat和关注按钮出现时机与骨架屏同步
         setTimeout(() => {
@@ -231,21 +242,32 @@ export default {
       this.getUserData(this.userName, this.currentPage)
     },
     beforeAvatarUpload(rawFile) {
+      const isImage = rawFile.type.startsWith('image/')
+      if (!isImage) {
+        this.$message.error('只能上传图片文件！')
+        return false
+      }
       if (rawFile.size / 1024 / 1024 > 1) {
         this.$message.error('图像的大小不能超过1MB!')
         return false
       }
+
+      const folder = this.currentUser.uploadAvatarsBaseUrl
+      const uniqueFileName = `${uuidv4()}.${rawFile.name.split('.').pop()}`
+      const key = folder + uniqueFileName
+      this.uploadData.key = key
       return true
     },
     handleAvatarSuccess(response) {
-      const url = response.data.links.url
-      image.saveImageUrl({ image: url }).then((res) => {
+      const domin = import.meta.env.VITE_QINIU_DOMAIN
+      const imageUrl = `http://${domin}/${response.key}`
+      image.saveImageUrl({ image: response.key }).then((res) => {
+        // 换图像成功后，更新本地image字段
         if (res.data.msg == 'success') {
-          this.user.image = url
+          this.currentUser.userInfo = {...this.currentUser.userInfo, ...{image:res.data.image}}
+          this.user.image = imageUrl
           this.imgList.push(this.user.image)
-          // 换图像成功后，更新本地image字段
-          this.currentUser.userInfo.image = res.data.image
-          emitter.emit('image', url)
+          emitter.emit('image', imageUrl)
           this.$message.success('图像上传成功')
         } else {
           this.$message.error('图像上传失败')
@@ -267,6 +289,11 @@ export default {
         return
       }
       this.$router.push('/chat')
+    },
+    getUploadToken() {
+      uploadApi.get_upload_token().then((res) => {
+        this.uploadData.token = res.data.upload_token
+      })
     }
   }
 }
@@ -275,110 +302,115 @@ export default {
 <template>
   <PageHeadBack>
     <el-avatar size="large" :src="user.image" @click="showDrawer" />
-    <el-card class="user-info" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span>个人信息</span>
-        </div>
-      </template>
+    <el-tabs v-model="activeName" class="demo-tabs" stretch>
+      <el-tab-pane label="资料" name="first">
+        <el-card class="user-info" shadow="never">
+          <template #header>
+            <div class="card-header">
+              <span>个人信息</span>
+              <el-button round size="small" v-if="isCurrentUser" @click="editProfile"
+                >编辑资料</el-button
+              >
+              <el-button
+                type="danger"
+                round
+                size="small"
+                v-if="currentUser.isAdmin"
+                @click="editProfileAdmin"
+                >编辑资料 [管理员]</el-button
+              >
+            </div>
+          </template>
 
-      <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="skeletonThrottle">
-        <template #default>
-          <el-row v-if="user.nickname">
-            <el-col :xs="6" :xl="4">昵称</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ user.nickname }}</el-col>
-          </el-row>
-          <el-row>
-            <el-col :xs="6" :xl="4">账号</el-col>
-            <el-col :xs="16" :xl="10" :offset="2">{{ user.username }}</el-col>
-          </el-row>
-          <el-row v-if="user.email">
-            <el-col :xs="6" :xl="4">电子邮件</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
-          </el-row>
-          <el-row v-if="user.location">
-            <el-col :xs="6" :xl="4">城市</el-col>
-            <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
-          </el-row>
-          <el-row v-if="user.about_me">
-            <el-col :xs="6" :xl="4">签名</el-col>
-            <el-col :xs="16" :xl="10" :offset="2">{{ user.about_me }}</el-col>
-          </el-row>
-          <el-row>
-            <el-col :xs="6" :xl="4">生日</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
-          </el-row>
+          <el-skeleton :rows="5" animated :loading="loading.userData" :throttle="skeletonThrottle">
+            <template #default>
+              <el-row v-if="user.nickname">
+                <el-col :xs="6" :xl="4">昵称</el-col>
+                <el-col :xs="8" :xl="10" :offset="2">{{ user.nickname }}</el-col>
+              </el-row>
+              <el-row>
+                <el-col :xs="6" :xl="4">账号</el-col>
+                <el-col :xs="16" :xl="10" :offset="2">{{ user.username }}</el-col>
+              </el-row>
+              <el-row v-if="user.email">
+                <el-col :xs="6" :xl="4">电子邮件</el-col>
+                <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
+              </el-row>
+              <el-row v-if="user.location">
+                <el-col :xs="6" :xl="4">城市</el-col>
+                <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
+              </el-row>
+              <el-row v-if="user.about_me">
+                <el-col :xs="6" :xl="4">签名</el-col>
+                <el-col :xs="16" :xl="10" :offset="2">{{ user.about_me }}</el-col>
+              </el-row>
+              <el-row>
+                <el-col :xs="6" :xl="4">生日</el-col>
+                <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
+              </el-row>
 
-          <el-row>
-            <el-col :xs="6" :xl="4">上线时间</el-col>
-            <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
-          </el-row>
-        </template>
-      </el-skeleton>
-    </el-card>
+              <el-row>
+                <el-col :xs="6" :xl="4">上线时间</el-col>
+                <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
+              </el-row>
+            </template>
+          </el-skeleton>
+        </el-card>
 
-    <el-card shadow="never">
-      <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
-        <template #template>
-          <div style="display: flex; justify-items: space-between; gap: 15px; height: 47px">
-            <el-skeleton-item variant="text" class="item" />
-            <el-skeleton-item variant="text" class="item" />
-          </div>
-        </template>
-        <template #default>
-          <el-row>
-            <el-col :span="6">
-              <el-statistic title="粉丝" :value="user.followers_count" @click="followerDetail" />
-            </el-col>
-            <el-col :span="6">
-              <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
-            </el-col>
-          </el-row>
-        </template>
-      </el-skeleton>
-    </el-card>
-
-    <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
-      <template #template>
         <el-card shadow="never">
-          <el-skeleton-item variant="button" style="width: 30%; height: 30px" />
+          <el-skeleton animated :loading="loading.userData" :throttle="skeletonThrottle">
+            <template #template>
+              <div style="display: flex; justify-items: space-between; gap: 15px; height: 47px">
+                <el-skeleton-item variant="text" class="item" />
+                <el-skeleton-item variant="text" class="item" />
+              </div>
+            </template>
+            <template #default>
+              <el-row>
+                <el-col :span="6">
+                  <el-statistic
+                    title="粉丝"
+                    :value="user.followers_count"
+                    @click="followerDetail"
+                  />
+                </el-col>
+                <el-col :span="6">
+                  <el-statistic title="关注" :value="user.followed_count" @click="followedDetail" />
+                </el-col>
+              </el-row>
+            </template>
+          </el-skeleton>
         </el-card>
-      </template>
-      <template #default>
-        <el-card shadow="never" v-if="isCurrentUser || currentUser.isAdmin">
-          <el-row justify="space-between">
-            <el-col v-if="isCurrentUser" :xs="9" :xl="6">
-              <el-button @click="editProfile">编辑资料</el-button>
-            </el-col>
-            <el-col v-if="currentUser.isAdmin" :xs="12" :xl="12">
-              <el-button type="danger" @click="editProfileAdmin">编辑资料 [管理员]</el-button>
-            </el-col>
-          </el-row>
-        </el-card>
-      </template>
-    </el-skeleton>
-
-    <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
-      <PostCard
-        v-for="item in posts"
-        :key="item"
-        :post="item"
-        :showImage="false"
-        @click="$router.push(`/postDetail/${item.id}`)"
-        v-slide-in
-      />
-
-      <el-pagination
-        v-model:current-page="currentPage"
-        :page-size="10"
-        layout="total, prev, pager, next"
-        :total="posts_count"
-        @current-change="handleCurrentChange"
-        :hide-on-single-page="true"
-        :pager-count="5"
-      />
-    </SkeletonUtil>
+      </el-tab-pane>
+      <el-tab-pane label="文章" name="second">
+        <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
+          <PostPreview
+            v-for="item in posts"
+            :key="item.id"
+            :post="item"
+            :containerStyle="{ marginBottom: '10px' }"
+            @click="$router.push(`/postDetail/${item.id}`)"
+            v-slide-in
+          >
+            <template #image>
+              <PostImage :postImages="item.post_images" @click.stop="" />
+            </template>
+          </PostPreview>
+          <el-pagination
+            v-model:current-page="currentPage"
+            :page-size="10"
+            layout="total, prev, pager, next"
+            :total="posts_count"
+            @current-change="handleCurrentChange"
+            :hide-on-single-page="true"
+            :pager-count="5"
+          />
+          <el-empty :image-size="200" description="生活总归带点荒谬" v-if="posts.length === 0" />
+        </SkeletonUtil>
+      </el-tab-pane>
+    </el-tabs>
   </PageHeadBack>
+
   <van-action-sheet v-model:show="drawer" cancel-text="取消">
     <photo-provider :photo-closable="true">
       <photo-consumer v-for="(src, index) in imgList" :intro="src" :key="src" :src="src">
@@ -391,12 +423,12 @@ export default {
     <div class="upload" v-if="isCurrentUser">
       <el-upload
         ref="uploadRef"
-        action="https://www.helloimg.com/api/v1/upload"
-        :headers="uploadData.headers"
-        :data="uploadData.data"
+        :action="uploadUrl"
+        :data="uploadData"
         :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload"
         :on-preview="handlePreview"
+        :limit="1"
       >
         <template #trigger>
           <el-button class="select-image" text>从相册选择</el-button>
@@ -456,6 +488,8 @@ export default {
   padding: 10px;
 }
 .card-header {
+  display: flex;
+  justify-content: space-between;
   color: #000000;
 }
 .user-info .el-row {
@@ -522,5 +556,12 @@ export default {
     width: 100%;
     height: 40px;
   }
+}
+:deep(.el-statistic__head) {
+  font-size: 0.9rem;
+}
+.el-statistic {
+  width: 30px;
+  text-align: center;
 }
 </style>

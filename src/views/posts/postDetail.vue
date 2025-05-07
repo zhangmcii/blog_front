@@ -67,7 +67,7 @@ export default {
     <el-row class="text">
       <el-text>{{ post.body }}</el-text>
     </el-row>
-    <PostImage :post_images="post.post_images" />
+    <PostImage :postImages="post.post_images" />
 
     <PostAction :post="post" :showShare="true" :showEdit="true"/>
     <CommentCard :post-id="postId" />
