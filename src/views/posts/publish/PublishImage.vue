@@ -243,8 +243,9 @@ export default {
       })
       try {
         await this.uploadFiles()
+        const formattedContent = this.content.replace(/\n/g,'<br>')
         postApi
-          .publishRichPost({ content: this.content, imageUrls: this.imageKey })
+          .publishRichPost({ content: formattedContent, imageUrls: this.imageKey })
           .then((response) => {
             if (response.data.msg === 'success') {
               this.$message.success('发布成功')

@@ -31,7 +31,7 @@ export default {
       // 监听内容变化
       editor.on('change', () => {
         this.body = this.editor.getText()
-        this.$emit('content_change', { body: this.body, bodyHtml: this.bodyHtml })
+        this.$emit('content_change', { body: this.bodyHtml, bodyHtml: this.bodyHtml })
       })
     },
     clean() {
