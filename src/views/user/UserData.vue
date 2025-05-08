@@ -14,7 +14,7 @@ import PostImage from '@/views/posts/components/PostImage.vue'
 import emitter from '@/utils/emitter.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import { showConfirmDialog } from 'vant'
-import { loginReminder } from '@/utils/common.js'
+import { loginReminder, compressImages } from '@/utils/common.js'
 import uploadApi from '@/api/upload/uploadApi.js'
 import { v4 as uuidv4 } from 'uuid'
 import * as qiniu from 'qiniu-js'
@@ -54,15 +54,10 @@ export default {
         skeleton: true
       },
 
-      uploadUrl: 'http://upload.qiniu.com',
-      uploadData: {
-        key: '',
-        token: '',
-        putExtra: {},
-        config: {
-          region: qiniu.region.z0
-        }
-      },
+      uploadToken: '',
+      imageUrls: [],
+      uploading: false,
+      imageKey: [],
 
       drawer: false,
       imgList: [],
@@ -71,7 +66,11 @@ export default {
         trailing: 300,
         initVal: true
       },
-      activeName: 'first'
+      activeName: 'first',
+      // 原始文件
+      originalFiles: [],
+      // 压缩后的文件
+      compressedImages: []
     }
   },
   setup() {
@@ -241,30 +240,60 @@ export default {
     handleCurrentChange() {
       this.getUserData(this.userName, this.currentPage)
     },
-    beforeAvatarUpload(rawFile) {
-      const isImage = rawFile.type.startsWith('image/')
-      if (!isImage) {
-        this.$message.error('只能上传图片文件！')
-        return false
+    async handleFileChange(file, fileList) {
+      if (!this.beforePicUpload([file])) {
+        return
       }
-      if (rawFile.size / 1024 / 1024 > 1) {
-        this.$message.error('图像的大小不能超过1MB!')
-        return false
-      }
-
-      const folder = this.currentUser.uploadAvatarsBaseUrl
-      const uniqueFileName = `${uuidv4()}.${rawFile.name.split('.').pop()}`
-      const key = folder + uniqueFileName
-      this.uploadData.key = key
-      return true
+      this.originalFiles = [...fileList]
+      // 压缩图像
+      this.compressedImages = await compressImages(this.originalFiles, this.compressedImages)
+      // 上传至七牛云
+      await this.uploadFiles()
+      // url保存至后端
+      this.submitAvatars()
     },
-    handleAvatarSuccess(response) {
+    async uploadFiles() {
       const domin = import.meta.env.VITE_QINIU_DOMAIN
-      const imageUrl = `http://${domin}/${response.key}`
-      image.saveImageUrl({ image: response.key }).then((res) => {
+      try {
+        const putExtra = {}
+        const config = {
+          // 存储区域
+          region: qiniu.region.z0
+        }
+        for (const file of this.compressedImages) {
+          const folder = this.currentUser.uploadAvatarsBaseUrl
+          const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
+          const key = folder + uniqueFileName
+          const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
+          await new Promise((resolve, reject) => {
+            // 保存 this 上下文
+            const self = this
+            observable.subscribe({
+              next() {},
+              error(err) {
+                reject(err)
+              },
+              complete(res) {
+                self.imageKey.push(res.key)
+                const imageUrl = `http://${domin}/${res.key}`
+                self.imageUrls.push(imageUrl)
+                resolve()
+              }
+            })
+          })
+        }
+      } catch (error) {
+        console.error('Upload failed:', error)
+      } finally {
+      }
+    },
+    submitAvatars() {
+      const domin = import.meta.env.VITE_QINIU_DOMAIN
+      const imageUrl = `http://${domin}/${this.imageKey[0]}`
+      image.saveImageUrl({ image: this.imageKey[0] }).then((res) => {
         // 换图像成功后，更新本地image字段
         if (res.data.msg == 'success') {
-          this.currentUser.userInfo = {...this.currentUser.userInfo, ...{image:res.data.image}}
+          this.currentUser.userInfo = { ...this.currentUser.userInfo, ...{ image: res.data.image } }
           this.user.image = imageUrl
           this.imgList.push(this.user.image)
           emitter.emit('image', imageUrl)
@@ -274,10 +303,22 @@ export default {
         }
       })
     },
-    submitUpload() {
-      this.$refs.uploadRef.submit()
-    },
-    handlePreview() {
+    beforePicUpload(fileList) {
+      for (const file of fileList) {
+        const isImage = file.raw.type.startsWith('image/')
+        if (!isImage) {
+          this.$message.error('只能上传图片格式文件！')
+          return false
+        }
+        const limitPic =
+          file.raw.type === 'image/png' ||
+          file.raw.type === 'image/jpg' ||
+          file.raw.type === 'image/jpeg'
+        if (!limitPic) {
+          this.$message.warning('请上传格式为png/jpg/jpeg的图片')
+          return false
+        }
+      }
       return true
     },
     showDrawer() {
@@ -292,7 +333,7 @@ export default {
     },
     getUploadToken() {
       uploadApi.get_upload_token().then((res) => {
-        this.uploadData.token = res.data.upload_token
+        this.uploadToken = res.data.upload_token
       })
     }
   }
@@ -393,7 +434,7 @@ export default {
             v-slide-in
           >
             <template #image>
-              <PostImage :post_images="item.post_images" @click.stop="" />
+              <PostImage :postImages="item.post_images" @click.stop="" />
             </template>
           </PostPreview>
           <el-pagination
@@ -423,11 +464,10 @@ export default {
     <div class="upload" v-if="isCurrentUser">
       <el-upload
         ref="uploadRef"
-        :action="uploadUrl"
-        :data="uploadData"
-        :on-success="handleAvatarSuccess"
-        :before-upload="beforeAvatarUpload"
-        :on-preview="handlePreview"
+        v-model:file-list="originalFiles"
+        :auto-upload="false"
+        :before-upload="() => false"
+        :on-change="handleFileChange"
         :limit="1"
       >
         <template #trigger>
