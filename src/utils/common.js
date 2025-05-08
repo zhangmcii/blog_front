@@ -89,7 +89,6 @@ function debounce(func, wait) {
  */
 async function compressImages(originalFiles, _compressedImages) {
   const compressedRatio = 80
-  console.log('_compressedImages:', _compressedImages)
   const compressedImages = [..._compressedImages]
   const compressionRatio = compressedRatio / 100
 
