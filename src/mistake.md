@@ -453,3 +453,9 @@ user_image/user_${this.currentUser.userInfo.id}/comments/*.png      评论图片
 点击”新增”按钮(不点击新增，不出现该对上传编辑组件)：
 每个el-upload组件与el-input成对出现。el-upload限制只能上传一张图片，el-input在下面。
 上传块可以点击删除，移除
+
+
+# 表单的formData对象存在的意义
+formData对象可以包含文件对象和其他二进制数据，使得在文件上传场景中非常适用
+场景： 表单中需要上传文件时
+虽然直接使用json传递表单数据也可以，但包含文件时，json格式不支持处理二进制。

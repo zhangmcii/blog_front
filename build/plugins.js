@@ -6,6 +6,7 @@ import IconsResolver from 'unplugin-icons/resolver'
 import AppLoading from 'vite-plugin-app-loading'
 import { configCompressPlugin } from './compress'
 import svgLoader from 'vite-svg-loader'
+import removeConsole from "vite-plugin-remove-console";
 
 export function getPluginsList(VITE_COMPRESSION) {
   return [
@@ -27,6 +28,7 @@ export function getPluginsList(VITE_COMPRESSION) {
     }),
     AppLoading(),
     configCompressPlugin(VITE_COMPRESSION),
-    svgLoader()
+    svgLoader(),
+    removeConsole()
   ]
 }

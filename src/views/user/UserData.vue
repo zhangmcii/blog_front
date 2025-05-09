@@ -467,6 +467,7 @@ export default {
         v-model:file-list="originalFiles"
         :auto-upload="false"
         :before-upload="() => false"
+        accept="image/jpeg,image/png,image/jpg,image/webp"
         :on-change="handleFileChange"
         :limit="1"
       >

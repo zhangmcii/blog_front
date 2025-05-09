@@ -17,6 +17,7 @@
         list-type="picture-card"
         :auto-upload="false"
         :before-upload="() => false"
+        accept="image/jpeg,image/png,image/jpg,image/webp"
         :on-change="handleFileChange"
         :on-preview="handlePictureCardPreview"
         :on-remove="handleFileRemove"
