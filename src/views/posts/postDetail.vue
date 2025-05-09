@@ -4,6 +4,7 @@ import PostImage from '@/views/posts/components/PostImage.vue'
 import PostAction from '@/views/posts/components/PostAction.vue'
 import CommentCard from '@/views/comment/ComCard.vue'
 import PostHeader from '@/views/posts/components/PostHeader.vue'
+import PostContent from '@/views/posts/components/PostContent.vue'
 import postApi from '@/api/posts/postApi.js'
 
 export default {
@@ -12,7 +13,8 @@ export default {
     CommentCard,
     PostImage,
     PostAction,
-    PostHeader
+    PostHeader,
+    PostContent
   },
   data() {
     return {
@@ -64,9 +66,7 @@ export default {
 <template>
   <PageHeadBack>
     <PostHeader :post="post" />
-    <el-row class="text">
-      <el-text>{{ post.body }}</el-text>
-    </el-row>
+    <PostContent :postContent="post.body" />
     <PostImage :postImages="post.post_images" />
 
     <PostAction :post="post" :showShare="true" :showEdit="true"/>
@@ -76,14 +76,5 @@ export default {
 <style scoped lang="scss">
 .el-button {
   margin-top: 10px;
-}
-.text {
-  margin: 10px 0px 10px 5px;
-  .el-text {
-    color: #303133;
-    font-size: 0.875rem;
-    line-height: 1.6;
-    letter-spacing: 0.04em;
-  }
 }
 </style>

@@ -6,6 +6,8 @@ import praise from '@/api/praise/praiseApi.js'
 import { loginReminder } from '@/utils/common.js'
 import PostAction from '@/views/posts/components/PostAction.vue'
 import PostHeader from '@/views/posts/components/PostHeader.vue'
+import PostContent from '@/views/posts/components/PostContent.vue'
+
 export default {
   props: {
     post: {
@@ -38,7 +40,8 @@ export default {
   },
   components: {
     PostAction,
-    PostHeader
+    PostHeader,
+    PostContent
   },
   data() {
     return {
@@ -87,10 +90,7 @@ export default {
 <template>
   <div :style="containerStyle">
     <PostHeader :post="post" />
-    <el-row class="text">
-      <el-text line-clamp="4">{{ post.body }}</el-text>
-    </el-row>
-
+    <PostContent :postContent="post.body" :preview="true" />
     <slot name="image"></slot>
 
     <PostAction :post="post" />
@@ -104,15 +104,5 @@ export default {
   width: 100%;
   height: 5px;
   background-color: #f5f7fa;
-}
-.text {
-  margin: 10px 0px 10px 5px;
-  .el-text {
-    color: #303133;
-    // 0.875rem = 14px
-    font-size: 0.875rem;
-    line-height: 1.6;
-    letter-spacing: 0.04em;
-  }
 }
 </style>

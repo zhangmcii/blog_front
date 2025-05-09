@@ -29,7 +29,9 @@ export default {
     normalPublish() {
       this.$emit('loadingBegin', true)
       this.loading = true
-      postApi.publish_post({ body: this.content, bodyHtml: null }).then((res) => {
+      // 替换换行符为 <br>
+      const formattedContent = this.content.replace(/\n/g, '<br>')
+      postApi.publish_post({ body: formattedContent, bodyHtml: null }).then((res) => {
         this.loading = false
         this.$emit('postsResult', res)
         if (res.data.msg == 'success') {
@@ -76,7 +78,7 @@ export default {
     <RichText
       ref="rickText"
       v-if="activeRichEditor"
-      @content_change="(n) => (this.rich_content = n)"
+      @content_change="(n) => (rich_content = n)"
     />
     <div v-else>
       <el-input

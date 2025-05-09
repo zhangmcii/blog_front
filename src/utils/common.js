@@ -101,8 +101,8 @@ async function compressImages(originalFiles, _compressedImages) {
     const rawFile = file.raw
     const compressedFile = await lrz(rawFile, { quality: compressionRatio })
 
-    console.log('压缩后的文件:', compressedFile)
-    console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
+    // console.log('压缩后的文件:', compressedFile)
+    // console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
 
     // 将 base64 转换为 Blob
     const byteString = atob(compressedFile.base64.split(',')[1])
