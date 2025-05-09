@@ -29,7 +29,9 @@ export default {
   },
   data() {
     return {
-      maxNum: 0
+      maxNum: 0,
+      formData: {},
+      showLog: false
     }
   },
   computed: {},
@@ -47,7 +49,10 @@ export default {
       }
       this.maxNum -= 1
     },
-    preview() {}
+    log() {
+      console.log('表单数据', this.formData)
+      this.showLog = !this.showLog
+    }
   }
 }
 </script>
@@ -55,35 +60,17 @@ export default {
 <template>
   <div>
     <!-- <Interest/> -->
-
     <el-row class="button-row">
-      <el-button @click="add">新增封面</el-button>
-      <el-button @click="del">删除封面</el-button>
-      <el-button @click="preview">预览</el-button>
+      <!-- <el-button @click="add">新增封面</el-button>
+      <el-button @click="del">删除封面</el-button> -->
+      <el-button @click="log">打印</el-button>
     </el-row>
-    <TransitionGroup name="list" tag="div">
-      <upload v-for="(item, index) in maxNum" :key="index"></upload>
-    </TransitionGroup>
+    <upload v-model:formData="formData"></upload>
+    <div v-if="showLog">{{ formData }}</div>
   </div>
 </template>
 <style lang="scss" scoped>
 .button-row {
   margin-bottom: 10px;
-}
-.list-move, /* 对移动中的元素应用的过渡 */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-/* 确保将离开的元素从布局流中删除
-  以便能够正确地计算移动的动画。 */
-.list-leave-active {
-  position: absolute;
 }
 </style>
