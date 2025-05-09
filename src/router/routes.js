@@ -120,6 +120,11 @@ const routes = [
         name: 'interest',
         component: () => import('../views/user/upload1.vue')
       },
+      {
+        path: '/editInterest',
+        name: 'editInterest',
+        component: () => import('../views/user/components/EditInterest.vue')
+      },
     ]
   },
   { path: '/', redirect: '/welcome' },
