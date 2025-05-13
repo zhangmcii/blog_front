@@ -28,6 +28,12 @@ const routes = [
         meta: { roles: ['admin'] }
       },
       {
+        path: '/editInterest',
+        name: 'editInterest',
+        component: () => import('../views/user/EditInterest.vue'),
+        meta: { requireAuth: true }
+      },
+      {
         path: '/postDetail/:id',
         name: 'detail',
         component: () => import('../views/posts/PostDetail.vue')

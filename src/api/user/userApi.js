@@ -1,6 +1,7 @@
 import { $http } from '@/utils/request.js'
 const url_prefix = '/api/v1'
 export default {
+  // 返回用户信息+文章数据
   get_user(username, page) {
     let params = {}
     params['page'] = page

@@ -5,7 +5,7 @@ export default {
   methods: {
     clear() {
         localStorage.clear('blog')
-        this.$message.sucess('清除成功')
+        this.$message.success('清除成功')
   }
 }
 }
