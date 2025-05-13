@@ -64,7 +64,11 @@ export const useCurrentUserStore = defineStore('currentUser', {
     uploadCommentsBaseUrl: (state) =>
       import.meta.env.DEV == true
         ? state.devUploadBaseUrl
-        : `user_image/user_${state.userInfo.id}/comments/`
+        : `user_image/user_${state.userInfo.id}/comments/`,
+    uploadInterestBaseUrl: (state) =>
+      import.meta.env.DEV == true
+        ? state.devUploadBaseUrl
+        : `user_image/user_${state.userInfo.id}/interest/`
   },
   actions: {
     addItemLikeIds(value) {

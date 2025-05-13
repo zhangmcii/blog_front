@@ -8,6 +8,9 @@ import image_8 from '../asset/image_8.ico'
 import logOut from '../asset/logOut.png'
 import cherry from '../asset/cherry5.jpg'
 import loading from '../asset/loading.gif'
+import book1 from '../asset/book/book1.webp'
+import book2 from '../asset/book/book2.webp'
+import book3 from '../asset/book/book3.webp'
 
 const arr = [image_1, image_2, image_4, image_5, image_6, image_7, image_8]
 function getRandomImage() {
@@ -24,6 +27,7 @@ const imageCfg = {
   login: cherry,
   loginFail: cherry,
   logOut: logOut,
-  preLoading:loading
+  preLoading: loading,
+  book: [book1, book2, book3],
 }
 export default imageCfg
