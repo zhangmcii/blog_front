@@ -1,16 +1,13 @@
 <script>
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
-import ButtonClick from '@/utils/components/ButtonClick.vue'
 import uploadCard from '@/views/user/components/uploadCard.vue'
 import interest from '@/views/user/components/interest.vue'
-import { useCurrentUserStore } from '@/stores/user'
 
 export default {
   name: 'BlogPost',
   props: {},
   components: {
     PageHeadBack,
-    ButtonClick,
     uploadCard,
     interest
   },
@@ -36,10 +33,6 @@ export default {
       }
     }
   },
-  setup() {
-    const currentUser = useCurrentUserStore()
-    return { currentUser }
-  },
   computed: {
     // 预览按钮可点击
     isPre() {
@@ -48,10 +41,6 @@ export default {
   },
   mounted() {},
   methods: {
-    log() {
-      console.log('表单数据', this.formDataMovie)
-      this.showLog = !this.showLog
-    },
     pre() {
       if (this.formDataMovie.coverImage) {
         this.preData.movies = this.formDataMovie.coverImage.map((item, index) => {
@@ -77,30 +66,47 @@ export default {
 
 <template>
   <PageHeadBack>
-    <div>
-      <!-- <el-button @click="log">打印</el-button> -->
-      <el-text>各分类下图片最多为3张</el-text>
-      <uploadCard ref="movie" v-model:formData="formDataMovie"  class="upload-card"/>
-      <uploadCard ref="book" v-model:formData="formDataBook" type="book" />
-      <el-button  type="primary" plain v-show="isPre" @click="pre">预览</el-button>
-
-      <!-- <div v-if="showLog">{{ formDataMovie }}</div> -->
-
-      <el-dialog v-model="showPre" width="400">
-        <interest :interest="preData" />
-      </el-dialog>
+    <div class="page-head">
+      <el-text>各分类下最多展示3张图片</el-text>
+      <Transition>
+        <el-button size="small" round type="primary" plain v-show="isPre" @click="pre"
+          >预览</el-button
+        >
+      </Transition>
     </div>
+    <uploadCard ref="movie" v-model:formData="formDataMovie" class="upload-card" />
+    <uploadCard ref="book" v-model:formData="formDataBook" type="book" />
+
+    <el-dialog v-model="showPre" width="400">
+      <interest :interest="preData" />
+    </el-dialog>
   </PageHeadBack>
 </template>
 
 <style scoped>
+.page-head {
+  margin: 20px 0px 70px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 :deep(.el-dialog) {
   padding: 0px;
 }
 .upload-card {
-  margin: 20px 0px 70px 0px;
+  margin: 0px 0px 70px 0px;
 }
-.el-button{
-  width: 98%;
+.el-button {
+  width: 70px;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

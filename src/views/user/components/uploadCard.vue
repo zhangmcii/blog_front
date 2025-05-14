@@ -59,8 +59,9 @@ export default {
         type: 'primary',
         text: '提交',
         disabled: false,
-        loading: false
-      },
+        loading: false,
+        icon: 'Pointer'
+      }
     }
   },
   setup() {
@@ -90,7 +91,7 @@ export default {
       } else {
         return '封面'
       }
-    },
+    }
   },
   mounted() {
     this.getUploadToken()
@@ -115,9 +116,11 @@ export default {
       this.originalFiles = this.originalFiles.filter((f) => f.uid !== file.uid)
       // 删除压缩文件
       this.compressedImages = this.compressedImages.filter((img) => img.uid !== file.uid)
-      
+
       // 删除表单数据
-      this.internalFormData.coverImage = this.internalFormData.coverImage.filter((f) => f.uid !== file.uid)
+      this.internalFormData.coverImage = this.internalFormData.coverImage.filter(
+        (f) => f.uid !== file.uid
+      )
     },
     handleExceed(files) {
       this.$message.error('最多只能上传3张封面图片')
@@ -235,6 +238,7 @@ export default {
               this.button.type = 'success'
               this.button.text = '提交成功'
               this.button.disabled = true
+              this.button.icon = 'Check'
               // 提交成功后改变提交按钮颜色和文字
 
               // this.originalFiles = []
@@ -281,9 +285,7 @@ export default {
             <div>
               <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
               <span class="el-upload-list__item-actions">
-                <span
-                  @click="handleRemove(file)"
-                >
+                <span @click="handleRemove(file)">
                   <el-icon><i-ep-Delete /></el-icon>
                 </span>
               </span>
@@ -307,8 +309,16 @@ export default {
           :disabled="button.disabled"
           :content="button.text"
           :loading="button.loading"
+          :round="true"
+          width="80px"
+          size="small"
           @do-search="submitForm"
-        />
+        >
+          <el-icon>
+            <i-ep-Check v-if="button.icon == 'Check'" />
+            <i-ep-Pointer v-else />
+          </el-icon>
+        </ButtonClick>
       </el-form-item>
     </el-form>
   </div>

@@ -16,6 +16,7 @@ import interest from '@/views/user/components/interest.vue'
 import { showConfirmDialog } from 'vant'
 import { loginReminder, compressImages } from '@/utils/common.js'
 import uploadApi from '@/api/upload/uploadApi.js'
+import imageApi from '@/api/user/imageApi.js'
 import { v4 as uuidv4 } from 'uuid'
 import * as qiniu from 'qiniu-js'
 
@@ -289,13 +290,12 @@ export default {
         }
       } catch (error) {
         console.error('Upload failed:', error)
-      } finally {
       }
     },
     submitAvatars() {
       const domin = import.meta.env.VITE_QINIU_DOMAIN
       const imageUrl = `http://${domin}/${this.imageKey[0]}`
-      image.saveImageUrl({ image: this.imageKey[0] }).then((res) => {
+      imageApi.saveImageUrl({ image: this.imageKey[0] }).then((res) => {
         // 换图像成功后，更新本地image字段
         if (res.data.msg == 'success') {
           this.currentUser.userInfo = { ...this.currentUser.userInfo, ...{ image: res.data.image } }
@@ -378,27 +378,32 @@ export default {
                 <el-col :xs="6" :xl="4">账号</el-col>
                 <el-col :xs="16" :xl="10" :offset="2">{{ user.username }}</el-col>
               </el-row>
-              <el-row v-if="user.email">
-                <el-col :xs="6" :xl="4">电子邮件</el-col>
-                <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
-              </el-row>
-              <el-row v-if="user.location">
-                <el-col :xs="6" :xl="4">城市</el-col>
-                <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
-              </el-row>
               <el-row v-if="user.about_me">
                 <el-col :xs="6" :xl="4">签名</el-col>
                 <el-col :xs="16" :xl="10" :offset="2">{{ user.about_me }}</el-col>
               </el-row>
-              <el-row>
-                <el-col :xs="6" :xl="4">生日</el-col>
-                <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
-              </el-row>
+              <el-collapse>
+                <el-collapse-item title="更多">
+                  <el-row v-if="user.email">
+                    <el-col :xs="6" :xl="4">电子邮件</el-col>
+                    <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
+                  </el-row>
+                  <el-row v-if="user.location">
+                    <el-col :xs="6" :xl="4">城市</el-col>
+                    <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
+                  </el-row>
 
-              <el-row>
-                <el-col :xs="6" :xl="4">上线时间</el-col>
-                <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
-              </el-row>
+                  <el-row>
+                    <el-col :xs="6" :xl="4">生日</el-col>
+                    <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
+                  </el-row>
+
+                  <el-row>
+                    <el-col :xs="6" :xl="4">上线时间</el-col>
+                    <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
+                  </el-row>
+                </el-collapse-item>
+              </el-collapse>
             </template>
           </el-skeleton>
         </el-card>
@@ -427,8 +432,7 @@ export default {
             </template>
           </el-skeleton>
         </el-card>
-
-        <interest :interest="user.interest" :showButton="isCurrentUser"/>
+        <interest :interest="user.interest" :showButton="isCurrentUser" />
       </el-tab-pane>
       <el-tab-pane label="文章" name="second">
         <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
@@ -526,7 +530,8 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.user-info {
+.user-info,
+:deep(.el-collapse-item__content) {
   font-size: 0.9rem;
   color: #9d9d9d;
   letter-spacing: 0.05em;
@@ -607,6 +612,9 @@ export default {
 }
 :deep(.el-statistic__head) {
   font-size: 0.9rem;
+}
+:deep(.el-statistic__number) {
+  font-size: 1rem;
 }
 .el-statistic {
   width: 30px;
