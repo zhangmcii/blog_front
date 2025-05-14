@@ -26,7 +26,8 @@ export default {
           return item.url
         })
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   computed: {},
