@@ -1,7 +1,6 @@
 <script>
 import userApi from '@/api/user/userApi.js'
 import authApi from '@/api/auth/authApi.js'
-import image from '@/api/user/image.js'
 import date from '@/utils/date.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
@@ -13,6 +12,7 @@ import PostPreview from '@/views/posts/components/PostPreview.vue'
 import PostImage from '@/views/posts/components/PostImage.vue'
 import emitter from '@/utils/emitter.js'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
+import interest from '@/views/user/components/interest.vue'
 import { showConfirmDialog } from 'vant'
 import { loginReminder, compressImages } from '@/utils/common.js'
 import uploadApi from '@/api/upload/uploadApi.js'
@@ -24,7 +24,8 @@ export default {
     PageHeadBack,
     SkeletonUtil,
     PostPreview,
-    PostImage
+    PostImage,
+    interest
   },
   data() {
     return {
@@ -42,7 +43,11 @@ export default {
         followed_count: 0,
         is_followed_by_current_user: false,
         is_following_current_user: false,
-        image: ''
+        image: '',
+        interest: {
+          movies: [],
+          books: []
+        }
       },
       posts: [{}],
       currentPage: 1,
@@ -422,6 +427,8 @@ export default {
             </template>
           </el-skeleton>
         </el-card>
+
+        <interest :interest="user.interest" :showButton="isCurrentUser"/>
       </el-tab-pane>
       <el-tab-pane label="文章" name="second">
         <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">

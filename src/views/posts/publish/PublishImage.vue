@@ -120,7 +120,6 @@ export default {
         return
       }
       // 确保只添加新的文件
-      // const newFiles = fileList.map((f) => f.raw).filter((f) => !this.originalFiles.includes(f))
       const newFiles = fileList.filter((f) => !this.originalFiles.some((of) => of.uid === f.uid))
       this.originalFiles = [...this.originalFiles, ...newFiles]
       // console.log('文件列表:', this.originalFiles)

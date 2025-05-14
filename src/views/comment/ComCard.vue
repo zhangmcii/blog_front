@@ -127,7 +127,7 @@ const submit = ({ content, parentId, reply, finish, mentionList }) => {
       }
     })
     .catch((error) => {
-      if (error.response.status === 429) {
+      if (error.response && error.response.status === 429) {
         ElMessage.info('操作太快了，慢点点~')
       }
     })
