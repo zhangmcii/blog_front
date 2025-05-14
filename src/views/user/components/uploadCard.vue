@@ -192,7 +192,7 @@ export default {
           region: qiniu.region.z0
         }
         for (const file of this.compressedImages) {
-          const folder = this.currentUser.uploadArticlesBaseUrl
+          const folder = this.currentUser.uploadInterestBaseUrl
           const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
           const key = folder + uniqueFileName
           const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
