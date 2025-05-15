@@ -122,7 +122,7 @@ export default {
           v-slide-in
         >
           <template #image>
-            <PostImage :post_images="item.post_images" @click.stop="" />
+            <PostImage :postImages="item.post_images" @click.stop="" />
           </template>
         </PostPreview>
       </SkeletonUtil>
