@@ -495,7 +495,7 @@ www.xx.com
     - 回复，点赞评论
     - 用户间发送消息
     - 关注用户
-    - @，评论，点赞，，私信时websocket消息推送
+    - @，评论，点赞，私信时websocket消息推送
     - 普通用户，内容管理员（可禁用评论），管理员（可禁用评论）
     - 评论敏感词过滤，图文请求限制次数
     - 七牛云图片存储
@@ -520,7 +520,7 @@ www.xx.com
 6.python flasky.py（redis需要提前启动，否则会报错）
 
 
-
+创建.env文件，或者从.env.example中复制，然后填写你的数据库凭证
 如果要使用用户图像和文章图片功能，
 修改前端项目.env文件中的变量VITE_QINIU_DOMAIN和VITE_QINIU_BUCKET为七牛云的测试域名和bucket（注册七牛云后每个月可免费使用10G空间）
 修改后端项目.env文件中的变量QINIU_ACCESS_KEY和QINIU_SECRET_KEY为自己的身份凭证（七牛云个人中心中查看）
