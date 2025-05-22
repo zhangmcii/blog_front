@@ -545,7 +545,7 @@ Flask-JWT-Extended
 Flask-SQLAlchemy
 Flask-Limiter
 flask-socketio
-
+Celery
 
 redis
 mysql
@@ -561,3 +561,13 @@ mysql
 4.cd blog_backend
 5.执行 ./deploy.sh 或者 bash ./deploy.sh
 6.可访问云服务器ip地址+端口 （本项目中访问的端口是1717，端口需要在云服务器上手动开放才能访问到）
+
+
+Celery 参考介绍：
+https://www.cnblogs.com/kangssssh/p/17201349.html
+
+使用场景：
+
+异步执行：解决耗时任务（本项目的用到的场景--发送邮件验证码）
+延迟执行：解决延迟任务
+定时执行：解决周期任务
