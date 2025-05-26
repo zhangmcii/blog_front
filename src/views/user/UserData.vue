@@ -347,7 +347,7 @@ export default {
 
 <template>
   <PageHeadBack>
-    <el-avatar size="large" :src="user.image" @click="showDrawer" />
+    <el-avatar alt="用户图像" size="large" :src="user.image" @click="showDrawer" />
     <el-tabs v-model="activeName" class="demo-tabs" stretch>
       <el-tab-pane label="资料" name="first">
         <el-card class="user-info" shadow="never">

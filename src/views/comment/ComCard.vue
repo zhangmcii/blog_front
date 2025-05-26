@@ -12,7 +12,7 @@
     >
       <u-comment-nav v-model="latest" @sorted="sorted"></u-comment-nav>
       <template #avatar="scope">
-        <el-avatar :src="scope.user.avatar" style="margin-top: 5px" />
+        <el-avatar alt="用户图像" :src="scope.user.avatar" style="margin-top: 5px" />
       </template>
       <template #operate="scope">
         <Operate :comment="scope" @remove="remove" />

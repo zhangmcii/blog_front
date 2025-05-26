@@ -43,7 +43,7 @@ export default {
 <template>
   <el-row class="head" justify="space-between" align="middle">
     <div class="head-name">
-      <el-avatar :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
+      <el-avatar alt="用户图像" :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
       <el-text @click.stop="$router.push(`/user/${post.author}`)">{{
         post.nick_name ? post.nick_name : post.author
       }}</el-text>

@@ -42,6 +42,7 @@ export default {
       <div class="book">
         <!-- <el-text class="book-badge">{{ index + 1 }}</el-text> -->
         <el-image
+          alt="兴趣图片"
           :src="movie.url"
           fit="cover"
           :preview-src-list="preList"

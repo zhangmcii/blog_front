@@ -1,7 +1,7 @@
 <template>
   <van-cell :border="false" :to="`/user/${follows.username}`">
     <template #icon>
-      <el-avatar :src="follows.image" />
+      <el-avatar alt="用户图像" :src="follows.image" />
     </template>
     <template #title>
       <div class="title-text">{{ follows.nickname?follows.nickname:follows.username }}</div>

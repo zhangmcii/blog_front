@@ -63,7 +63,7 @@ const isF = computed(() => {
     <template #default>
       <div class="user-card">
         <div class="user-avatar" @click="$router.push(`/user/${scope.uName}`)">
-          <el-avatar style="margin-top: 5px" :size="40" fit="cover" :src="scope.avatar" />
+          <el-avatar alt="用户图像" style="margin-top: 5px" :size="40" fit="cover" :src="scope.avatar" />
         </div>
         <div class="user-content">
           <div class="user-info">

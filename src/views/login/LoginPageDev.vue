@@ -146,6 +146,9 @@ export default {
     <el-text class="register-account">还没有账号?</el-text>
     <el-link class="register" @click="$router.push('/register')">创建账号 </el-link>
   </div>
+   <div class="visit">
+    <el-text class="register" @click="$router.push('/posts')">游客访问</el-text>
+  </div>
 </template>
 
 <style scoped>
@@ -223,5 +226,10 @@ p {
 .el-row,
 .el-button {
   margin-bottom: 0.8rem;
+}
+.visit {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }
 </style>

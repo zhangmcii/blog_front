@@ -175,7 +175,7 @@ export default {
   <el-card shadow="hover" :style="cardStyle">
     <el-row>
       <el-col :span="4" v-if="showImage">
-        <el-avatar :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
+        <el-avatar alt="用户图像" :src="image" @click.stop="$router.push(`/user/${post.author}`)" />
       </el-col>
       <el-col :span="showImage ? 20 : 24">
         <el-row justify="space-between" class="content">

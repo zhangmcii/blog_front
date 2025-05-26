@@ -41,7 +41,7 @@ export default {
     <div class="preview">
       <photo-provider :photo-closable="true" :should-transition="true">
         <photo-consumer v-for="(url, index) in postUrls" :intro="url" :key="url" :src="url">
-          <el-image :src="url" lazy fit="cover">
+          <el-image alt="文章图片" :src="url" lazy fit="cover">
             <template #error>
               <div class="image-slot">
                 <el-icon><i-ep-picture /></el-icon>
