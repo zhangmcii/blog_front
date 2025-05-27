@@ -14,7 +14,14 @@ export default {
     return $http.get(`/unfollow/${username}`)
   },
 
-  getUser(userId){
+  getUser(userId) {
     return $http.get(`${url_prefix}/users/${userId}`)
+  },
+  query(user_id) {
+   
+    return $http.get(`/query/${user_id}`)
+  },
+  get_task(task_id) {
+    return $http.get(`/task/${task_id}`)
   }
 }

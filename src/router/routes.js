@@ -142,6 +142,11 @@ const routes = [
     path: '/welcome',
     name: 'welcome',
     component: () => import('../views/welcome/BlogIndex.vue')
+  },
+   {
+    path: '/msg',
+    name: 'msg',
+    component: () => import('../views/msgq.vue')
   }
 ]
 
