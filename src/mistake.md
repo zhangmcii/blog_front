@@ -571,3 +571,8 @@ https://www.cnblogs.com/kangssssh/p/17201349.html
 异步执行：解决耗时任务（本项目的用到的场景--发送邮件验证码）
 延迟执行：解决延迟任务
 定时执行：解决周期任务
+
+
+前端部署：去掉了docker,直接将静态页面放在nginx上即可
+成本： centos7上需要按转nginx
+收益：去掉了dockerfile以及构建镜像步骤
