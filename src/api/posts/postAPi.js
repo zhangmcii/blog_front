@@ -16,6 +16,7 @@ export default {
   editPost(id, post) {
     return $http.put(`${url_prefix}/posts/${id}`, post)
   },
+  // 带图片的文章
   publishRichPost(post) {
     return $http.post('/rich_post', post)
   }

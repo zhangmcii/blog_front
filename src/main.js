@@ -28,6 +28,8 @@ import vSlideIn from '@/directives/vSlideIn.js'
 import { UIcon } from 'undraw-ui'
 import 'undraw-ui/dist/style.css'
 
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 
 const app = createApp(App)
 app.directive('slide-in',vSlideIn)
@@ -39,5 +41,6 @@ app.use(useVant)
 app.use(router)
 app.use(pinia)
 app.use(vue3PhotoPreview)
+app.use(mavonEditor)
 app.component('u-icon', UIcon)
 app.mount('#app')

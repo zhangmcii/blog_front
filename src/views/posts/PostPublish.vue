@@ -3,12 +3,14 @@ import postApi from '@/api/posts/postApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 import RichText from '@/utils/components/RichText.vue'
 import Emoji from '@/utils/components/Emoji.vue'
+import MarkdownEditor from '@/utils/components/MarkdownEditor.vue'
 export default {
   emits: ['postsResult', 'loadingBegin'],
   components: {
     ButtonClick,
     RichText,
-    Emoji
+    Emoji,
+    MarkdownEditor
   },
   data() {
     return {
@@ -45,6 +47,8 @@ export default {
     richEditorPublish() {
       this.$emit('loadingBegin', true)
       this.loading = true
+      console.log('发布内容:', this.rich_content)
+
       postApi.publish_post(this.rich_content).then((res) => {
         this.loading = false
         this.$emit('postsResult', res)
@@ -75,8 +79,12 @@ export default {
     <el-text>你在想什么？</el-text>
   </div>
   <Transition mode="out-in">
-    <RichText
+    <!-- <RichText
       ref="rickText"
+      v-if="activeRichEditor"
+      @content_change="(n) => (rich_content = n)"
+    /> -->
+    <MarkdownEditor
       v-if="activeRichEditor"
       @content_change="(n) => (rich_content = n)"
     />
