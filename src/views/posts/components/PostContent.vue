@@ -23,7 +23,12 @@ export default {
 
 <template>
   <el-row class="text">
-    <el-text v-if="preview" line-clamp="4" v-html="postContent" class="preview"></el-text>
+    <el-text
+      v-if="preview"
+      line-clamp="4"
+      v-html="postContent"
+      class="markdown-body preview"
+    ></el-text>
     <div v-else v-html="postContent" class="markdown-body"></div>
   </el-row>
 </template>
@@ -45,6 +50,7 @@ export default {
   .markdown-body {
     @extend .base;
     box-sizing: border-box;
+    width: 99%;
   }
 }
 </style>

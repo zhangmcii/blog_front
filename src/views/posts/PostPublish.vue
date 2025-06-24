@@ -1,14 +1,12 @@
 <script>
 import postApi from '@/api/posts/postApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
-import RichText from '@/utils/components/RichText.vue'
 import Emoji from '@/utils/components/Emoji.vue'
 import MarkdownEditor from '@/utils/components/MarkdownEditor.vue'
 export default {
   emits: ['postsResult', 'loadingBegin'],
   components: {
     ButtonClick,
-    RichText,
     Emoji,
     MarkdownEditor
   },
@@ -53,7 +51,7 @@ export default {
         this.loading = false
         this.$emit('postsResult', res)
         if (res.data.msg == 'success') {
-          // this.$refs.rickText.clean()
+          this.$refs.md.clean()
           this.$message.success('发布成功!')
         } else {
           this.$message.error('发布失败!')
@@ -79,15 +77,7 @@ export default {
     <el-text>你在想什么？</el-text>
   </div>
   <Transition mode="out-in">
-    <!-- <RichText
-      ref="rickText"
-      v-if="activeRichEditor"
-      @content_change="(n) => (rich_content = n)"
-    /> -->
-    <MarkdownEditor
-      v-if="activeRichEditor"
-      @content_change="(n) => (rich_content = n)"
-    />
+    <MarkdownEditor ref="md" v-if="activeRichEditor" @content_change="(n) => (rich_content = n)" />
     <div v-else>
       <el-input
         v-model="content"

@@ -1,13 +1,14 @@
 <script>
 import postApi from '@/api/posts/postApi.js'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
-import RichText from '@/utils/components/RichText.vue'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
+import MarkdownEditor from '@/utils/components/MarkdownEditor.vue'
+
 export default {
   components: {
     ButtonClick,
-    RichText,
-    PageHeadBack
+    PageHeadBack,
+    MarkdownEditor
   },
   data() {
     return {
@@ -18,7 +19,7 @@ export default {
         bodyHtml: ''
       },
       originalPost: '',
-      isChange:false,
+      isChange: false,
       loading: false,
       activeRichEditor: false
     }
@@ -31,11 +32,11 @@ export default {
     })
   },
   watch: {
-    'post.body'(newVal){
-        this.isChange = newVal !== this.originalPost
+    'post.body'(newVal) {
+      this.isChange = newVal !== this.originalPost
     },
-    'rich_content.body'(newVal){
-        this.isChange = newVal !== this.originalPost
+    'rich_content.body'(newVal) {
+      this.isChange = newVal !== this.originalPost
     }
   },
   methods: {
@@ -93,20 +94,19 @@ export default {
   <PageHeadBack>
     <h1>编辑</h1>
     <h4>你在想什么？</h4>
-      <RichText
-        ref="rickText"
-        v-if="activeRichEditor"
-        :bodyInit="post.body"
-        :bodyHtmlInit="post.body_html"
-        @content_change="(n) => (this.rich_content = n)"
-      />
-      <el-input
-        v-else
-        v-model="post.body"
-        :autosize="{ minRows: 2, maxRows: 4 }"
-        type="textarea"
-        placeholder="发你所想"
-      />
+    <MarkdownEditor
+      v-if="activeRichEditor"
+      :bodyInit="post.body"
+      :bodyHtmlInit="post.body_html"
+      @content_change="(n) => (rich_content = n)"
+    />
+    <el-input
+      v-else
+      v-model="post.body"
+      :autosize="{ minRows: 2, maxRows: 4 }"
+      type="textarea"
+      placeholder="发你所想"
+    />
     <ButtonClick content="修改" :loading="loading" :disabled="!isChange" @do-search="modify" />
   </PageHeadBack>
 </template>

@@ -1,10 +1,6 @@
 <template>
   <div class="markdown-editor">
     <mavon-editor v-model="markdown" @change="change" />
-    <div class="preview" v-html="htmlContent"></div>
-    <div class="law">markdown:{{ markdown }}</div>
-    <div class="transform-law">{{ htmlContent }}</div>
-    <!-- <el-button type="primary" size="small">发布</el-button> -->
   </div>
 </template>
 
@@ -28,16 +24,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['content_change'])
+defineExpose({ clean })
 
 const md = new MarkdownIt()
 
 // 编辑器内容
 const markdown = ref('')
-
-// 计算属性：将 Markdown 转换为 HTML
-const htmlContent = computed(() => {
-  return md.render(markdown.value)
-})
 
 onBeforeMount(() => {
   markdown.value = props.bodyInit || ''
@@ -69,8 +61,10 @@ const handleImageUpload = async (pos, file) => {
 }
 
 function change(value) {
-  console.log('Markdown 内容变化:', value)
   emit('content_change', { body: value, bodyHtml: md.render(value) })
+}
+function clean() {
+  markdown.value = ''
 }
 </script>
 
