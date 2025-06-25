@@ -1,6 +1,6 @@
 <template>
   <div class="markdown-editor">
-    <mavon-editor v-model="markdown" @change="change" />
+    <mavon-editor v-model="markdown" @imgAdd="handleImageUpload" @change="change" />
   </div>
 </template>
 
@@ -36,28 +36,29 @@ onBeforeMount(() => {
 })
 // 处理图片上传
 const handleImageUpload = async (pos, file) => {
+    console.log('图片上传:', pos, file)
   // 创建 FormData 对象
-  const formData = new FormData()
-  formData.append('image', file)
+//   const formData = new FormData()
+//   formData.append('image', file)
 
-  try {
-    // 上传到后端
-    const response = await fetch('/api/upload/image', {
-      method: 'POST',
-      body: formData
-    })
+//   try {
+//     // 上传到后端
+//     const response = await fetch('/api/upload/image', {
+//       method: 'POST',
+//       body: formData
+//     })
 
-    if (response.ok) {
-      const result = await response.json()
-      if (result.errno === 0 && result.data.length > 0) {
-        const imageUrl = result.data[0]
-        // 将图片 URL 插入到 Markdown 中
-        this.$refs.mavonEditor.$img2Url(pos, imageUrl)
-      }
-    }
-  } catch (error) {
-    console.error('图片上传失败:', error)
-  }
+//     if (response.ok) {
+//       const result = await response.json()
+//       if (result.errno === 0 && result.data.length > 0) {
+//         const imageUrl = result.data[0]
+//         // 将图片 URL 插入到 Markdown 中
+//         this.$refs.mavonEditor.$img2Url(pos, imageUrl)
+//       }
+//     }
+//   } catch (error) {
+//     console.error('图片上传失败:', error)
+//   }
 }
 
 function change(value) {
