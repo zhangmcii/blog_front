@@ -68,7 +68,11 @@ export const useCurrentUserStore = defineStore('currentUser', {
     uploadInterestBaseUrl: (state) =>
       import.meta.env.DEV == true
         ? state.devUploadBaseUrl
-        : `user_image/user_${state.userInfo.id}/interest/`
+        : `user_image/user_${state.userInfo.id}/interest/`,
+    uploadMarkdownBaseUrl: (state) =>
+      import.meta.env.DEV == true
+        ? state.devUploadBaseUrl
+        : `user_image/user_${state.userInfo.id}/markdown/`
   },
   actions: {
     addItemLikeIds(value) {

@@ -45,6 +45,13 @@ export default {
   .preview {
     @extend .base;
     color: #303133;
+
+    /* 设置最大高度  只会影响特长的表格，不会影响正常的文本段*/
+    max-height: 300px; 
+    overflow: hidden;
+    display: -webkit-box; 
+    -webkit-line-clamp: 5; /* 显示的行数 */
+    -webkit-box-orient: vertical;
   }
   // 复用.preview样式
   .markdown-body {
