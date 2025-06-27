@@ -107,10 +107,7 @@ export default {
     from_now() {
       // 防止上线时间与当前时间过于接近而显示"几秒后"
       const time = dayjs(this.user.last_seen).subtract(5, 'second').format('YYYY-MM-DD HH:mm:ss')
-      if (date.isYesterday(time)) {
-        return `昨天 ${dayjs(time).format('HH:mm')}`
-      }
-      return dayjs(time).fromNow()
+      return date.dateShow(time)
     },
     isCurrentUser() {
       return this.user.username == this.currentUser.userInfo.username

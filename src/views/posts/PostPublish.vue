@@ -109,7 +109,7 @@ export default {
       v-model="activeRichEditor"
       inline-prompt
       inactive-text="普通编辑器"
-      active-text="富文本编辑器"
+      active-text="Markdown编辑器"
     />
   </div>
 </template>

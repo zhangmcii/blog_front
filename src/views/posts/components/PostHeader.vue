@@ -29,11 +29,7 @@ export default {
   mounted() {},
   computed: {
     from_now() {
-      if (date.isYesterday(this.post.timestamp)) {
-        let time = this.$dayjs(this.post.timestamp).format('HH:mm')
-        return `昨天 ${time}`
-      }
-      return this.$dayjs(this.post.timestamp).fromNow()
+      return date.dateShow(this.post.timestamp)
     }
   },
   methods: {}
