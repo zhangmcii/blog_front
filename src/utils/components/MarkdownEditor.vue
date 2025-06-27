@@ -70,19 +70,8 @@ export default {
       if (!beforePicUpload([uploadFile])) {
         return
       }
-
-      console.log('图片选择:', pos, uploadFile)
-      // 图片上传逻辑可在此补充
-      // 例如上传后调用 this.$refs.mavonEditor.$img2Url(pos, imageUrl)
-
-      // 压缩图片
-
-      // 确保只添加新的文件
-      // const newFiles = fileList.filter(
-      //   (f) => !this.originalFiles.some((of) => of.lastModified === f.lastModified)
-      // )
       this.originalFiles = [...this.originalFiles, uploadFile]
-      // console.log('文件列表:', this.originalFiles)
+     // 压缩图片
       this.compressedImages = await compressImages(this.originalFiles, this.compressedImages)
     },
 
@@ -132,9 +121,6 @@ export default {
                 self.imageKey.push({ pos: file.pos, url: res.key })
                 const imageUrl = `http://${domin}/${res.key}`
                 self.imageUrls.push(imageUrl)
-                console.log('替换开始' )
-                self.$refs.mavonEditor.$img2Url(file.pos, imageUrl)
-                console.log('替换结束')
                 resolve()
               }
             })
