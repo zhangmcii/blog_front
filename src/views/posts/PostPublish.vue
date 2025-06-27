@@ -15,9 +15,10 @@ export default {
       content: '',
       posts: [],
       loading: false,
-      rich_content: {
+      richContent: {
         body: '',
-        bodyHtml: ''
+        bodyHtml: '',
+        images:[]
       },
       activeRichEditor: false,
       showPopover: false,
@@ -42,12 +43,12 @@ export default {
         }
       })
     },
-    richEditorPublish() {
+    async richEditorPublish() {
       this.$emit('loadingBegin', true)
       this.loading = true
-      console.log('发布内容:', this.rich_content)
-
-      postApi.publish_post(this.rich_content).then((res) => {
+      const images = await this.$refs.md.uploadPhotos()
+      this.richContent.images = images
+      postApi.publish_post(this.richContent).then((res) => {
         this.loading = false
         this.$emit('postsResult', res)
         if (res.data.msg == 'success') {
@@ -77,7 +78,7 @@ export default {
     <el-text>你在想什么？</el-text>
   </div>
   <Transition mode="out-in">
-    <MarkdownEditor ref="md" v-if="activeRichEditor" @content_change="(n) => (rich_content = n)" />
+    <MarkdownEditor ref="md" v-if="activeRichEditor" @contentChange="(n) => (richContent = n)" @uploadComplete=""/>
     <div v-else>
       <el-input
         v-model="content"
@@ -96,7 +97,7 @@ export default {
     class="custom-button"
     content="发布"
     size="small"
-    :disabled="!content && !rich_content.body"
+    :disabled="!content && !richContent.body"
     :loading="loading"
     @do-search="publish"
   >

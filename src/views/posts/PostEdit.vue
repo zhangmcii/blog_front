@@ -98,7 +98,7 @@ export default {
       v-if="activeRichEditor"
       :bodyInit="post.body"
       :bodyHtmlInit="post.body_html"
-      @content_change="(n) => (rich_content = n)"
+      @contentChange="(n) => (rich_content = n)"
     />
     <el-input
       v-else

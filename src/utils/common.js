@@ -88,6 +88,8 @@ function debounce(func, wait) {
  * @return {Array} compressedImages 压缩后的图片列表
  */
 async function compressImages(originalFiles, _compressedImages) {
+  console.log('开始压缩图片:', originalFiles)
+  console.log('已压缩的图片:', _compressedImages)
   const compressedRatio = 80
   const compressedImages = [..._compressedImages]
   const compressionRatio = compressedRatio / 100
@@ -96,13 +98,14 @@ async function compressImages(originalFiles, _compressedImages) {
   const uncompressedFiles = originalFiles.filter(
     (file) => !compressedImages.some((img) => img.uid === file.uid)
   )
+  console.log('未压缩的文件:', uncompressedFiles)
 
   for (const file of uncompressedFiles) {
     const rawFile = file.raw
     const compressedFile = await lrz(rawFile, { quality: compressionRatio })
 
-    // console.log('压缩后的文件:', compressedFile)
-    // console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
+    console.log('压缩后的文件:', compressedFile)
+    console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
 
     // 将 base64 转换为 Blob
     const byteString = atob(compressedFile.base64.split(',')[1])
@@ -116,13 +119,41 @@ async function compressImages(originalFiles, _compressedImages) {
 
     compressedImages.push({
       src: compressedFile.base64,
-      blob, // 保存 Blob 对象
+      // 保存 Blob 对象
+      blob, 
       name: rawFile.name,
       uid: rawFile.uid,
+      // markdown图片位置
+      pos: rawFile.pos,
       sizeInfo: `压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`
     })
   }
   return compressedImages
 }
 
-export { copy, loginReminder, retry, randomNum, isNode, debounce, compressImages }
+function beforePicUpload(fileList) {
+  for (const file of fileList) {
+    const isImage = file.raw.type.startsWith('image/')
+    if (!isImage) {
+      ElMessage({
+        message: '只能上传图片格式文件！',
+        type: 'error'
+      })
+      return false
+    }
+    const limitPic =
+      file.raw.type === 'image/png' ||
+      file.raw.type === 'image/jpg' ||
+      file.raw.type === 'image/jpeg'
+    if (!limitPic) {
+      ElMessage({
+        message: '请上传格式为png/jpg/jpeg的图片',
+        type: 'warning'
+      })
+      return false
+    }
+  }
+  return true
+}
+
+export { copy, loginReminder, retry, randomNum, isNode, debounce, compressImages, beforePicUpload }
