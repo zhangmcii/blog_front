@@ -14,9 +14,10 @@ export default {
     return {
       post: {},
       postId: -1,
-      rich_content: {
+      richContent: {
         body: '',
-        bodyHtml: ''
+        bodyHtml: '',
+        images:[],
       },
       originalPost: '',
       isChange: false,
@@ -35,7 +36,7 @@ export default {
     'post.body'(newVal) {
       this.isChange = newVal !== this.originalPost
     },
-    'rich_content.body'(newVal) {
+    'richContent.body'(newVal) {
       this.isChange = newVal !== this.originalPost
     }
   },
@@ -64,14 +65,16 @@ export default {
         }
       })
     },
-    richEditorModify() {
+    async richEditorModify() {
       this.loading = true
-      postApi.editPost(this.post.id, this.rich_content).then((res) => {
+      const images = await this.$refs.md.uploadPhotos()
+      this.richContent.images = images
+      postApi.editPost(this.post.id, this.richContent).then((res) => {
         if (res.data.msg == 'success') {
           this.loading = false
           this.$message.success('修改成功')
-          this.post.body = this.rich_content.body
-          this.post.body_html = this.rich_content.bodyHtml
+          this.post.body = this.richContent.body
+          this.post.body_html = this.richContent.bodyHtml
           this.$router.push(`/postDetail/${this.postId}`)
         } else {
           this.loading = false
@@ -95,10 +98,11 @@ export default {
     <h1>编辑</h1>
     <h4>你在想什么？</h4>
     <MarkdownEditor
+      ref="md"
       v-if="activeRichEditor"
       :bodyInit="post.body"
       :bodyHtmlInit="post.body_html"
-      @contentChange="(n) => (rich_content = n)"
+      @contentChange="(n) => (richContent = n)"
     />
     <el-input
       v-else
