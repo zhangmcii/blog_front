@@ -19,11 +19,12 @@ export default {
     const d = dayjs(date)
     const currentYear = dayjs().year()
     const currentMonth = dayjs().month() + 1 
-    const currentDay = dayjs().day()
+    // 注意，date()是日期，而day()是星期几
+    const currentDay = dayjs().date()
 
     const year = d.year()
     const month = d.month() + 1
-    const day = d.day()
+    const day = d.date()
     if (year > currentYear) {
       return 'null'
     }
