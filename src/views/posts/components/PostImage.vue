@@ -8,17 +8,26 @@ export default {
       }
     }
   },
-  data() {
-    return {}
-  },
-  mounted() {},
-  methods: {}
+  computed: {
+    gridTemplateColumns() {
+      const count = this.postImages.length
+      if (count === 1) return '1fr'
+      if (count === 2 || count === 4) return '1fr 1fr'
+      return '1fr 1fr 1fr'
+    },
+    containerWidth() {
+      const count = this.postImages.length
+      if (count === 1) return '220px'
+      if (count === 2 || count === 4) return '320px'
+      return '370px'
+    }
+  }
 }
 </script>
 
 <template>
-  <div class="container">
-    <div class="preview">
+  <div class="container" :style="{ width: containerWidth }">
+    <div class="preview" :style="{ gridTemplateColumns }">
       <photo-provider :photo-closable="true" :should-transition="true">
         <photo-consumer v-for="(url, index) in postImages" :intro="url" :key="url" :src="url">
           <el-image alt="文章图片" :src="url" lazy fit="cover">
@@ -35,16 +44,14 @@ export default {
 </template>
 <style lang="scss" scoped>
 .container {
-  width: 370px;
   .preview {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 每行 3 列 */
-    gap: 5px; /* 图片之间的间距 */
+    gap: 5px;
     width: 100%;
-    margin: 0 auto; /* 居中对齐 */
+    margin: 0 auto;
     .el-image {
       width: 100%;
-      aspect-ratio: 1; /* 保持图片为正方形 */
+      aspect-ratio: 1;
       .image-slot {
         display: flex;
         justify-content: center;
