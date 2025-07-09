@@ -86,7 +86,7 @@ export default {
     change(value) {
       this.$emit('contentChange', {
         body: value,
-        bodyHtml: this.md.render(value)
+        bodyHtml: value
       })
     },
     clean() {
