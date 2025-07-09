@@ -90,9 +90,9 @@ export default {
           // mask.style.display = 'flex'
           // mask.style.alignItems = 'flex-end'
           // mask.style.justifyContent = 'flex-end'
-          mask.style.pointerEvents = 'none'
-          mask.innerHTML =
-            '<div style="color:#888;font-size:18px;padding:20px 10px 10px 10px;">...</div>'
+          // mask.style.pointerEvents = 'none'
+          // mask.innerHTML =
+          //   '<div style="color:#888;font-size:18px;padding:20px 10px 10px 10px;">...</div>'
           contentDom.appendChild(mask)
         } else {
           contentDom.style.maxHeight = 'none'
