@@ -120,7 +120,7 @@ const routes = [
         path: '/500',
         name: 'networkError',
         component: () => import('../views/error/NetError.vue')
-      }
+      },
     ]
   },
   { path: '/', redirect: '/welcome' },
@@ -142,6 +142,11 @@ const routes = [
     path: '/welcome',
     name: 'welcome',
     component: () => import('../views/welcome/BlogIndex.vue')
+  },
+  {
+    path: '/pc',
+    name: 'pc',
+    component: () => import('../views/user/UserPage1.vue')
   }
 ]
 
