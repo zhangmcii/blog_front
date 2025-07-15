@@ -1,16 +1,33 @@
 <template>
   <div class="vapp-fullscreen-background">
+    <div class="leleo-left-avatar" style="margin-top: 2rem">
+      <el-avatar
+        src="/src/asset/image.png"
+        fit="fill"
+        alt="Leleo"
+        style="border-radius: 50%; width: 120px; height: 120px"
+      />
+    </div>
+
+    <!-- tags -->
+    <el-card class="leleo-left-card" style="">
+      <div class="card-title">
+        <span>Tags</span>
+      </div>
+      <el-tag v-for="item in personalizedtags" :key="item" size="small" round>
+        {{ item }}
+      </el-tag>
+    </el-card>
   </div>
 </template>
 
 <script src="./userPage.js"></script>
 
-<style lang="scss" scoped >
+<style lang="scss" scoped>
 :root {
-    --leleo-background-image-url: none;
+  --leleo-background-image-url: none;
 }
 .vapp-fullscreen-background {
-
   min-height: 100vh;
   width: 100vw;
   position: relative;
@@ -19,10 +36,42 @@
   background-position: center;
   overflow: hidden;
 }
-.video-bg {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  object-fit: cover;
-  z-index: -100;
+.leleo-left-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.glass {
+  //设置为毛玻璃样式
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.el-card {
+  @extend .glass;
+  border-radius: 5%;
+}
+.leleo-left-card {
+  max-width: 270px;
+  margin: 0 auto; /* 左右边距自动 */
+  padding: 2px;
+  .card-title {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #ffffff;
+    font-size: 20px;
+  }
+}
+:deep(.el-tag__content) {
+  color: #ffffff;
+  font-family: sans-serif;
+}
+
+.el-tag {
+  @extend .glass;
+  margin: 2px;
 }
 </style>
