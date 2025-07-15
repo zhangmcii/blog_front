@@ -14,9 +14,11 @@
       <div class="card-title">
         <span>Tags</span>
       </div>
+      <div class="tags">
       <el-tag v-for="item in personalizedtags" :key="item" size="small" round>
         {{ item }}
       </el-tag>
+      </div>
     </el-card>
   </div>
 </template>
@@ -64,6 +66,11 @@
     color: #ffffff;
     font-size: 20px;
   }
+  .tags{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 :deep(.el-tag__content) {
   color: #ffffff;
@@ -72,6 +79,6 @@
 
 .el-tag {
   @extend .glass;
-  margin: 2px;
+  margin: 4px;
 }
 </style>
