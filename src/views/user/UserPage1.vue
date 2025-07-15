@@ -1,6 +1,6 @@
 <template>
   <div class="vapp-fullscreen-background">
-    <div class="leleo-left-avatar" style="margin-top: 2rem">
+    <div class="avatar" style="margin-top: 2rem">
       <el-avatar
         src="/src/asset/image.png"
         fit="fill"
@@ -10,16 +10,24 @@
     </div>
 
     <!-- tags -->
-    <el-card class="leleo-left-card" style="">
+    <el-card>
       <div class="card-title">
         <span>Tags</span>
       </div>
-      <div class="tags">
-      <el-tag v-for="item in personalizedtags" :key="item" size="small" round>
-        {{ item }}
-      </el-tag>
+      <div class="tags-container">
+        <el-tag
+          class="golang"
+          v-for="item in personalizedtags"
+          :key="item"
+          size="small"
+          round
+          @click="playTagAnimation"
+        >
+          {{ item }}
+        </el-tag>
       </div>
     </el-card>
+    <typewriter class="typewriter"></typewriter>
   </div>
 </template>
 
@@ -38,7 +46,7 @@
   background-position: center;
   overflow: hidden;
 }
-.leleo-left-avatar {
+.avatar {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,7 +64,7 @@
   @extend .glass;
   border-radius: 5%;
 }
-.leleo-left-card {
+.el-card {
   max-width: 270px;
   margin: 0 auto; /* 左右边距自动 */
   padding: 2px;
@@ -66,19 +74,49 @@
     color: #ffffff;
     font-size: 20px;
   }
-  .tags{
+  .tags-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
   }
+}
+.el-tag {
+  @extend .glass;
+  margin: 4px;
 }
 :deep(.el-tag__content) {
   color: #ffffff;
   font-family: sans-serif;
 }
 
-.el-tag {
-  @extend .glass;
-  margin: 4px;
+// 点击tag的动画
+.golang {
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.golang:before {
+  content: '';
+  background-color: rgba(255, 255, 255, 0.5);
+  height: 100%;
+  width: 3em;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -4.5em;
+  transform: skewX(-45deg) translateX(0);
+  transition: none;
+}
+
+// 如果一个标签中同时使用了这两个类,
+// 则响应此样式规则。
+.golang.animate:before {
+  transform: skewX(-45deg) translateX(260px);
+  transition: all 0.7s ease-in-out;
+}
+.typewriter {
+  margin: 12px;
 }
 </style>
