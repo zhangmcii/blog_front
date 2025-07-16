@@ -1,14 +1,25 @@
 import typewriter from '@/utils/components/Typewriter.vue'
 import interest from '@/views/user/components/interest.vue'
 import { FloatButton } from 'vue-amazing-ui'
+import socialLinks from '@/utils/components/SocialLinks.vue'
 export default {
   components: {
     typewriter,
     interest,
-    FloatButton
+    FloatButton,
+    socialLinks
   },
   data() {
     return {
+      socialPlatformIcons: [
+        { icon: 'mdi-github', link: 'https://www.github.com/leleo886' },
+        { icon: 'mdi-email', link: 'mailto:leleo886@foxmail.com' },
+        { icon: 'mdi-qqchat', link: 'https://im.qq.com/' },
+        { icon: 'mdi-wechat', link: 'https://wx.qq.com/' },
+        { icon: 'mdi-youtube', link: 'https://www.youtube.com' },
+        { icon: 'mdi-facebook', link: 'https://www.facebook.com' }
+      ],
+      but: false,
       hamburgerActive: false,
       personalizedtags: [
         '乐观开朗',
