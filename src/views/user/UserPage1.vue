@@ -1,5 +1,6 @@
 <template>
   <div class="vapp-fullscreen-background">
+    <div class="nickname">{{ user.nickname }}</div>
     <div class="avatar" style="margin-top: 2rem">
       <el-avatar
         src="/src/asset/image.png"
@@ -27,7 +28,36 @@
         </el-tag>
       </div>
     </el-card>
-    <typewriter class="typewriter"></typewriter>
+    <!-- 打字机 -->
+    <!-- <typewriter class="typewriter"></typewriter> -->
+
+    <!-- <el-card class="interest-card">
+     <interest :interest="user.interest" :showButton="false" />
+    </el-card> -->
+    
+    <!-- 设置齿轮按钮 -->
+    <FloatButton
+      shape="square"
+      description="HELP"
+      :right="96"
+      menu-trigger="click"
+    >
+      <template #icon>
+        <el-icon><i-ep-Setting /></el-icon>
+      </template>
+      <template #menu>
+        <FloatButton shape="square">
+          <template #icon>
+            <el-icon><i-ep-Clock /></el-icon>
+          </template>
+        </FloatButton>
+        <FloatButton>
+          <template #icon>
+            <el-icon><i-ep-Clock /></el-icon>
+          </template>
+        </FloatButton>
+      </template>
+    </FloatButton>
   </div>
 </template>
 
@@ -45,6 +75,12 @@
   background-size: cover;
   background-position: center;
   overflow: hidden;
+
+}
+.nickname {
+  color: #ffffff;
+  font-size: 2.3rem;
+  text-align: center;
 }
 .avatar {
   display: flex;
@@ -118,5 +154,14 @@
 }
 .typewriter {
   margin: 12px;
+}
+.interest-card {
+  max-width: 90%;
+  margin: 0 auto; /* 左右边距自动 */
+  padding: 2px;
+}
+
+.setting {
+  margin-top: 1rem;
 }
 </style>
