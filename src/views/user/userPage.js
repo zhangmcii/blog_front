@@ -9,6 +9,7 @@ export default {
   },
   data() {
     return {
+      hamburgerActive: false,
       personalizedtags: [
         '乐观开朗',
         '温柔体贴',
@@ -72,7 +73,7 @@ export default {
   methods: {
     setMainProperty() {
       const root = document.documentElement
-      // root.style.setProperty('--leleo-background-image-url', `url('/src/asset/image.png')`)
+      root.style.setProperty('--leleo-background-image-url', `url('/src/asset/image.png')`)
     },
     // 每次点击tag触发动画
     playTagAnimation(e) {
