@@ -38,7 +38,7 @@ export default {
 
 <template>
   <div class="interest-container">
-    <el-row :gutter="16" class="bookshelf">
+    <el-row :gutter="10" class="bookshelf">
       <el-col :span="8" v-for="(movie, index) in interest" :key="index">
         <div class="book">
           <el-image
@@ -49,7 +49,7 @@ export default {
             :initial-index="index"
           ></el-image>
           <el-text class="book-name" truncated>{{ movie.describe }}</el-text>
-          <el-text class="book-descirbe">111111{{ movie.describe }}</el-text>
+          <el-text class="book-descirbe">111111</el-text>
         </div>
       </el-col>
     </el-row>
@@ -87,14 +87,14 @@ export default {
 .book {
   @extend .glass;
   width: 117px;
-
   position: relative;
   display: flex;
   flex-direction: column;
   margin: 10px 0px;
   .el-image {
-    width: 117px;
-    height: 198px;
+    width: 110px;
+    height: 130px;
+    border-radius: 5%;
   }
   .text-base {
     width: 97%;
