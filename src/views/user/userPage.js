@@ -9,8 +9,19 @@ import { useOtherUserStore } from '@/stores/otherUser'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import PostImage from '@/views/posts/components/PostImage.vue'
 import PostPreview from '@/views/posts/components/PostPreview.vue'
-import dayjs from 'dayjs'
+import userApi from '@/api/user/userApi.js'
+import authApi from '@/api/auth/authApi.js'
 import date from '@/utils/date.js'
+import dayjs from 'dayjs'
+import cityUtil from '@/utils/cityUtil.js'
+import emitter from '@/utils/emitter.js'
+import { showConfirmDialog } from 'vant'
+import { loginReminder, compressImages } from '@/utils/common.js'
+import uploadApi from '@/api/upload/uploadApi.js'
+import imageApi from '@/api/user/imageApi.js'
+import { v4 as uuidv4 } from 'uuid'
+import * as qiniu from 'qiniu-js'
+import { set } from 'undraw-ui'
 
 export default {
   components: {
@@ -36,10 +47,21 @@ export default {
         { icon: 'mdi-facebook', link: 'https://www.facebook.com' }
       ],
       but: false,
-      hamburgerActive: false,
       personalizedtags: ['乐观开朗', '温柔体贴', '善解人意'],
       user: {
-        nickname: '山山水水',
+        username: '张三',
+        name: '赫赫',
+        location: '上海',
+        email: 'zmc@qq.com',
+        about_me: '天气不错',
+        member_since: '2024-9-20 12:14:00',
+        last_seen: '2024-9-20 12:14:00',
+        admin: false,
+        followers_count: 0,
+        followed_count: 0,
+        is_followed_by_current_user: false,
+        is_following_current_user: false,
+        image: '/src/asset/image1.png',
         interest: {
           books: [
             {
@@ -83,188 +105,34 @@ export default {
           ]
         }
       },
-      posts: [
-        {
-          author: 'Blazing',
-          body: '<p>\u5bcc\u6587\u672c\u7f16\u8f91\u56681</p>',
-          body_html: '<p>\u5bcc\u6587\u672c\u7f16\u8f91\u56681</p>',
-          comment_count: 0,
-          has_praised: false,
-          id: 115,
-          image: 'http://sxryiuhrz.hd-bkt.clouddn.com//static/ico/image_6-CouPu7Rl.ico-slim',
-          nick_name: null,
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 0,
-          timestamp: '2025-06-06 12:13:29',
-          url: '/api/v1/posts/115'
-        },
-        {
-          author: 'Blazing',
-          body: '\u4eca\u5929\u662f2025-06-06 12:13:17',
-          body_html: null,
-          comment_count: 0,
-          has_praised: false,
-          id: 114,
-          image: 'http://sxryiuhrz.hd-bkt.clouddn.com//static/ico/image_6-CouPu7Rl.ico-slim',
-          nick_name: null,
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 1,
-          timestamp: '2025-06-06 12:13:21',
-          url: '/api/v1/posts/114'
-        },
-        {
-          author: '1234',
-          body: '\u4e09\u4eba\u5403\u996d\uff5e',
-          body_html: null,
-          comment_count: 0,
-          has_praised: false,
-          id: 112,
-          image:
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_99/avatars/70664cee-83a8-4c1d-a304-b181365e957c.png-slim',
-          nick_name: '\u8424\u706b',
-          pos: [],
-          post_images: [
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_99/articles/8e61b556-b4b7-47c6-80b2-85328694b11a.jpg-slim'
-          ],
-          post_type: '\u56fe\u6587',
-          praise_num: 0,
-          timestamp: '2025-05-01 19:49:25',
-          url: '/api/v1/posts/112'
-        },
-        {
-          author: '1234',
-          body: '\u671d\u971e\u7eda\u4e3d\u591a\u5f69',
-          body_html: null,
-          comment_count: 0,
-          has_praised: false,
-          id: 110,
-          image:
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_99/avatars/70664cee-83a8-4c1d-a304-b181365e957c.png-slim',
-          nick_name: '\u8424\u706b',
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 0,
-          timestamp: '2025-02-18 14:04:14',
-          url: '/api/v1/posts/110'
-        },
-        {
-          author: '1234',
-          body: '\u4eca\u5929\u591a\u4e91\u8f6c\u6674~',
-          body_html: null,
-          comment_count: 1,
-          has_praised: false,
-          id: 109,
-          image:
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_99/avatars/70664cee-83a8-4c1d-a304-b181365e957c.png-slim',
-          nick_name: '\u8424\u706b',
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 2,
-          timestamp: '2025-02-12 09:20:23',
-          url: '/api/v1/posts/109'
-        },
-        {
-          author: '1234',
-          body: '\u6211\u4e0a\u4f20\u4e86\u56fe\u50cf~',
-          body_html: null,
-          comment_count: 0,
-          has_praised: false,
-          id: 108,
-          image:
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_99/avatars/70664cee-83a8-4c1d-a304-b181365e957c.png-slim',
-          nick_name: '\u8424\u706b',
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 0,
-          timestamp: '2025-01-21 12:28:15',
-          url: '/api/v1/posts/108'
-        },
-        {
-          author: '123',
-          body: '21212',
-          body_html: null,
-          comment_count: 0,
-          has_praised: false,
-          id: 107,
-          image:
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_93/avatars/a5d0ecbb-a4c8-4bcb-96a1-faa7162c5151.png-slim',
-          nick_name: '\u67d2\u590f',
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 0,
-          timestamp: '2025-01-17 15:26:37',
-          url: '/api/v1/posts/107'
-        },
-        {
-          author: '123',
-          body: '\u5f53\u65f6\u7684',
-          body_html: null,
-          comment_count: 0,
-          has_praised: false,
-          id: 106,
-          image:
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_93/avatars/a5d0ecbb-a4c8-4bcb-96a1-faa7162c5151.png-slim',
-          nick_name: '\u67d2\u590f',
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 0,
-          timestamp: '2025-01-17 15:20:21',
-          url: '/api/v1/posts/106'
-        },
-        {
-          author: '123',
-          body: '3333',
-          body_html: null,
-          comment_count: 0,
-          has_praised: false,
-          id: 105,
-          image:
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_93/avatars/a5d0ecbb-a4c8-4bcb-96a1-faa7162c5151.png-slim',
-          nick_name: '\u67d2\u590f',
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 0,
-          timestamp: '2025-01-17 15:13:44',
-          url: '/api/v1/posts/105'
-        },
-        {
-          author: '123',
-          body: '3333',
-          body_html: null,
-          comment_count: 1,
-          has_praised: false,
-          id: 104,
-          image:
-            'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_93/avatars/a5d0ecbb-a4c8-4bcb-96a1-faa7162c5151.png-slim',
-          nick_name: '\u67d2\u590f',
-          pos: [],
-          post_images: [],
-          post_type: '\u7eaf\u6587\u5b57',
-          praise_num: 0,
-          timestamp: '2025-01-17 15:11:32',
-          url: '/api/v1/posts/104'
-        }
-      ],
+      userName: '',
+      posts: [{}],
+      currentPage: 1,
+      posts_count: 0,
+      followPerm: false,
       loading: {
         userData: false,
         follow: false,
-        skeleton: true
+        skeleton: true,
+        switch: false
       },
+      uploadToken: '',
+      imageUrls: [],
+      uploading: false,
+      imageKey: [],
+
+      drawer: false,
+      imgList: [],
       skeletonThrottle: {
         leading: 300,
         trailing: 300,
         initVal: true
-      }
+      },
+      activeName: 'first',
+      // 原始文件
+      originalFiles: [],
+      // 压缩后的文件
+      compressedImages: []
     }
   },
   setup() {
@@ -272,8 +140,27 @@ export default {
     const otherUser = useOtherUserStore()
     return { currentUser, otherUser, areaList }
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.userName = to.params.userName
+      vm.getUserData(vm.userName)
+      vm.$nextTick(() => {})
+    })
+  },
+  // 当从A资料跳转B资料时，更新资料页面
+  created() {
+    this.$watch(
+      () => this.$route.params.userName,
+      (newVal) => {
+        this.userName = newVal
+        this.getUserData(newVal)
+      }
+    )
+  },
   async mounted() {
     this.setMainProperty()
+    this.getPermission(1)
+    this.getUploadToken()
   },
   computed: {
     location() {
@@ -322,7 +209,7 @@ export default {
   methods: {
     setMainProperty() {
       const root = document.documentElement
-      root.style.setProperty('--leleo-background-image-url', `url('/src/asset/image.png')`)
+      root.style.setProperty('--leleo-background-image-url', `url('/src/asset/user/image2.png')`)
     },
     // 每次点击tag触发动画
     playTagAnimation(e) {
@@ -338,12 +225,209 @@ export default {
     handleSwitchChange() {
       const root = document.documentElement
       if (this.isUserPage) {
-        root.style.setProperty('--leleo-background-image-url', `url('/src/asset/image.png')`)
+        root.style.setProperty('--leleo-background-image-url', `url('/src/asset/user/image2.png')`)
       } else {
         root.style.setProperty('--leleo-background-image-url', `none`)
-        // 新增：设置为白色
-        root.style.setProperty('background-color', '#fff') 
+        root.style.setProperty('background-color', '#fff')
       }
+    },
+    beforeSwitch() {
+      this.loading.switch = true
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          this.loading.switch = false
+          return resolve(true)
+        }, 500)
+      })
+    },
+
+    getUserData(userName, page) {
+      this.loading.userData = true
+      if (!userName) {
+        userName = this.otherUser.userInfo.username
+      }
+      if (!userName) {
+        this.$message.error('要显示资料的用户名为空！')
+        return
+      }
+      userApi.get_user(userName, page).then((res) => {
+        this.loading.userData = false
+        this.user = res.data.data
+        // 保存当前点开的用户资料信息
+        this.otherUser.userInfo = res.data.data
+        this.imgList.push(this.user.image)
+        this.posts = res.data.posts
+        this.posts_count = res.data.total
+        // 让chat和关注按钮出现时机与骨架屏同步
+        setTimeout(() => {
+          this.loading.skeleton = false
+        }, this.skeletonThrottle.trailing)
+      })
+    },
+    editProfile() {
+      this.$router.push(`/editProfile/${this.user.id}`)
+    },
+    editProfileAdmin() {
+      this.$router.push(`/editProfileAdmin/${this.user.id}`)
+    },
+    // 查询当前登录用户的权限
+    getPermission(perm) {
+      authApi.getPermission(perm).then((res) => {
+        if (res.data.data) {
+          this.followPerm = true
+        } else {
+          this.followPerm = false
+        }
+      })
+    },
+    followUser() {
+      this.loading.follow = true
+      userApi.follow(this.user.username).then((res) => {
+        if (res.data.msg == 'success') {
+          this.loading.follow = false
+          this.user = res.data.data
+          this.currentUser.addItemFollowed({
+            id: this.user.id,
+            name: this.user.name ? this.user.name : this.user.username,
+            uName: this.user.username,
+            avatar: this.user.image
+          })
+          this.$message.success('关注成功')
+        } else {
+          this.loading.follow = false
+          this.$message.error(res.data.msg)
+        }
+      })
+    },
+    unFollowUser() {
+      showConfirmDialog({
+        title: '取消对该用户的关注',
+        width: 230,
+        beforeClose: this.beforeClose
+      })
+    },
+
+    beforeClose(action) {
+      if (action !== 'confirm') {
+        return Promise.resolve(true)
+      } else {
+        return userApi.unFollow(this.user.username).then((res) => {
+          if (res.data.msg == 'success') {
+            this.user = res.data.data
+            this.currentUser.delItemFollowed(this.user.username)
+            this.$message.success('已取消关注')
+          } else {
+            this.$message.error(res.data.msg)
+          }
+          return res
+        })
+      }
+    },
+    followerDetail() {
+      const f = 'follower'
+      this.$router.push(`/follow/${f}/${this.user.username}`)
+    },
+    followedDetail() {
+      const f = 'followed'
+      this.$router.push(`/follow/${f}/${this.user.username}`)
+    },
+    handleCurrentChange() {
+      this.getUserData(this.userName, this.currentPage)
+    },
+    async handleFileChange(file, fileList) {
+      if (!this.beforePicUpload([file])) {
+        return
+      }
+      this.originalFiles = [...fileList]
+      // 压缩图像
+      this.compressedImages = await compressImages(this.originalFiles, this.compressedImages)
+      // 上传至七牛云
+      await this.uploadFiles()
+      // url保存至后端
+      this.submitAvatars()
+    },
+    async uploadFiles() {
+      const domin = import.meta.env.VITE_QINIU_DOMAIN
+      try {
+        const putExtra = {}
+        const config = {
+          // 存储区域
+          region: qiniu.region.z0
+        }
+        for (const file of this.compressedImages) {
+          const folder = this.currentUser.uploadAvatarsBaseUrl
+          const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
+          const key = folder + uniqueFileName
+          const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
+          await new Promise((resolve, reject) => {
+            // 保存 this 上下文
+            const self = this
+            observable.subscribe({
+              next() {},
+              error(err) {
+                reject(err)
+              },
+              complete(res) {
+                self.imageKey.push(res.key)
+                const imageUrl = `http://${domin}/${res.key}`
+                self.imageUrls.push(imageUrl)
+                resolve()
+              }
+            })
+          })
+        }
+      } catch (error) {
+        console.error('Upload failed:', error)
+      }
+    },
+    submitAvatars() {
+      const domin = import.meta.env.VITE_QINIU_DOMAIN
+      const imageUrl = `http://${domin}/${this.imageKey[0]}`
+      imageApi.saveImageUrl({ image: this.imageKey[0] }).then((res) => {
+        // 换图像成功后，更新本地image字段
+        if (res.data.msg == 'success') {
+          this.currentUser.userInfo = { ...this.currentUser.userInfo, ...{ image: res.data.image } }
+          this.user.image = imageUrl
+          this.imgList.push(this.user.image)
+          emitter.emit('image', imageUrl)
+          this.$message.success('图像上传成功')
+        } else {
+          this.$message.error('图像上传失败')
+        }
+      })
+    },
+    beforePicUpload(fileList) {
+      for (const file of fileList) {
+        const isImage = file.raw.type.startsWith('image/')
+        if (!isImage) {
+          this.$message.error('只能上传图片格式文件！')
+          return false
+        }
+        const limitPic =
+          file.raw.type === 'image/png' ||
+          file.raw.type === 'image/jpg' ||
+          file.raw.type === 'image/jpeg'
+        if (!limitPic) {
+          this.$message.warning('请上传格式为png/jpg/jpeg的图片')
+          return false
+        }
+      }
+      return true
+    },
+    showDrawer() {
+      this.drawer = !this.drawer
+    },
+    openChat() {
+      if (!this.currentUser.isLogin) {
+        loginReminder('快去登录再私信吧')
+        return
+      }
+      this.$router.push('/chat')
+    },
+    getUploadToken() {
+      uploadApi.get_upload_token().then((res) => {
+        this.uploadToken = res.data.upload_token
+      })
     }
   }
 }

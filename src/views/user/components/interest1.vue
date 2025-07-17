@@ -56,7 +56,7 @@ export default {
 <style lang="scss" scoped>
 .container {
   position: relative;
-  height: 250px;
+  height: 170px;
 }
 .el-button {
   width: 50px;

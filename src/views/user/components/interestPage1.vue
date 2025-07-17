@@ -47,23 +47,16 @@ export default {
             fit="cover"
             :preview-src-list="preList"
             :initial-index="index"
+            preview-teleported
           ></el-image>
           <el-text class="book-name" truncated>{{ movie.describe }}</el-text>
-          <el-text class="book-descirbe">111111</el-text>
+          <!-- <el-text class="book-descirbe">111111</el-text> -->
         </div>
       </el-col>
     </el-row>
   </div>
 </template>
 <style lang="scss" scoped>
-// .glass {
-//   //设置为毛玻璃样式
-//   backdrop-filter: blur(5px);
-//   -webkit-backdrop-filter: blur(12px);
-//   background-color: rgba(255, 255, 255, 0.15);
-//   border: 1px solid rgba(255, 255, 255, 0.18);
-// }
-
 //设置为毛玻璃样式
 .glass {
   backdrop-filter: blur(7px);
@@ -109,7 +102,7 @@ export default {
   .book-descirbe {
     @extend .text-base;
     font-size: 0.6rem;
-    opacity:0.6;
+    opacity: 0.6;
   }
 }
 </style>

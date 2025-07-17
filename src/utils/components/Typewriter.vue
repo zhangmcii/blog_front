@@ -7,13 +7,18 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import TypeIt from 'typeit'
-
-const text = ref(null)
+const prop = defineProps({
+  content: {
+    type: String,
+    default: ''
+  }
+})
+const text = ref('')
 onMounted(() => {
   new TypeIt(text.value, {
-    strings: '控制是将多个字符串打印在彼此之上，还是删除这些字符串并相互替换',
+    strings: prop.content,
     cursorChar:
-      "<span class='cursorChar' style='font-size: 26px;color: var(--leleo-vcard-color);'>|<span>", //用于光标的字符。HTML也可以
+      "<span class='cursorChar' style='font-size: 12px;color: var(--leleo-vcard-color);'>|<span>", //用于光标的字符。HTML也可以
     speed: 150,
     lifeLike: true, // 使打字速度不规则
     cursor: true, //在字符串末尾显示闪烁的光标

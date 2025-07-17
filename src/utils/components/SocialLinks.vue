@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import socialLinks from '@/asset/socialLinks/socialLinks.json'
+import socialLinks from '@/config/socialLinks.json'
 import { ref } from 'vue'
 // 社交链接提示
 const socialTip = ref('通过这里联系我吧')

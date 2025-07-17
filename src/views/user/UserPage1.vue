@@ -1,20 +1,25 @@
 <template>
   <div class="vapp-fullscreen-background">
+    <el-page-header @back="$router.back()" title="返回" />
+
     <el-switch
       v-model="isUserPage"
+      :loading="loading.switch"
       size="large"
       style="--el-switch-on-color: #424242; --el-switch-off-color: #424242"
       inline-prompt
       active-text="主页"
       inactive-text="文章"
       @change="handleSwitchChange"
+      :before-change="beforeSwitch"
     />
     <div class="avatar" style="margin-top: 1rem">
       <el-avatar
-        src="/src/asset/image1.png"
         fit="fill"
-        alt="Leleo"
         style="border-radius: 50%; width: 120px; height: 120px"
+        alt="用户图像"
+        :src="user.image"
+        @click="showDrawer"
       />
     </div>
 
@@ -36,7 +41,7 @@
         </div>
       </el-card>
       <div class="user-info-container">
-        <el-row :gutter="1">
+        <el-row :gutter="10">
           <el-col :span="12">
             <el-card class="user-info" shadow="never">
               <div class="card-title">
@@ -62,33 +67,33 @@
                 <template #default>
                   <el-row v-if="user.nickname">
                     <el-col :xs="6" :xl="4">昵称</el-col>
-                    <el-col :xs="8" :xl="10" :offset="2">{{ user.nickname }}</el-col>
+                    <el-col :xs="8" :xl="10">{{ user.nickname }}</el-col>
                   </el-row>
                   <el-row>
                     <el-col :xs="6" :xl="4">账号</el-col>
-                    <el-col :xs="16" :xl="10" :offset="2">{{ user.username }}</el-col>
+                    <el-col :xs="16" :xl="10">{{ user.username }}</el-col>
                   </el-row>
-                  <el-row v-if="user.about_me">
+                  <!-- <el-row v-if="user.about_me">
                     <el-col :xs="6" :xl="4">签名</el-col>
-                    <el-col :xs="16" :xl="10" :offset="2">{{ user.about_me }}</el-col>
-                  </el-row>
+                    <el-col :xs="16" :xl="10">{{ user.about_me }}</el-col>
+                  </el-row> -->
 
-                  <el-row v-if="user.email">
+                  <!-- <el-row v-if="user.email">
                     <el-col :xs="6" :xl="4">电子邮件</el-col>
                     <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
-                  </el-row>
+                  </el-row> -->
                   <el-row v-if="user.location">
                     <el-col :xs="6" :xl="4">城市</el-col>
-                    <el-col :xs="16" :xl="10" :offset="2">{{ location }}</el-col>
+                    <el-col :xs="16" :xl="10">{{ location }}</el-col>
                   </el-row>
 
                   <el-row>
                     <el-col :xs="6" :xl="4">生日</el-col>
-                    <el-col :xs="8" :xl="10" :offset="2">{{ member_since }}</el-col>
+                    <el-col :xs="15" :xl="10">{{ member_since }}</el-col>
                   </el-row>
 
                   <el-row>
-                    <el-col :xs="6" :xl="4">上线时间</el-col>
+                    <el-col :xs="8" :xl="4">上线时间</el-col>
                     <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
                   </el-row>
                 </template>
@@ -124,11 +129,16 @@
                 </template>
               </el-skeleton>
             </el-card>
+            <el-card class="user-wisdom" shadow="never">
+              <div class="card-title">
+                <span>个性签名</span>
+              </div>
+              <!-- 打字机 -->
+               <typewriter class="typewriter" :content="user.about_me"></typewriter>
+            </el-card>
           </el-col>
         </el-row>
       </div>
-      <!-- 打字机 -->
-      <!-- <typewriter class="typewriter"></typewriter> -->
       <ButtonAnimate
         content="喜欢的电影"
         :isActive="activeInterest === 'movie'"
@@ -141,33 +151,17 @@
       />
 
       <interest :showInterest="activeInterest" :interest="user.interest" :showButton="false" />
-      <!-- 设置齿轮按钮 -->
-      <!-- <FloatButton shape="square" description="HELP" :right="96" menu-trigger="click">
-      <template #icon>
-        <el-icon><i-ep-Setting /></el-icon>
-      </template>
-      <template #menu>
-        <FloatButton shape="square">
-          <template #icon>
-            <el-icon><i-ep-Clock /></el-icon>
-          </template>
-        </FloatButton>
-        <FloatButton>
-          <template #icon>
-            <el-icon><i-ep-Clock /></el-icon>
-          </template>
-        </FloatButton>
-      </template>
-    </FloatButton> -->
+      <el-card class="socialLinks">
+        <socialLinks />
+      </el-card>
 
-      <socialLinks />
-      <div class="hamburger" @click="but = !but">
+      <!-- <div class="hamburger" @click="but = !but">
         <van-icon name="wap-nav" size="24" v-show="!but" />
         <van-icon name="cross" size="24" v-show="but" />
-      </div>
+      </div> -->
     </div>
 
-    <div v-show="!isUserPage">
+    <div v-show="!isUserPage" class="posts-container">
       <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
         <PostPreview
           v-for="item in posts"
@@ -193,6 +187,71 @@
         <el-empty :image-size="200" description="生活总归带点荒谬" v-if="posts.length === 0" />
       </SkeletonUtil>
     </div>
+
+    <van-action-sheet v-model:show="drawer" cancel-text="取消">
+      <photo-provider :photo-closable="true">
+        <photo-consumer v-for="(src, index) in imgList" :intro="src" :key="src" :src="src">
+          <el-button v-if="index === 0" text class="pre-image" @click="this.drawer = false"
+            >查看图像</el-button
+          >
+        </photo-consumer>
+      </photo-provider>
+      <el-divider />
+      <div class="upload" v-if="isCurrentUser">
+        <el-upload
+          ref="uploadRef"
+          v-model:file-list="originalFiles"
+          :auto-upload="false"
+          :before-upload="() => false"
+          accept="image/jpeg,image/png,image/jpg,image/webp"
+          :on-change="handleFileChange"
+          :limit="1"
+        >
+          <template #trigger>
+            <el-button class="select-image" text>从相册选择</el-button>
+          </template>
+        </el-upload>
+      </div>
+    </van-action-sheet>
+    <div class="block" v-if="!isCurrentUser && !loading.skeleton"></div>
+    <div class="footer" v-if="!isCurrentUser && !loading.skeleton">
+      <el-button color="#d1edc4" round class="chat" @click="openChat">
+        <template #icon>
+          <el-icon><i-ep-ChatRound /></el-icon>
+        </template>
+        私信
+      </el-button>
+      <div>
+        <el-button
+          color="#faecd8"
+          round
+          class="follow"
+          v-if="isFollowOtherUser"
+          @click="unFollowUser"
+        >
+          <template #icon>
+            <el-icon>
+              <i-ep-Switch v-if="isFollowEachOther" />
+              <i-ep-Check v-else-if="isFollowOtherUser" />
+            </el-icon>
+          </template>
+          取消关注
+        </el-button>
+        <el-button
+          color="#faecd8"
+          round
+          class="follow"
+          v-else
+          :loading="loading.follow"
+          @click="followUser"
+        >
+          <template #icon>
+            <el-icon><i-ep-Plus /></el-icon>
+          </template>
+          关注
+        </el-button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -207,15 +266,14 @@
   width: 100vw;
   position: relative;
   background-image: var(--leleo-background-image-url);
-  // background-color: rgb(95, 96, 95);
   background-size: cover;
   background-position: center;
   overflow: hidden;
 }
-.nickname {
-  color: #ffffff;
-  font-size: 2rem;
-  text-align: center;
+.el-page-header {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
 .el-switch {
@@ -233,7 +291,7 @@
 
 //设置为毛玻璃样式
 .glass {
-  backdrop-filter: blur(7px);
+  backdrop-filter: blur(15px);
   border-radius: 5%;
   color: #ffffff;
   /* 确保背景透明，显示毛玻璃效果 */
@@ -244,8 +302,7 @@
 .tags-container {
   @extend .glass;
   max-width: 270px;
-  margin: 0 auto; /* 左右边距自动 */
-
+  margin: 10px auto; /* 左右边距自动 */
   .tags {
     display: flex;
     flex-wrap: wrap;
@@ -263,14 +320,38 @@
   @extend .glass;
   .card-title {
     margin-bottom: 10px;
-    color: #ffffff;
+    color: #fff;
     font-size: 20px;
   }
+  font-size: 12px;
+  // color: #e3d4d4;
+  color: #fff;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.el-statistic {
+  width: 30px;
+  text-align: center;
+}
+:deep(.el-statistic__head) {
+  font-size: 0.9rem;
+  color: #fff;
+}
+:deep(.el-statistic__number) {
+  font-size: 1rem;
+  color: #fff;
 }
 
 .fans {
   @extend .glass;
 }
+.user-wisdom {
+  @extend .glass;
+  margin-top: 5px;
+  max-height: 120px;
+}
+
 .el-tag {
   background-color: transparent;
   margin: 4px;
@@ -318,12 +399,16 @@
   margin: 0 auto; /* 左右边距自动 */
   padding: 2px;
 }
+.socialLinks {
+  @extend .glass;
+  max-width: 270px;
+  margin: 0px auto; /* 左右边距自动 */
+}
+.socialLinks :deep(.el-card__body) {
+  padding: 2px;
+}
 
 .hamburger {
-  // position: absolute;
-  // bottom: 8%;
-  // right: 43%;
-
   width: 56px;
   height: 27px;
   margin: 0px auto;
@@ -335,7 +420,65 @@
   justify-content: center;
   align-items: center;
 }
-.socialPlatformIcons {
+
+.posts-container {
+  margin: 0px 20px;
+}
+
+//  //
+.PhotoConsumer {
   width: 100%;
+}
+.pre-image {
+  width: 100%;
+  height: 40px;
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+.upload {
+  width: 100%;
+  text-align: center;
+  height: 33px;
+}
+
+.select-image {
+  width: 100%;
+  font-size: 0.9rem;
+}
+.el-divider {
+  margin: 2px 0px 2px 0px;
+}
+.item {
+  width: 20%;
+  margin-top: 20px;
+}
+
+.skeleton-item {
+  width: v-bind(skeletonItemWidth);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.block {
+  margin-bottom: 33px;
+}
+.footer {
+  position: fixed;
+  bottom: 0px;
+  padding: 10px;
+  height: 40px;
+  width: 95%;
+  margin: 0px auto;
+  display: flex;
+  justify-content: space-between;
+  div,
+  .chat {
+    width: 48%;
+    height: 40px;
+  }
+  .follow {
+    width: 100%;
+    height: 40px;
+  }
 }
 </style>

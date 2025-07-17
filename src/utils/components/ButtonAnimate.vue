@@ -46,7 +46,8 @@ export default {
   width: 80px;
   font-size: 12px;
   line-height: 30px;
-  border: 1px solid rgb(103, 120, 138);
+  // border: 1px solid rgb(103, 120, 138);
+  border: 1px solid rgb(216.8, 235.6, 255);
   opacity: 1;
   transition: all 0.3s;
 }
@@ -55,6 +56,6 @@ export default {
   opacity: 0.7;
 }
 .active {
-  border: 1px solid rgb(216.8, 235.6, 255);
+  border: 1px solid rgb(4, 122, 239);
 }
 </style>
