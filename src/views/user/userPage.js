@@ -1,16 +1,19 @@
 import typewriter from '@/utils/components/Typewriter.vue'
-import interest from '@/views/user/components/interest.vue'
+import interest from '@/views/user/components/interest1.vue'
 import { FloatButton } from 'vue-amazing-ui'
 import socialLinks from '@/utils/components/SocialLinks.vue'
+import ButtonAnimate from '@/utils/components/ButtonAnimate.vue'
 export default {
   components: {
     typewriter,
     interest,
     FloatButton,
-    socialLinks
+    socialLinks,
+    ButtonAnimate
   },
   data() {
     return {
+      activeInterest: 'movie',
       socialPlatformIcons: [
         { icon: 'mdi-github', link: 'https://www.github.com/leleo886' },
         { icon: 'mdi-email', link: 'mailto:leleo886@foxmail.com' },
@@ -32,7 +35,7 @@ export default {
         '善解人意'
       ],
       user: {
-        nickname: '电脑叮咛电脑',
+        nickname: '111',
         interest: {
           books: [
             {
@@ -53,7 +56,7 @@ export default {
               related_id: 99,
               timestamp: 'Fri, 13 Jun 2025 12:25:49 GMT',
               type: '\u7535\u5f71',
-              url: 'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_99/interest/681cae50-42c8-4355-847d-6b205ab9e022.webp-slim'
+              url: 'src/asset/book/book1.webp'
             },
             {
               describe: '\u6211\u7684\u5927\u53d4',
@@ -62,7 +65,7 @@ export default {
               related_id: 99,
               timestamp: 'Fri, 13 Jun 2025 12:25:49 GMT',
               type: '\u7535\u5f71',
-              url: 'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_99/interest/99cbd343-6da6-4529-9ad6-2328e6ef3ad3.webp-slim'
+               url: 'src/asset/book/book2.webp'
             },
             {
               describe: '\u9ed1\u8bdd\u5f8b\u5e08',
@@ -71,7 +74,7 @@ export default {
               related_id: 99,
               timestamp: 'Fri, 13 Jun 2025 12:25:49 GMT',
               type: '\u7535\u5f71',
-              url: 'http://sxryiuhrz.hd-bkt.clouddn.com/user_image/user_99/interest/f3cb1054-3de8-42e7-9ae0-dfa3b84a55e5.webp-slim'
+              url: 'src/asset/book/book3.webp'
             }
           ]
         }
@@ -93,6 +96,9 @@ export default {
       // 强制重绘
       void el.offsetWidth
       el.classList.add('animate')
+    },
+    setActive(type) {
+      this.activeInterest = type
     }
   }
 }

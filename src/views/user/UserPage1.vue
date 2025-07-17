@@ -3,7 +3,7 @@
     <div class="nickname">{{ user.nickname }}</div>
     <div class="avatar" style="margin-top: 2rem">
       <el-avatar
-        src="/src/asset/image.png"
+        src="/src/asset/image1.png"
         fit="fill"
         alt="Leleo"
         style="border-radius: 50%; width: 120px; height: 120px"
@@ -29,12 +29,19 @@
       </div>
     </el-card>
     <!-- 打字机 -->
-    <typewriter class="typewriter"></typewriter>
-
-    <!-- <el-card class="interest-card">
-     <interest :interest="user.interest" :showButton="false" />
-    </el-card> -->
-
+    <!-- <typewriter class="typewriter"></typewriter> -->
+    <ButtonAnimate
+      content="喜欢的电影"
+      :isActive="activeInterest === 'movie'"
+      @click="setActive('movie')"
+    />
+    <ButtonAnimate
+      content="在看到书籍"
+      :isActive="activeInterest === 'book'"
+      @click="setActive('book')"
+    />
+   
+    <interest :showInterest="activeInterest" :interest="user.interest" :showButton="false" />
     <!-- 设置齿轮按钮 -->
     <!-- <FloatButton shape="square" description="HELP" :right="96" menu-trigger="click">
       <template #icon>
@@ -73,6 +80,7 @@
   width: 100vw;
   position: relative;
   background-image: var(--leleo-background-image-url);
+  // background-color: rgb(95, 96, 95);
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -89,21 +97,22 @@
   margin-bottom: 1rem;
 }
 
+//设置为毛玻璃样式
 .glass {
-  //设置为毛玻璃样式
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(12px);
-  background-color: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(7px);
+  border-radius: 5%;
+  color: #ffffff;
+  /* 确保背景透明，显示毛玻璃效果 */
+  background-color: transparent;
+  /* 移除默认边框 */
+  border: none;
 }
+
 .el-card {
   @extend .glass;
-  border-radius: 5%;
-}
-.el-card {
+
   max-width: 270px;
   margin: 0 auto; /* 左右边距自动 */
-  padding: 2px;
   .card-title {
     text-align: center;
     margin-bottom: 10px;
@@ -116,13 +125,19 @@
     justify-content: center;
   }
 }
+:deep(.el-card__body) {
+  padding: 8px;
+}
 .el-tag {
-  @extend .glass;
+  background-color: transparent;
   margin: 4px;
+  padding: 0px 10px;
+  border: 1px solid rgb(216.8, 235.6, 255);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 :deep(.el-tag__content) {
   color: #ffffff;
-  font-family: sans-serif;
+  font-family: Roboto, sans-serif;
 }
 
 // 点击tag的动画
@@ -161,23 +176,20 @@
   padding: 2px;
 }
 
-.setting {
-  margin-top: 1rem;
-}
 .hamburger {
-  position: absolute;
-  bottom: 8%;
-  right: 43%;
+  // position: absolute;
+  // bottom: 8%;
+  // right: 43%;
 
   width: 56px;
   height: 27px;
   margin: 0px auto;
   background-color: #00000033;
   display: flex;
-  
+
   // 线条垂直居中
   flex-direction: column;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
 }
 .socialPlatformIcons {
