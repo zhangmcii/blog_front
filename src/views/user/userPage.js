@@ -3,6 +3,7 @@ import interest from '@/views/user/components/interest1.vue'
 import { FloatButton } from 'vue-amazing-ui'
 import socialLinks from '@/utils/components/SocialLinks.vue'
 import ButtonAnimate from '@/utils/components/ButtonAnimate.vue'
+import cityUtil from '@/utils/cityUtil.js'
 import { areaList } from '@vant/area-data'
 import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
@@ -13,7 +14,6 @@ import userApi from '@/api/user/userApi.js'
 import authApi from '@/api/auth/authApi.js'
 import date from '@/utils/date.js'
 import dayjs from 'dayjs'
-import cityUtil from '@/utils/cityUtil.js'
 import emitter from '@/utils/emitter.js'
 import { showConfirmDialog } from 'vant'
 import { loginReminder, compressImages } from '@/utils/common.js'
@@ -103,7 +103,10 @@ export default {
               url: 'src/asset/book/book3.webp'
             }
           ]
-        }
+        },
+        social_account:{},
+        tags:[],
+
       },
       userName: '',
       posts: [{}],
@@ -209,7 +212,7 @@ export default {
   methods: {
     setMainProperty() {
       const root = document.documentElement
-      root.style.setProperty('--leleo-background-image-url', `url('/src/asset/user/image2.png')`)
+      root.style.setProperty('--leleo-background-image-url', `url('/src/asset/user/image.png')`)
     },
     // 每次点击tag触发动画
     playTagAnimation(e) {
@@ -225,7 +228,7 @@ export default {
     handleSwitchChange() {
       const root = document.documentElement
       if (this.isUserPage) {
-        root.style.setProperty('--leleo-background-image-url', `url('/src/asset/user/image2.png')`)
+        root.style.setProperty('--leleo-background-image-url', `url('/src/asset/user/image.png')`)
       } else {
         root.style.setProperty('--leleo-background-image-url', `none`)
         root.style.setProperty('background-color', '#fff')

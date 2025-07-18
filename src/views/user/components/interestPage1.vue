@@ -53,6 +53,11 @@ export default {
           <!-- <el-text class="book-descirbe">111111</el-text> -->
         </div>
       </el-col>
+      <el-col>
+        <div class="book" v-if="interest.length === 0">
+          <el-text class="book-empty">空空如页...</el-text>
+        </div>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -103,6 +108,11 @@ export default {
     @extend .text-base;
     font-size: 0.6rem;
     opacity: 0.6;
+  }
+  .book-empty {
+    @extend .text-base;
+    font-size: 0.8rem;
+    margin-left: 5px;
   }
 }
 </style>

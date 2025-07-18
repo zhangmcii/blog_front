@@ -19,18 +19,17 @@
         style="border-radius: 50%; width: 120px; height: 120px"
         alt="用户图像"
         :src="user.image"
-        @click="showDrawer"
       />
     </div>
 
     <div v-show="isUserPage">
       <!-- tags -->
-      <el-card class="tags-container">
+      <el-card class="tags-container" v-if="user.tags.length > 0">
         <div class="card-title"></div>
         <div class="tags">
           <el-tag
             class="golang"
-            v-for="item in personalizedtags"
+            v-for="item in user.tags"
             :key="item"
             size="small"
             round
@@ -46,7 +45,12 @@
             <el-card class="user-info" shadow="never">
               <div class="card-title">
                 <span>个人信息</span>
-                <el-button round size="small" v-if="isCurrentUser" @click="editProfile"
+                <el-button
+                  round
+                  size="small"
+                  style="margin-left: 5px"
+                  v-if="isCurrentUser"
+                  @click="editProfile"
                   >编辑资料</el-button
                 >
                 <el-button
@@ -73,15 +77,6 @@
                     <el-col :xs="6" :xl="4">账号</el-col>
                     <el-col :xs="16" :xl="10">{{ user.username }}</el-col>
                   </el-row>
-                  <!-- <el-row v-if="user.about_me">
-                    <el-col :xs="6" :xl="4">签名</el-col>
-                    <el-col :xs="16" :xl="10">{{ user.about_me }}</el-col>
-                  </el-row> -->
-
-                  <!-- <el-row v-if="user.email">
-                    <el-col :xs="6" :xl="4">电子邮件</el-col>
-                    <el-col :xs="8" :xl="10" :offset="2">{{ user.email }}</el-col>
-                  </el-row> -->
                   <el-row v-if="user.location">
                     <el-col :xs="6" :xl="4">城市</el-col>
                     <el-col :xs="16" :xl="10">{{ location }}</el-col>
@@ -134,7 +129,7 @@
                 <span>个性签名</span>
               </div>
               <!-- 打字机 -->
-               <typewriter class="typewriter" :content="user.about_me"></typewriter>
+              <typewriter class="typewriter" :content="user.about_me"></typewriter>
             </el-card>
           </el-col>
         </el-row>
@@ -150,7 +145,7 @@
         @click="setActive('book')"
       />
 
-      <interest :showInterest="activeInterest" :interest="user.interest" :showButton="false" />
+      <interest :showInterest="activeInterest" :interest="user.interest" />
       <el-card class="socialLinks">
         <socialLinks />
       </el-card>
@@ -188,31 +183,6 @@
       </SkeletonUtil>
     </div>
 
-    <van-action-sheet v-model:show="drawer" cancel-text="取消">
-      <photo-provider :photo-closable="true">
-        <photo-consumer v-for="(src, index) in imgList" :intro="src" :key="src" :src="src">
-          <el-button v-if="index === 0" text class="pre-image" @click="this.drawer = false"
-            >查看图像</el-button
-          >
-        </photo-consumer>
-      </photo-provider>
-      <el-divider />
-      <div class="upload" v-if="isCurrentUser">
-        <el-upload
-          ref="uploadRef"
-          v-model:file-list="originalFiles"
-          :auto-upload="false"
-          :before-upload="() => false"
-          accept="image/jpeg,image/png,image/jpg,image/webp"
-          :on-change="handleFileChange"
-          :limit="1"
-        >
-          <template #trigger>
-            <el-button class="select-image" text>从相册选择</el-button>
-          </template>
-        </el-upload>
-      </div>
-    </van-action-sheet>
     <div class="block" v-if="!isCurrentUser && !loading.skeleton"></div>
     <div class="footer" v-if="!isCurrentUser && !loading.skeleton">
       <el-button color="#d1edc4" round class="chat" @click="openChat">
@@ -274,6 +244,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
+  color: #fff;
 }
 
 .el-switch {
@@ -318,6 +289,7 @@
 }
 .user-info {
   @extend .glass;
+  min-height: 190px;
   .card-title {
     margin-bottom: 10px;
     color: #fff;

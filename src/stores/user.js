@@ -29,7 +29,13 @@ export const useCurrentUserStore = defineStore('currentUser', {
             uName: '',
             avatar: ''
           }
-        ]
+        ],
+        interest: {
+          movies: [],
+          books: []
+        },
+        social_account: {},
+        tag: []
       },
       notice: {
         Notification_data: [],

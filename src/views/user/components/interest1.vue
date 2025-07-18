@@ -39,30 +39,13 @@ export default {
 
 <template>
   <div class="container">
-    <el-button round size="small" @click="$router.push('/editInterest')" v-if="showButton"
-      >上传</el-button
-    >
-
-    <InterestPage
-      :interest="interest.movies"
-      v-if="showInterest == 'movie' && interest.movies.length != 0"
-    />
-    <InterestPage
-      :interest="interest.books"
-      v-if="showInterest == 'book' && interest.books.length != 0"
-    />
+    <InterestPage :interest="interest.movies" v-if="showInterest == 'movie'" />
+    <InterestPage :interest="interest.books" v-if="showInterest == 'book'" />
   </div>
 </template>
 <style lang="scss" scoped>
 .container {
   position: relative;
   height: 170px;
-}
-.el-button {
-  width: 50px;
-  position: absolute;
-  right: 35px;
-  top: 5px;
-  z-index: 3;
 }
 </style>

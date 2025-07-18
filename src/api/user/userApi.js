@@ -16,5 +16,8 @@ export default {
 
   getUser(userId){
     return $http.get(`${url_prefix}/users/${userId}`)
-  }
+  },
+  get_tag_list() {
+    return $http.get('/tags_list')
+  },
 }
