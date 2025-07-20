@@ -39,7 +39,7 @@ onMounted(() => {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.msg ::v-deep.cursorChar {
+.msg :deep(.cursorChar) {
   display: inline-block;
   margin-left: 2px;
 }

@@ -20,14 +20,17 @@ export default {
       userId: -1,
       loading: false,
       isChange: false,
-      cityShow: false,
       cityCode: 0,
       cityName: '',
       isLoading: false,
       drawer: false,
       tagList: [],
       selectedTags: [],
-      imgList: []
+      imgList: [],
+      sex: '男',
+      sexShow: false,
+      cityShow: false,
+      tagShow: false
     }
   },
   setup() {
@@ -179,12 +182,24 @@ export default {
         </el-upload>
 
         <van-cell title="昵称" is-link :value="formLabelAlign.nickname" />
-        <van-cell title="城市" is-link :value="cityName" @click="cityShow = !cityShow" />
+         <!-- <van-cell title="账号"  :value="formLabelAlign.username" /> -->
         <van-cell title="签名" is-link :value="formLabelAlign.about_me" />
-        <van-cell title="标签" is-link :value="tag" />
-         <van-cell title="兴趣图片" is-link @click="$router.push('/editInterest')" />
+        <van-cell title="性别" is-link :value="formLabelAlign.sex" @click="sexShow = !sexShow" />
+        <van-cell title="所在地" is-link :value="cityName" @click="cityShow = !cityShow" />
+        <van-cell title="标签" is-link :value="tag" @click="tagShow = !tagShow" />
+        <van-cell title="兴趣图片" is-link @click="$router.push('/editInterest')" />
+        <van-cell title="背景图片" is-link :value="formLabelAlign.image" />
 
-        <el-form
+        <van-cell title="社交账号" is-link />
+
+        <ButtonClick
+          class="sava-but"
+          content="保存"
+          :loading="loading"
+          :disabled="!isChange"
+          @do-search="submit"
+        />
+        <!-- <el-form
           ref="formLabelAlign"
           :model="formLabelAlign"
           label-position="top"
@@ -219,19 +234,29 @@ export default {
               @do-search="submit"
             />
           </el-form-item>
-        </el-form>
+        </el-form> -->
       </template>
     </el-skeleton>
-
-    <el-button size="small" @click="$router.push('/editInterest')">上传兴趣图片</el-button>
-    <photo-provider :photo-closable="true">
-      <photo-consumer v-for="(src, index) in imgList" :intro="src" :key="src" :src="src">
-        <el-button v-if="index === 0" text class="pre-image">查看图像</el-button>
-      </photo-consumer>
-    </photo-provider>
-    <el-divider />
+    <el-dialog v-model="sexShow" title="设置性别" width="500" align-center>
+      <van-radio-group v-model="sex">
+        <van-cell-group inset>
+          <van-cell title="男" clickable @click="formLabelAlign.sex = '男';sexShow=false" />
+          <van-cell title="女" clickable @click="formLabelAlign.sex = '女';sexShow=false" />
+        </van-cell-group>
+      </van-radio-group>
+    </el-dialog>
     <van-action-sheet v-model:show="cityShow" title="选择城市">
       <van-area v-model="formLabelAlign.location" :area-list="areaList" @confirm="setCity" />
+    </van-action-sheet>
+
+    <van-action-sheet v-model:show="tagShow" title="选择标签">
+      <el-checkbox-group v-model="selectedTags" :min="0" :max="3">
+        <el-checkbox v-for="tag in tagList" :key="tag" :value="tag" size="large">
+          <template #default>
+            <el-tag type="primary" effect="plain" round size="small">{{ tag }}</el-tag>
+          </template>
+        </el-checkbox>
+      </el-checkbox-group>
     </van-action-sheet>
   </PageHeadBack>
 </template>
@@ -250,5 +275,13 @@ export default {
 }
 :deep(.el-upload) {
   display: flex;
+}
+.sava-but {
+  margin-top: 20px;
+}
+
+.el-checkbox-group {
+  width: 85%;
+  margin: 0 auto;
 }
 </style>
