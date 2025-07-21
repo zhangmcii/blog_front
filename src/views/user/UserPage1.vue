@@ -144,10 +144,9 @@
         :isActive="activeInterest === 'book'"
         @click="setActive('book')"
       />
-
       <interest :showInterest="activeInterest" :interest="user.interest" />
       <el-card class="socialLinks">
-        <socialLinks :links="currentUser.social_account"/>
+        <socialLinks :links="currentUser.userInfo.social_account"/>
       </el-card>
 
       <!-- <div class="hamburger" @click="but = !but">

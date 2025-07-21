@@ -17,7 +17,7 @@ import {
   Popover ,
   Badge,
   Field,
-  RadioGroup
+  RadioGroup,
 } from 'vant'
 
 const components = [

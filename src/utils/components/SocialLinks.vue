@@ -2,13 +2,21 @@
   <!-- 社交链接 -->
   <div class="social">
     <div class="link">
-      <template v-for="item in value" :key="item.name">
+      <a
+        :href="value[0].url"
+        target="_blank"
+        @mouseenter="socialTip = value[0].tip"
+        @mouseleave="socialTip = '通过这里联系我吧'"
+      >
+        <img class="icon" :src="value[0].icon" height="20" />
+      </a>
+      <template v-for="item in value.slice(1)" :key="item.name">
         <a
           v-if="item.url"
-          :href="item.url"
           target="_blank"
           @mouseenter="socialTip = item.tip"
           @mouseleave="socialTip = '通过这里联系我吧'"
+          @click="openDialog(item)"
         >
           <img class="icon" :src="item.icon" height="20" />
         </a>
@@ -16,36 +24,47 @@
     </div>
     <span class="tip">{{ socialTip }}</span>
   </div>
-  {{ value }}
 </template>
 
 <script setup>
 import socialLinks from '@/config/socialLinks.json'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { showConfirmDialog } from 'vant'
+import { copy } from '@/utils/common.js'
 
 const props = defineProps({
   // 社交链接配置
   links: {
     type: Object,
-    default: {
-      github: '',
-      email: '',
-      qq: '',
-      wechat: '',
-      bilibili: '',
-      twitter: ''
+    default() {
+      return { github: '', email: '', qq: '', wechat: '', bilibili: '', twitter: '' }
     }
   }
 })
-
 const value = computed(() => {
   return socialLinks.map((item) => ({
     ...item,
-    url: props.links[item.name]
+    url: props.links[item.name.toLowerCase()]
   }))
 })
 // 社交链接提示
 const socialTip = ref('通过这里联系我吧')
+
+function openDialog(item) {
+  showConfirmDialog({
+    title: ` ${item.name} 地址`,
+    message: item.url,
+    confirmButtonText: '复制链接',
+    cancelButtonText: '取消',
+    closeOnClickOverlay: true
+  })
+    .then(() => {
+      copy(item.url)
+    })
+    .catch(() => {
+      // on cancel
+    })
+}
 </script>
 
 <style lang="scss" scoped>

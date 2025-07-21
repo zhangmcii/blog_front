@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import TypeIt from 'typeit'
 const prop = defineProps({
   content: {
@@ -14,17 +14,33 @@ const prop = defineProps({
   }
 })
 const text = ref('')
-onMounted(() => {
-  new TypeIt(text.value, {
-    strings: prop.content,
+let typeitInstance = null // 新增变量保存实例
+
+function runTypeIt(str) {
+  if (typeitInstance) {
+    typeitInstance.destroy() // 销毁旧实例
+    typeitInstance = null
+  }
+  text.value.innerHTML = '' // 清空旧内容
+  typeitInstance = new TypeIt(text.value, {
+    strings: str,
     cursorChar:
-      "<span class='cursorChar' style='font-size: 12px;color: var(--leleo-vcard-color);'>|<span>", //用于光标的字符。HTML也可以
+      "<span class='cursorChar' style='font-size: 12px;color: var(--leleo-vcard-color);'>|<span>",
     speed: 150,
-    lifeLike: true, // 使打字速度不规则
-    cursor: true, //在字符串末尾显示闪烁的光标
-    breakLines: false, // 控制是将多个字符串打印在彼此之上，还是删除这些字符串并相互替换
-    loop: false //是否循环
-  }).go()
+    lifeLike: true,
+    cursor: true,
+    breakLines: false,
+    loop: false
+  })
+  typeitInstance.go()
+}
+
+onMounted(() => {
+  runTypeIt(prop.content)
+})
+
+watch(() => prop.content, (val) => {
+  runTypeIt(val)
 })
 </script>
 

@@ -1,7 +1,6 @@
 <script>
 import editApi from '@/api/user/editApi.js'
 import userApi from '@/api/user/userApi.js'
-import ButtonClick from '@/utils/components/ButtonClick.vue'
 import { areaList } from '@vant/area-data'
 import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
@@ -9,7 +8,6 @@ import { useCurrentUserStore } from '@/stores/user'
 import { cloneDeep } from '@pureadmin/utils'
 export default {
   components: {
-    ButtonClick,
     PageHeadBack
   },
   data() {
@@ -188,7 +186,7 @@ export default {
                   style="width: 30px; height: 30px"
                   :preview-src-list="imgList"
                   alt="用户图像"
-                  :src="formLabelAlign.image"
+                  :src="localUserInfo.image"
                   @click.stop=""
                 />
               </template>
@@ -199,10 +197,10 @@ export default {
         <van-cell
           title="昵称"
           is-link
-          :value="formLabelAlign.nickname"
+          :value="localUserInfo.nickname"
           @click="$router.push({ path: '/editNickName', query: { type: 1 } })"
         />
-        <van-cell title="账号" :value="formLabelAlign.username" />
+        <van-cell title="账号" :value="localUserInfo.username" />
         <van-cell title="性别" is-link :value="localUserInfo.sex" @click="sexShow = !sexShow" />
         <van-cell
           title="所在地"
@@ -214,12 +212,12 @@ export default {
         <van-cell
           title="签名"
           is-link
-          :value="formLabelAlign.about_me"
+          :value="localUserInfo.about_me"
           @click="$router.push({ path: '/editNickName', query: { type: 2 } })"
         />
 
         <van-cell title="兴趣图片" class="image" is-link @click="$router.push('/editInterest')" />
-        <van-cell title="背景图片" is-link :value="formLabelAlign.image" />
+        <van-cell title="背景图片" is-link :value="localUserInfo.bg_image" />
 
         <van-cell
           title="社交账号"
@@ -276,10 +274,10 @@ export default {
   margin: 0 auto;
 }
 .image {
-  margin-top: 15px;
+  margin-top: 35px;
 }
 .socical-link {
-  margin-top: 15px;
+  margin-top: 35px;
 }
 
 .tag-container {
