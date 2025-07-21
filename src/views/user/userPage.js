@@ -257,6 +257,7 @@ export default {
         this.loading.userData = false
         this.user = res.data.data
         // 保存当前点开的用户资料信息
+        this.currentUser.setUserInfo(res.data.data)
         this.otherUser.userInfo = res.data.data
         this.imgList.push(this.user.image)
         this.posts = res.data.posts

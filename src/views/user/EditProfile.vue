@@ -21,7 +21,6 @@ export default {
       loading: false,
       isChange: false,
       cityShow: false,
-      cityCode: 0,
       cityName: '',
       isLoading: false
     }

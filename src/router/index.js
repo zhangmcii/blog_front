@@ -11,8 +11,8 @@ router.beforeEach((to, _from, next) => {
   let j = JSON.parse(localStorage.getItem('blog'))
   if (!j) {
     j = {
+      token: '',
       userInfo: {
-        token: '',
         roleId: '',
       }
     }
@@ -24,7 +24,7 @@ router.beforeEach((to, _from, next) => {
   // 无权限跳转403页面
   if (to.meta?.roles && !to.meta?.roles.includes(role)) {
     next({ path: '/403' })
-  } else if (to.meta?.requireAuth && !j.userInfo.token) {
+  } else if (to.meta?.requireAuth && !j.token) {
     // 判断是否需要登录
     next({ path: '/login' })
   } else {

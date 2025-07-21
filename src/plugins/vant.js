@@ -16,6 +16,8 @@ import {
   Search ,
   Popover ,
   Badge,
+  Field,
+  RadioGroup
 } from 'vant'
 
 const components = [
@@ -36,6 +38,8 @@ const components = [
   Search ,
   Popover,
   Badge,
+  Field,
+  RadioGroup
 ]
 
 

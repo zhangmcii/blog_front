@@ -2,24 +2,48 @@
   <!-- 社交链接 -->
   <div class="social">
     <div class="link">
-      <a
-        v-for="item in socialLinks"
-        :key="item.name"
-        :href="item.url"
-        target="_blank"
-        @mouseenter="socialTip = item.tip"
-        @mouseleave="socialTip = '通过这里联系我吧'"
-      >
-        <img class="icon" :src="item.icon" height="20" />
-      </a>
+      <template v-for="item in value" :key="item.name">
+        <a
+          v-if="item.url"
+          :href="item.url"
+          target="_blank"
+          @mouseenter="socialTip = item.tip"
+          @mouseleave="socialTip = '通过这里联系我吧'"
+        >
+          <img class="icon" :src="item.icon" height="20" />
+        </a>
+      </template>
     </div>
     <span class="tip">{{ socialTip }}</span>
   </div>
+  {{ value }}
 </template>
 
 <script setup>
 import socialLinks from '@/config/socialLinks.json'
 import { ref } from 'vue'
+
+const props = defineProps({
+  // 社交链接配置
+  links: {
+    type: Object,
+    default: {
+      github: '',
+      email: '',
+      qq: '',
+      wechat: '',
+      bilibili: '',
+      twitter: ''
+    }
+  }
+})
+
+const value = computed(() => {
+  return socialLinks.map((item) => ({
+    ...item,
+    url: props.links[item.name]
+  }))
+})
 // 社交链接提示
 const socialTip = ref('通过这里联系我吧')
 </script>

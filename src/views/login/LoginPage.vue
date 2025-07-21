@@ -63,6 +63,7 @@ export default {
                 this.hasRemember()
                 const u = res.data.data
                 this.currentUser.userInfo=u
+                this.currentUser.token = res.data.token
                 this.$message({
                   message: '登录成功',
                   type: 'success',

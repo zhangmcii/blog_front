@@ -1,4 +1,5 @@
 import { $http } from '@/utils/request.js'
+const url_prefix = '/api/v1'
 export default {
   editProfile(formUserData) {
     return $http.post('/edit-profile', formUserData)
@@ -8,5 +9,8 @@ export default {
   },
   editUserTag(data) {
     return $http.post('/update_user_tag', data)
+  },
+  editUser(data){
+    return $http.post(`${url_prefix}/update_user`, data)
   }
 }

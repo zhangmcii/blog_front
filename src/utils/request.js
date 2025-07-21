@@ -21,7 +21,7 @@ function setInterceptors(...instance) {
     i.interceptors.request.use(
       function (config) {
         // 从localStorage中获取token
-        const token = currentUser.userInfo.token
+        const token = currentUser.token
         if (token) {
           config.headers['Authorization'] = token
         }

@@ -1,3 +1,25 @@
+const updateUser = [
+  {
+    path: '/editNickName',
+    name: 'editNickName',
+    component: () => import('../views/user/edit/NickName.vue')
+  },
+  // {
+  //   path: '/editAboutme',
+  //   name: 'editAboutme',
+  //   component: () => import('../views/user/edit/AboutMe.vue')
+  // },
+  {
+    path: '/editBackGround',
+    name: 'editBackGround',
+    component: () => import('../views/user/edit/Background.vue')
+  },
+   {
+    path: '/editSocialLink',
+    name: 'editSocialLink',
+    component: () => import('../views/user/edit/SocialLink.vue')
+  },
+]
 const routes = [
   {
     path: '/layout',
@@ -15,6 +37,7 @@ const routes = [
       //   name: 'user',
       //   component: () => import('../views/user/UserData.vue')
       // },
+      ...updateUser,
       {
         path: '/editProfile/:id',
         name: 'editProfile',
@@ -155,5 +178,8 @@ const routes = [
         component: () => import('../views/user/UserPage1.vue')
       },
 ]
+
+
+
 
 export default routes

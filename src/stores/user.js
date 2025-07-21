@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { io } from 'socket.io-client'
 import requestUrl from '@/config/requestUrl.js'
 import imageCfg from '@/config/image.js'
+import cityUtil from '@/utils/cityUtil.js'
+import { areaList } from '@vant/area-data'
 
 export const useCurrentUserStore = defineStore('currentUser', {
   state() {
@@ -9,6 +11,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
       socket: null,
       activeChat: null,
       heartbeatInterval: null,
+      token: '',
       userInfo: {
         id: '1',
         username: '',
@@ -18,7 +21,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
         image: '',
         about_me: '',
         location: '',
-        token: '',
+        // token: '',
         // 已点赞的评论id
         likeIds: [],
         // 关注的用户
@@ -34,7 +37,14 @@ export const useCurrentUserStore = defineStore('currentUser', {
           movies: [],
           books: []
         },
-        social_account: {},
+        social_account: {
+          github: '',
+          email: '',
+          qq: '',
+          wechat: '',
+          bilibili: '',
+          twitter: ''
+        },
         tag: []
       },
       notice: {
@@ -47,13 +57,17 @@ export const useCurrentUserStore = defineStore('currentUser', {
     }
   },
   getters: {
-    isLogin: (state) => state.userInfo.token != '',
+    isLogin: (state) => state.token != '',
     isCommentManage: (state) => state.userInfo.roleId >= 2,
     isConfirmed: (state) => state.userInfo.isConfirmed == true,
     isAdmin: (state) => state.userInfo.roleId == 3,
     priorityName: (state) =>
       state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username,
     avatarsUrl: (state) => (state.userInfo.image ? state.userInfo.image : imageCfg.logOut),
+    cityName: (state) => {
+      if (!state.userInfo.location) return ''
+      return cityUtil.getCodeToName(state.userInfo.location, areaList)
+    },
     // 图片上传目录
     uploadArticlesBaseUrl: (state) =>
       import.meta.env.DEV == true
@@ -109,8 +123,8 @@ export const useCurrentUserStore = defineStore('currentUser', {
     connectSocket() {
       if (!this.socket) {
         this.socket = io(`${requestUrl.baseUrl}:${requestUrl.backendPort}`, {
-          auth: { Authorization: this.userInfo.token },
-          query: { token: this.userInfo.token },
+          auth: { Authorization: this.token },
+          query: { token: this.token },
           transports: ['websocket'],
           reconnectionAttempts: 5,
           reconnectionDelay: 5000
@@ -189,11 +203,14 @@ export const useCurrentUserStore = defineStore('currentUser', {
           console.log('发送消息:', content.trim())
         }
       }
+    },
+    setUserInfo(val) {
+      this.userInfo = val
     }
   },
   persist: {
     key: 'blog',
     storage: localStorage,
-    pick: ['userInfo', 'notice']
+    pick: ['token', 'userInfo', 'notice']
   }
 })
