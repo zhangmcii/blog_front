@@ -7,7 +7,7 @@ import { useRouter, useRoute } from 'vue-router'
 import editApi from '@/api/user/editApi.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import socialLinks from '@/config/socialLinks.json'
-
+import { useChange } from '@/utils/composedFunc/change.js'
 const user = useCurrentUserStore()
 const router = useRouter()
 const route = useRoute()
@@ -28,10 +28,10 @@ const data = reactive({
   }
 })
 
-onMounted(() => {
-  data.localUserInfo = cloneDeep(user.userInfo)
-  data.type = Number(route.query.type)
-})
+data.type = Number(route.query.type)
+data.localUserInfo = cloneDeep(user.userInfo)
+
+const { isChange } = useChange(data, getAttr(data.type))
 
 async function saveNickname() {
   await editApi.editUser({ nickname: data.localUserInfo.nickname })
@@ -59,10 +59,25 @@ async function save() {
   loading.close()
   router.back()
 }
+function getAttr(type) {
+  switch (type) {
+    case 1:
+      return 'localUserInfo.nickname'
+    case 2:
+      return 'localUserInfo.about_me'
+    // case 3:
+    //   return 'localUserInfo.social_account'
+    default:
+      return ''
+  }
+}
 </script>
 <template>
   <PageHeadBack>
-    <template #action><el-button @click="save">保存</el-button></template>
+    <template #action>
+      <el-button v-if="data.type == 3" @click="save">保存</el-button>
+      <el-button v-else :disabled="!isChange" @click="save">保存</el-button>
+    </template>
     <div v-if="data.type === 1">
       <div class="title">修改昵称</div>
       <el-input v-model="data.localUserInfo.nickname" />
