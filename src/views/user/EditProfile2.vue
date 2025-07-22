@@ -1,33 +1,47 @@
+
+
 <script>
 import editApi from '@/api/user/editApi.js'
 import userApi from '@/api/user/userApi.js'
 import { areaList } from '@vant/area-data'
-import cityUtil from '@/utils/cityUtil.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import { useCurrentUserStore } from '@/stores/user'
 import { cloneDeep } from '@pureadmin/utils'
+import { compressImages } from '@/utils/common.js'
+import uploadApi from '@/api/upload/uploadApi.js'
+import imageApi from '@/api/user/imageApi.js'
+import { debounce } from '@/utils/common.js'
+import emitter from '@/utils/emitter.js'
+import { v4 as uuidv4 } from 'uuid'
+import * as qiniu from 'qiniu-js'
+
 export default {
   components: {
     PageHeadBack
   },
   data() {
     return {
-      formLabelAlign: {},
-      originalForm: {},
-      user: {},
-      userId: -1,
-      loading: false,
-      isChange: false,
-      cityCode: 0,
-      cityName: '',
+      // formLabelAlign: {},
+      // originalForm: {},
+      // user: {},
+      // userId: -1,
+      // loading: false,
+      // isChange: false,
+      // cityCode: 0,
+      // cityName: '',
       isLoading: false,
-      drawer: false,
+      // drawer: false,
       tagList: [],
       selectedTags: [],
+
       imgList: [],
       sexShow: false,
       cityShow: false,
       tagShow: false,
+
+      uploadToken: '',
+      imageKey: [],
+      imageUrls: [],
       // 原始文件
       originalFiles: [],
       // 压缩后的文件
@@ -44,17 +58,17 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
-      vm.userId = to.params.id
-      vm.getUserInfo(vm.userId)
+      // vm.userId = to.params.id
+      // vm.getUserInfo(vm.userId)
       vm.getTagList()
       vm.$nextTick(() => {})
     })
   },
   watch: {},
   computed: {
-    baseInfoChange() {
-      return JSON.stringify(this.formLabelAlign) !== this.originalForm
-    },
+    // baseInfoChange() {
+    //   return JSON.stringify(this.formLabelAlign) !== this.originalForm
+    // },
     tagAdd() {
       return this.selectedTags.filter((tag) => !this.localUserInfo.tags.includes(tag))
     },
@@ -70,24 +84,27 @@ export default {
   },
   mounted() {
     this.localUserInfo = cloneDeep(this.currentUser.userInfo)
+    this.selectedTags = [...this.currentUser.userInfo.tags]
+    this.imgList.push(this.currentUser.userInfo.image)
+    this.getUploadToken()
   },
   methods: {
-    getUserInfo(userId) {
-      this.isLoading = true
-      userApi.getUser(userId).then((res) => {
-        if (res.data.msg == 'success') {
-          const location = res.data.data.location
-          this.imgList.push(res.data.data.image)
-          this.selectedTags = [...res.data.data.tags]
-          // if (location && !isNaN(parseInt(location))) {
-          //   this.cityName = cityUtil.getCodeToName(location, this.areaList)
-          // }
-          this.originalForm = JSON.stringify(res.data.data)
-          this.formLabelAlign = { ...res.data.data }
-          this.isLoading = false
-        }
-      })
-    },
+    // getUserInfo(userId) {
+    //   this.isLoading = true
+    //   userApi.getUser(userId).then((res) => {
+    //     if (res.data.msg == 'success') {
+    //       // const location = res.data.data.location
+    //       // this.imgList.push(res.data.data.image)
+    //       // this.selectedTags = [...res.data.data.tags]
+    //       // if (location && !isNaN(parseInt(location))) {
+    //       //   this.cityName = cityUtil.getCodeToName(location, this.areaList)
+    //       // }
+    //       // this.originalForm = JSON.stringify(res.data.data)
+    //       // this.formLabelAlign = { ...res.data.data }
+    //       this.isLoading = false
+    //     }
+    //   })
+    // },
 
     getTagList() {
       userApi.get_tag_list().then((res) => {
@@ -96,31 +113,6 @@ export default {
         }
       })
     },
-    // submit() {
-    //   this.loading = true
-    //   if (this.baseInfoChange) {
-    //     editApi.editProfile(this.formLabelAlign).then((res) => {
-    //       this.loading = false
-    //       this.isChange = false
-    //       if (res.data.msg == 'success') {
-    //         this.currentUser.userInfo = { ...this.currentUser.userInfo, ...this.formLabelAlign }
-    //         this.$message.success('修改成功')
-    //         this.$router.push(`/user/${this.formLabelAlign.username}`)
-    //       } else {
-    //         this.$message.error('基础信息修改失败')
-    //       }
-    //     })
-    //   }
-    //   if (this.tagChange) {
-    //     editApi.editUserTag({ tagAdd: this.tagAdd, tagRemove: this.tagRemove }).then((res) => {
-    //       this.loading = false
-    //       this.isChange = false
-    //       if (res.data.msg !== 'success') {
-    //         this.$message.error('标签修改失败')
-    //       }
-    //     })
-    //   }
-    // },
     async setCity() {
       await editApi.editUser({ location: this.localUserInfo.location })
       this.currentUser.setUserInfo(this.localUserInfo)
@@ -132,7 +124,7 @@ export default {
       this.currentUser.setUserInfo(this.localUserInfo)
       this.sexShow = false
     },
-     saveTags() {
+    saveTags() {
       editApi.editUserTag({ tagAdd: this.tagAdd, tagRemove: this.tagRemove }).then((res) => {
         if (res.data.msg === 'success') {
           this.localUserInfo.tags = [...this.selectedTags]
@@ -141,6 +133,99 @@ export default {
         } else {
           this.$message.error('标签修改失败')
         }
+      })
+    },
+    beforePicUpload(fileList) {
+      for (const file of fileList) {
+        const isImage = file.raw.type.startsWith('image/')
+        if (!isImage) {
+          this.$message.error('只能上传图片格式文件！')
+          return false
+        }
+        const limitPic =
+          file.raw.type === 'image/png' ||
+          file.raw.type === 'image/jpg' ||
+          file.raw.type === 'image/jpeg'
+        if (!limitPic) {
+          this.$message.warning('请上传格式为png/jpg/jpeg的图片')
+          return false
+        }
+      }
+      return true
+    },
+    async handleFileChange(file, fileList) {
+      console.log('文件变化11', file.status)
+      // 如果文件列表为空，直接返回
+      if (!this.beforePicUpload([file])) {
+        return
+      }
+      this.originalFiles = [...fileList]
+      // 压缩图像
+      this.compressedImages = await compressImages(this.originalFiles, this.compressedImages)
+      // 上传至七牛云
+      await this.uploadFiles()
+      // url保存至后端
+      this.submitAvatars()
+    },
+    async uploadFiles() {
+      console.log('开始上传图片', this.uploadToken)
+      const domin = import.meta.env.VITE_QINIU_DOMAIN
+      try {
+        const putExtra = {}
+        const config = {
+          // 存储区域
+          region: qiniu.region.z0
+        }
+        for (const file of this.compressedImages) {
+          const folder = this.currentUser.uploadAvatarsBaseUrl
+          const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
+          const key = folder + uniqueFileName
+          const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
+          await new Promise((resolve, reject) => {
+            // 保存 this 上下文
+            const self = this
+            observable.subscribe({
+              next() {},
+              error(err) {
+                reject(err)
+              },
+              complete(res) {
+                self.imageKey.push(res.key)
+                const imageUrl = `http://${domin}/${res.key}`
+                self.imageUrls.push(imageUrl)
+                resolve()
+              }
+            })
+          })
+        }
+      } catch (error) {
+        console.error('Upload failed:', error)
+      }
+    },
+    submitAvatars() {
+      const domin = import.meta.env.VITE_QINIU_DOMAIN
+      const imageUrl = `http://${domin}/${this.imageKey[0]}`
+      imageApi.saveImageUrl({ image: this.imageKey[0] }).then((res) => {
+        // 换图像成功后，更新本地image字段
+        if (res.data.msg == 'success') {
+          this.currentUser.userInfo = { ...this.currentUser.userInfo, ...{ image: res.data.image } }
+          this.localUserInfo.image = imageUrl
+          this.currentUser.setUserInfo(this.localUserInfo)
+          this.originalFiles = []
+          this.compressedImages = []
+          this.imgList = []
+          this.imgList.push(imageUrl)
+          emitter.emit('image', imageUrl)
+          this.$message.success('图像上传成功')
+        } else {
+          this.$message.error('图像上传失败')
+        }
+      })
+    },
+    // 改为异步获取上传凭证
+    getUploadToken() {
+      uploadApi.get_upload_token().then((res) => {
+        this.uploadToken = res.data.upload_token
       })
     }
   }
@@ -152,7 +237,6 @@ export default {
     <el-skeleton
       :loading="isLoading"
       animated
-      :throttle="{ leading: 300, trailing: 300, initVal: true }"
     >
       <template #template>
         <el-skeleton-item variant="h3" style="width: 20%" />
@@ -170,10 +254,8 @@ export default {
 
       <template #default>
         <el-upload
-          ref="uploadRef"
-          v-model:file-list="originalFiles"
+          :show-file-list="false"
           :auto-upload="false"
-          :before-upload="() => false"
           accept="image/jpeg,image/png,image/jpg,image/webp"
           :on-change="handleFileChange"
           :limit="1"
@@ -217,7 +299,7 @@ export default {
         />
 
         <van-cell title="兴趣图片" class="image" is-link @click="$router.push('/editInterest')" />
-        <van-cell title="背景图片" is-link :value="localUserInfo.bg_image" />
+        <van-cell title="背景图片" is-link :value="localUserInfo.bg_image"  @click="$router.push('/editBackGround')"/>
 
         <van-cell
           title="社交账号"
