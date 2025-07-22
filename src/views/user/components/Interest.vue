@@ -11,6 +11,10 @@ export default {
         }
       }
     },
+    showInterest: {
+      type: String,
+      default: ''
+    },
     showButton: {
       type: Boolean,
       default: false
@@ -35,32 +39,13 @@ export default {
 
 <template>
   <div class="container">
-    <el-button round size="small" @click="$router.push('/editInterest')" v-if="showButton"
-      >上传</el-button
-    >
-    <el-tabs v-model="activeName" class="demo-tabs">
-      <el-tab-pane label="喜欢的电影" name="first">
-        <InterestPage :interest="interest.movies" v-if="interest.movies.length != 0" />
-        <el-empty :image-size="100" description="空空如也~" v-else />
-      </el-tab-pane>
-      <el-tab-pane label="在看的书籍" name="second">
-        <InterestPage :interest="interest.books" v-if="interest.books.length != 0" />
-        <el-empty :image-size="100" description="空空如也~" v-else />
-      </el-tab-pane>
-    </el-tabs>
+    <InterestPage :interest="interest.movies" v-if="showInterest == 'movie'" />
+    <InterestPage :interest="interest.books" v-if="showInterest == 'book'" />
   </div>
 </template>
 <style lang="scss" scoped>
 .container {
   position: relative;
-  height: 300px;
-  margin: 20px 0px;
-}
-.el-button {
-  width: 50px;
-  position: absolute;
-  right: 35px;
-  top: 5px;
-  z-index: 3;
+  height: 170px;
 }
 </style>

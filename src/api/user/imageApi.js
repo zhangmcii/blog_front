@@ -8,10 +8,10 @@ export default {
   },
   getBackgroundImage(currentPage, pageSize) {
     const images = [
-      'src/asset/user/image.png',
-      'src/asset/user/image2.png',
-      'src/asset/user/image3.png',
-      'src/asset/user/image4.png',
+      '/bg/image.png',
+      '/bg/image2.png',
+      '/bg/image3.png',
+      '/bg/image4.png',
 
       'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
       'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',

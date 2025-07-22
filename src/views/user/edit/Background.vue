@@ -2,13 +2,11 @@
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import imageApi from '@/api/user/imageApi.js'
+import editApi from '@/api/user/editApi.js'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-const loading = reactive({
-  loading1: false,
-  loading2: false,
-  loading3: false
-})
+import { ElMessage, ElLoading } from 'element-plus'
+import { useCurrentUserStore } from '@/stores/user'
+
 let images = ref([])
 const active = ref('图片壁纸')
 const radio = ref('')
@@ -18,7 +16,7 @@ const query = reactive({
   size: 6, // 页大小
   total: 10 // 评论总数
 })
-
+const currentUser = useCurrentUserStore()
 const router = useRouter()
 onMounted(() => {
   getBackgroundImage()
@@ -39,26 +37,37 @@ function handleCurrentChange() {
 }
 
 function redefault() {
-  loading.loading1 = true
+  const loading = ElLoading.service({
+    lock: true,
+    text: '正在保存',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
   setTimeout(() => {
-    loading.loading1 = false
+    loading.close()
     // 恢复默认
   }, 800)
 }
-function submitdata() {
+async function submitdata() {
   if (!radio.value) {
     ElMessage.warning('请选择壁纸')
     return
   }
-
-  loading.loading2 = true
+  const loading = ElLoading.service({
+    lock: true,
+    text: '正在保存',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
+  // 至少加载1s
+  const startTime = Date.now()
+  // 保存url
+  await editApi.editUser({ bg_image: radio.value })
+  const elapsedTime = Date.now() - startTime
+  const delayTime = Math.max(0, 1000 - elapsedTime)
   setTimeout(() => {
-    loading.loading2 = false
-    // 保存url
-
+    loading.close()
     // 回到用户资料页
-    // router.push('/user')
-  }, 800)
+    router.push(`/user/${currentUser.userInfo.username}`)
+  }, delayTime)
 }
 </script>
 
@@ -108,7 +117,8 @@ function submitdata() {
         <div class="scroll-container">
           <el-row>
             <el-col>
-              <el-image> </el-image>
+              <!-- <el-image> </el-image> -->
+              <el-text>尽请期待</el-text>
             </el-col>
           </el-row>
         </div>
@@ -116,9 +126,8 @@ function submitdata() {
     </van-tabs>
     <!-- 按钮区 -->
     <div class="btn-bar">
-      <el-button :loading="loading.loading1" type="info" @click="redefault">恢复</el-button>
-      <!-- <el-button :loading="loading.loading3" type="warning" @click="cancel">取消</el-button> -->
-      <el-button :loading="loading.loading2" type="primary" @click="submitdata">确认</el-button>
+      <el-button type="info" @click="redefault">恢复</el-button>
+      <el-button type="primary" :disabled="!radio" @click="submitdata">确认</el-button>
     </div>
   </PageHeadBack>
 </template>

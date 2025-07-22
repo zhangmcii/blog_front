@@ -1,7 +1,7 @@
 <script>
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import uploadCard from '@/views/user/components/uploadCard.vue'
-import interest from '@/views/user/components/interest.vue'
+import interest from '@/views/user/components/Interest.vue'
 
 export default {
   name: 'BlogPost',

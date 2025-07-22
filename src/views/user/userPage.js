@@ -1,5 +1,5 @@
 import typewriter from '@/utils/components/Typewriter.vue'
-import interest from '@/views/user/components/interest1.vue'
+import interest from '@/views/user/components/Interest.vue'
 import { FloatButton } from 'vue-amazing-ui'
 import socialLinks from '@/utils/components/SocialLinks.vue'
 import ButtonAnimate from '@/utils/components/ButtonAnimate.vue'
@@ -21,7 +21,6 @@ import uploadApi from '@/api/upload/uploadApi.js'
 import imageApi from '@/api/user/imageApi.js'
 import { v4 as uuidv4 } from 'uuid'
 import * as qiniu from 'qiniu-js'
-
 
 export default {
   components: {
@@ -104,9 +103,8 @@ export default {
             }
           ]
         },
-        social_account:{},
-        tags:[],
-
+        social_account: {},
+        tags: []
       },
       userName: '',
       posts: [{}],
@@ -147,7 +145,6 @@ export default {
     next((vm) => {
       vm.userName = to.params.userName
       vm.getUserData(vm.userName)
-      vm.$nextTick(() => {})
     })
   },
   // 当从A资料跳转B资料时，更新资料页面
@@ -161,7 +158,6 @@ export default {
     )
   },
   async mounted() {
-    this.setMainProperty()
     this.getPermission(1)
     this.getUploadToken()
   },
@@ -211,8 +207,11 @@ export default {
   },
   methods: {
     setMainProperty() {
+      if (!this.user.bg_image) {
+        return
+      }
       const root = document.documentElement
-      root.style.setProperty('--leleo-background-image-url', `url('/src/asset/user/image.png')`)
+      root.style.setProperty('--leleo-background-image-url', `url('${this.user.bg_image}')`)
     },
     // 每次点击tag触发动画
     playTagAnimation(e) {
@@ -228,7 +227,7 @@ export default {
     handleSwitchChange() {
       const root = document.documentElement
       if (this.isUserPage) {
-        root.style.setProperty('--leleo-background-image-url', `url('/src/asset/user/image.png')`)
+        root.style.setProperty('--leleo-background-image-url', `url('${this.user.bg_image}')`)
       } else {
         root.style.setProperty('--leleo-background-image-url', `none`)
         root.style.setProperty('background-color', '#fff')
@@ -265,11 +264,12 @@ export default {
         // 让chat和关注按钮出现时机与骨架屏同步
         setTimeout(() => {
           this.loading.skeleton = false
+          this.setMainProperty()
         }, this.skeletonThrottle.trailing)
       })
     },
     editProfile() {
-      this.$router.push(`/editProfile/${this.user.id}`)
+      this.$router.push(`/editProfile`)
     },
     editProfileAdmin() {
       this.$router.push(`/editProfileAdmin/${this.user.id}`)

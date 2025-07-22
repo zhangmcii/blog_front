@@ -1,6 +1,8 @@
+<!-- 修改昵称，签名，社交账号 -->
 <script setup>
 import { useCurrentUserStore } from '@/stores/user'
 import { cloneDeep } from '@pureadmin/utils'
+import { ElLoading } from 'element-plus'
 import { useRouter, useRoute } from 'vue-router'
 import editApi from '@/api/user/editApi.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
@@ -41,6 +43,11 @@ async function saveSocialLinks() {
   await editApi.editUser({ social_account: data.localUserInfo.social_account })
 }
 async function save() {
+  const loading = ElLoading.service({
+    lock: true,
+    text: '正在保存',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
   if (data.type === 1) {
     await saveNickname()
   } else if (data.type === 2) {
@@ -49,6 +56,7 @@ async function save() {
     await saveSocialLinks()
   }
   user.setUserInfo(data.localUserInfo)
+  loading.close()
   router.back()
 }
 </script>
@@ -62,7 +70,13 @@ async function save() {
 
     <div v-if="data.type === 2">
       <div class="title">修改签名</div>
-      <el-input v-model="data.localUserInfo.about_me" autosize type="textarea" show-word-limit maxlength="30" />
+      <el-input
+        v-model="data.localUserInfo.about_me"
+        autosize
+        type="textarea"
+        show-word-limit
+        maxlength="30"
+      />
     </div>
 
     <div v-if="data.type === 3">

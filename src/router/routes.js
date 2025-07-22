@@ -1,23 +1,13 @@
 const updateUser = [
   {
-    path: '/editNickName',
-    name: 'editNickName',
-    component: () => import('../views/user/edit/NickName.vue')
+    path: '/editCommonField',
+    name: 'editCommonField',
+    component: () => import('../views/user/edit/CommonField.vue')
   },
-  // {
-  //   path: '/editAboutme',
-  //   name: 'editAboutme',
-  //   component: () => import('../views/user/edit/AboutMe.vue')
-  // },
   {
     path: '/editBackGround',
     name: 'editBackGround',
     component: () => import('../views/user/edit/Background.vue')
-  },
-   {
-    path: '/editSocialLink',
-    name: 'editSocialLink',
-    component: () => import('../views/user/edit/SocialLink.vue')
   },
 ]
 const routes = [
@@ -39,9 +29,9 @@ const routes = [
       // },
       ...updateUser,
       {
-        path: '/editProfile/:id',
+        path: '/editProfile',
         name: 'editProfile',
-        component: () => import('../views/user/EditProfile2.vue'),
+        component: () => import('../views/user/EditProfile.vue'),
         meta: { requireAuth: true }
       },
       {
