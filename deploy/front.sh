@@ -1,10 +1,10 @@
 #!/bin/bash
 
 function front_to_remote(){
-    base_path="/Users/v/Documents/proj/blog/blog_front"
+    base_path="/e/project/vue-proj/responsive_new"
     # macOS：uname 输出为 Darwin
     if [[ "$(uname)" == "Darwin" ]]; then
-        base_path="/e/project/vue-proj/responsive_new"
+        base_path="/Users/v/Documents/proj/blog/blog_front"
     fi
     # 对项目打包
     cd $base_path

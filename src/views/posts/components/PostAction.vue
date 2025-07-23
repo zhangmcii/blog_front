@@ -98,7 +98,7 @@ export default {
     },
     shareSelect(option) {
       if (option.name === '复制链接') {
-        copy(`${requestUrl.baseUrl}:${requestUrl.frontPort}/postDetail/${this.post.id}`)
+        copy(`${requestUrl.baseUrl}/postDetail/${this.post.id}`)
       } else {
         this.$message.info(option.name)
       }
