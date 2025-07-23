@@ -52,7 +52,7 @@ export default {
         name: '赫赫',
         location: '上海',
         email: 'zmc@qq.com',
-        about_me: '天气不错',
+        about_me: '',
         member_since: '2024-9-20 12:14:00',
         last_seen: '2024-9-20 12:14:00',
         admin: false,

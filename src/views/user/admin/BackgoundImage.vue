@@ -1,16 +1,9 @@
 <template>
   <PageHeadBack>
     <div class="container">
-      <el-input
-        v-model="content"
-        :autosize="{ minRows: 8 }"
-        type="textarea"
-        placeholder="书写片段，温润流年..."
-        :input-style="inputStyle"
-        minlength="5"
-        maxlength="150"
-        show-word-limit
-      />
+      <el-text>选择公共背景库图片</el-text>
+      <el-text>文件名即为图片名</el-text>
+      <el-text>支持webp格式图片</el-text>
       <el-upload
         ref="uploadRef"
         v-model:file-list="originalFiles"
@@ -31,9 +24,9 @@
       <el-dialog v-model="dialogVisible">
         <img w-full :src="dialogImageUrl" alt="Preview Image" />
       </el-dialog>
-      <div class="note">
+      <!-- <div class="note">
         <el-text size="small">(图文 每日发布次数限定2次)</el-text>
-      </div>
+      </div> -->
     </div>
     <template #action>
       <ButtonClick content="发布" size="small" :disabled="ban_pub" @do-search="submitBlog">
@@ -48,9 +41,6 @@ import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import ButtonClick from '@/utils/components/ButtonClick.vue'
 import { useCurrentUserStore } from '@/stores/user'
 import uploadApi from '@/api/upload/uploadApi.js'
-import postApi from '@/api/posts/postApi.js'
-import emitter from '@/utils/emitter.js'
-import { v4 as uuidv4 } from 'uuid'
 import * as qiniu from 'qiniu-js'
 import lrz from 'lrz'
 
@@ -63,7 +53,6 @@ export default {
   },
   data() {
     return {
-      content: '',
       uploadToken: '',
       imageUrls: [],
       uploading: false,
@@ -91,7 +80,7 @@ export default {
   },
   computed: {
     ban_pub() {
-      return this.content === '' || this.originalFiles.length === 0
+      return this.originalFiles.length === 0
     }
   },
   created() {
@@ -138,8 +127,8 @@ export default {
         const rawFile = file.raw
         const compressedFile = await lrz(rawFile, { quality: compressionRatio })
 
-        // console.log('压缩后的文件:', compressedFile)
-        // console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
+        console.log('压缩后的文件:', compressedFile)
+        console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
 
         // 将 base64 转换为 Blob
         const byteString = atob(compressedFile.base64.split(',')[1])
@@ -180,9 +169,10 @@ export default {
         const limitPic =
           file.raw.type === 'image/png' ||
           file.raw.type === 'image/jpg' ||
-          file.raw.type === 'image/jpeg'
+          file.raw.type === 'image/jpeg' ||
+          file.raw.type === 'image/webp'
         if (!limitPic) {
-          this.$message.warning('请上传格式为png/jpg/jpeg的图片')
+          this.$message.warning('请上传格式为png/jpg/jpeg/webp的图片')
           return false
         }
       }
@@ -198,26 +188,27 @@ export default {
           region: qiniu.region.z0
         }
         for (const file of this.compressedImages) {
-          const folder = this.currentUser.uploadArticlesBaseUrl
-          const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
-          const key = folder + uniqueFileName
-          const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
-          await new Promise((resolve, reject) => {
-            // 保存 this 上下文
-            const self = this
-            observable.subscribe({
-              next() {},
-              error(err) {
-                reject(err)
-              },
-              complete(res) {
-                self.imageKey.push(res.key)
-                const imageUrl = `http://${domin}/${res.key}`
-                self.imageUrls.push(imageUrl)
-                resolve()
-              }
-            })
-          })
+          const folder = this.currentUser.uploadBackgroundStatic
+          console.log('uniqueFileName', file.name)
+          const key = folder + file.name
+          console.log('key', key)
+          //   const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
+          //   await new Promise((resolve, reject) => {
+          //     // 保存 this 上下文
+          //     const self = this
+          //     observable.subscribe({
+          //       next() {},
+          //       error(err) {
+          //         reject(err)
+          //       },
+          //       complete(res) {
+          //         self.imageKey.push(res.key)
+          //         const imageUrl = `http://${domin}/${res.key}`
+          //         self.imageUrls.push(imageUrl)
+          //         resolve()
+          //       }
+          //     })
+          //   })
         }
       } catch (error) {
         console.error('Upload failed:', error)
@@ -226,10 +217,7 @@ export default {
       }
     },
     async submitBlog() {
-      if (this.content === '') {
-        this.$message.error('内容不能为空')
-        return
-      } else if (this.originalFiles.length === 0) {
+      if (this.originalFiles.length === 0) {
         this.$message.error('图片不能为空')
         return
       }
@@ -238,31 +226,11 @@ export default {
       }
       const loadingInstance = this.$loading({
         lock: true,
-        text: '正在发布',
+        text: 'Loading',
         background: 'rgba(0, 0, 0, 0.7)'
       })
       try {
         await this.uploadFiles()
-        const formattedContent = this.content.replace(/\n/g,'<br>')
-        postApi
-          .publishRichPost({ content: formattedContent, imageUrls: this.imageKey })
-          .then((response) => {
-            if (response.data.msg === 'success') {
-              this.$message.success('发布成功')
-              this.content = ''
-              this.originalFiles = []
-              emitter.emit('newPost', response.data.data)
-              this.$router.push('/posts')
-            }
-            loadingInstance.close()
-          })
-          .catch((error) => {
-            loadingInstance.close()
-            if (error.response.status === 429) {
-              uploadApi.del_image(this.imageKey)
-              this.$message.info('今天的发布次数已达上限～')
-            }
-          })
       } catch (error) {
         loadingInstance.close()
       }

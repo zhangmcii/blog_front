@@ -53,7 +53,9 @@ export const useCurrentUserStore = defineStore('currentUser', {
         NOTIFICATION_KEY: `user_notifications_1}`,
         MAX_ITEM: 50
       },
-      devUploadBaseUrl: 'dev/'
+      devUploadBaseUrl: 'dev/',
+      // 主页背景库地址
+      userBackgroundUrl: 'userBackground/'
     }
   },
   getters: {
@@ -77,10 +79,6 @@ export const useCurrentUserStore = defineStore('currentUser', {
       import.meta.env.DEV == true
         ? state.devUploadBaseUrl
         : `user_image/user_${state.userInfo.id}/avatars/`,
-    uploadBackgroundBaseUrl: (state) =>
-      import.meta.env.DEV == true
-        ? state.devUploadBaseUrl
-        : `user_image/user_${state.userInfo.id}/background/`,
     uploadCommentsBaseUrl: (state) =>
       import.meta.env.DEV == true
         ? state.devUploadBaseUrl
@@ -92,7 +90,9 @@ export const useCurrentUserStore = defineStore('currentUser', {
     uploadMarkdownBaseUrl: (state) =>
       import.meta.env.DEV == true
         ? state.devUploadBaseUrl
-        : `user_image/user_${state.userInfo.id}/markdown/`
+        : `user_image/user_${state.userInfo.id}/markdown/`,
+    uploadBackgroundStatic: (state) => `${state.userBackgroundUrl}static/`,
+    uploadBackgroundDynamics: (state) => `${state.userBackgroundUrl}dynamics/`
   },
   actions: {
     addItemLikeIds(value) {

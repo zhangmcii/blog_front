@@ -46,6 +46,12 @@ const routes = [
         component: () => import('../views/user/EditInterest.vue'),
         meta: { requireAuth: true }
       },
+       {
+        path: '/uploadBg',
+        name: 'uploadBg',
+        component: () => import('../views/user/admin/BackgoundImage.vue'),
+        meta: { requireAuth: true }
+      },
       {
         path: '/postDetail/:id',
         name: 'detail',

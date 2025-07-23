@@ -31,7 +31,7 @@ const data = reactive({
 data.type = Number(route.query.type)
 data.localUserInfo = cloneDeep(user.userInfo)
 
-const { isChange } = useChange(data, getAttr(data.type))
+const { isChange,changedFields } = useChange(data, getAttr(data.type))
 
 async function saveNickname() {
   await editApi.editUser({ nickname: data.localUserInfo.nickname })
@@ -65,8 +65,8 @@ function getAttr(type) {
       return 'localUserInfo.nickname'
     case 2:
       return 'localUserInfo.about_me'
-    // case 3:
-    //   return 'localUserInfo.social_account'
+    case 3:
+      return 'localUserInfo.social_account'
     default:
       return ''
   }
@@ -75,8 +75,7 @@ function getAttr(type) {
 <template>
   <PageHeadBack>
     <template #action>
-      <el-button v-if="data.type == 3" @click="save">保存</el-button>
-      <el-button v-else :disabled="!isChange" @click="save">保存</el-button>
+       <el-button :disabled="!isChange" @click="save">保存</el-button>
     </template>
     <div v-if="data.type === 1">
       <div class="title">修改昵称</div>
