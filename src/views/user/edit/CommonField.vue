@@ -31,7 +31,7 @@ const data = reactive({
 data.type = Number(route.query.type)
 data.localUserInfo = cloneDeep(user.userInfo)
 
-const { isChange,changedFields } = useChange(data, getAttr(data.type))
+const { isChange } = useChange(data, getAttr(data.type))
 
 async function saveNickname() {
   await editApi.editUser({ nickname: data.localUserInfo.nickname })

@@ -268,7 +268,6 @@ export default {
     <van-cell
       title="背景图片"
       is-link
-      :value="localUserInfo.bg_image"
       @click="$router.push('/editBackGround')"
     />
 

@@ -43,7 +43,7 @@ const routes = [
       {
         path: '/editInterest',
         name: 'editInterest',
-        component: () => import('../views/user/EditInterest.vue'),
+        component: () => import('../views/user/edit/Interest.vue'),
         meta: { requireAuth: true }
       },
        {

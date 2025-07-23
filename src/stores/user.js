@@ -18,6 +18,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
         nickname: '',
         roleId: 0,
         isConfirmed: false,
+        bg_image: '',
         image: '',
         about_me: '',
         location: '',

@@ -6,18 +6,22 @@ import editApi from '@/api/user/editApi.js'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElLoading } from 'element-plus'
 import { useCurrentUserStore } from '@/stores/user'
+import { useChange } from '@/utils/composedFunc/change.js'
+
+const currentUser = useCurrentUserStore()
+const router = useRouter()
 
 let images = ref([])
 const active = ref('图片壁纸')
-const radio = ref('')
+const radio = ref(currentUser.userInfo.bg_image)
+
+const { isChange } = useChange(radio)
 // 分页
 const query = reactive({
   currentPage: 1, // 当前页数
   size: 6, // 页大小
   total: 10 // 评论总数
 })
-const currentUser = useCurrentUserStore()
-const router = useRouter()
 onMounted(() => {
   getBackgroundImage()
 })
@@ -28,7 +32,6 @@ function getBackgroundImage() {
       images.value = [...res.data]
       query.total = res.total
     }
-    nextTick(() => {})
   })
 }
 
@@ -75,9 +78,7 @@ async function submitdata() {
   <PageHeadBack>
     <van-tabs v-model:active="active" animated>
       <van-tab title="图片壁纸" class="tab">
-        <!-- title  下拉箭头 -->
         <!-- 图片 -->
-        <!-- 分页 -->
         <el-text class="title">请选择壁纸</el-text>
         <el-radio-group v-model="radio">
           <div class="scroll-container">
@@ -100,6 +101,7 @@ async function submitdata() {
             </el-row>
           </div>
         </el-radio-group>
+        <!-- 分页 -->
         <el-pagination
           v-model:current-page="query.currentPage"
           layout="prev, pager, next"
@@ -108,26 +110,21 @@ async function submitdata() {
           @current-change="handleCurrentChange"
         />
       </van-tab>
-      <van-tab title="动态壁纸">
-        <!-- title  下拉箭头 -->
-        <!-- 图片 -->
-        <!-- 分页 -->
+      <!-- <van-tab title="动态壁纸">
         <el-text>请选择壁纸</el-text>
-
         <div class="scroll-container">
           <el-row>
             <el-col>
-              <!-- <el-image> </el-image> -->
               <el-text>尽请期待</el-text>
             </el-col>
           </el-row>
         </div>
-      </van-tab>
+      </van-tab> -->
     </van-tabs>
     <!-- 按钮区 -->
     <div class="btn-bar">
       <el-button type="info" @click="redefault">恢复</el-button>
-      <el-button type="primary" :disabled="!radio" @click="submitdata">确认</el-button>
+      <el-button type="primary" :disabled="!radio || !isChange" @click="submitdata">确认</el-button>
     </div>
   </PageHeadBack>
 </template>
@@ -175,8 +172,10 @@ async function submitdata() {
   justify-content: center;
 }
 .selected-item {
-  border-color: rgb(206, 160, 160); /* 选中时的边框颜色 */
-  box-shadow: 0 0 10px #903333; /* 选中时的阴影 */
+  /* 选中时的边框颜色 */
+  border-color: rgb(206, 160, 160);
+  /* 选中时的阴影 */
+  box-shadow: 0 0 10px #e11111;
 }
 
 .btn-bar {
