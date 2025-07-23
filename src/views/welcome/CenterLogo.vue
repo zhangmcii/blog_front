@@ -32,12 +32,6 @@ function loadBackground() {
   })
 }
 
-/**
- * 前往我的博客
- */
-function goToBlog() {
-  window.location.href = GLOBAL_CONFIG.BLOG_URL
-}
 
 function randomSlogan() {
   const slogans = GLOBAL_CONFIG.SLOGANS
@@ -56,7 +50,7 @@ onMounted(() => {
     :style="{ background: `url(${GLOBAL_CONFIG.BACKGROUND_IMG_URL})` }"
   >
     <div :class="['img-shadow', { 'img-shadow-show': bgLoaded }]"></div>
-    <div class="inner" style="cursor: pointer" @click="goToBlog">
+    <div class="inner" style="cursor: pointer" @click="$router.push('/posts')">
       <!-- <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]" /> -->
       <div :class="['hello', { hello_bottom: touchable }]">
         <div>{{ slogan }}</div>

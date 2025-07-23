@@ -21,11 +21,12 @@ onMounted(() => {
   }, 1300)
 })
 
-watch([backgroundLoaded, animationEnd], () => {
-  if (backgroundLoaded.value && animationEnd.value) {
-    document.body.style.backgroundColor = 'rgba(0,0,0,0.8)'
-  }
-})
+// 会把主页背景部分变黑，导致无法预览，故注释掉
+// watch([backgroundLoaded, animationEnd], () => {
+//   if (backgroundLoaded.value && animationEnd.value) {
+//     document.body.style.backgroundColor = 'rgba(0,0,0,0.8)'
+//   }
+// })
 </script>
 
 <template>
