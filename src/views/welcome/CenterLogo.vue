@@ -2,7 +2,6 @@
 import { GLOBAL_CONFIG } from '@/config/welcomeCfg.js'
 import { randomNum } from '@/utils/common'
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 // import LocalLogo from '@/asset/logo.svg?component'
 
 defineOptions({
@@ -17,7 +16,7 @@ defineProps({
 const emit = defineEmits({
   backgroundLoaded: []
 })
-const router = useRouter()
+
 const bgLoaded = ref(false)
 const slogan = ref('')
 
@@ -51,7 +50,7 @@ onMounted(() => {
     :style="{ background: `url(${GLOBAL_CONFIG.BACKGROUND_IMG_URL})` }"
   >
     <div :class="['img-shadow', { 'img-shadow-show': bgLoaded }]"></div>
-    <div class="inner" style="cursor: pointer" @click="router.push('/posts')">
+    <div class="inner" style="cursor: pointer" @click="$router.push('/posts')">
       <!-- <LocalLogo :class="['main-logo', { 'main-logo-top': touchable }]" /> -->
       <div :class="['hello', { hello_bottom: touchable }]">
         <div>{{ slogan }}</div>
