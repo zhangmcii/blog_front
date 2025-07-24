@@ -119,7 +119,7 @@ export default {
               },
               complete(res) {
                 self.imageKey.push({ pos: file.pos, url: res.key })
-                const imageUrl = `http://${domin}/${res.key}`
+                const imageUrl = `${domin}/${res.key}`
                 self.imageUrls.push(imageUrl)
                 resolve()
               }

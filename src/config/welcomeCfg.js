@@ -76,7 +76,7 @@ const GLOBAL_CONFIG = {
   // BACKGROUND_IMG_URL: "https://api.dujin.org/bing/1920.php",
   // BACKGROUND_IMG_URL: bgIndex,
   // BACKGROUND_IMG_URL: 'http://sv1puyfmn.hd-bkt.clouddn.com/user_image/bg_index.jpg-slim',
-  BACKGROUND_IMG_URL: `http://${import.meta.env.VITE_QINIU_DOMAIN}/user_image/bg_index.jpg-slim`,
+  BACKGROUND_IMG_URL: `${import.meta.env.VITE_QINIU_DOMAIN}/user_image/bg_index.jpg-slim`,
   /**
    * ICP 备案号，留空不显示
    */

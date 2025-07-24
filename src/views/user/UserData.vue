@@ -278,7 +278,7 @@ export default {
               },
               complete(res) {
                 self.imageKey.push(res.key)
-                const imageUrl = `http://${domin}/${res.key}`
+                const imageUrl = `${domin}/${res.key}`
                 self.imageUrls.push(imageUrl)
                 resolve()
               }
@@ -291,7 +291,7 @@ export default {
     },
     submitAvatars() {
       const domin = import.meta.env.VITE_QINIU_DOMAIN
-      const imageUrl = `http://${domin}/${this.imageKey[0]}`
+      const imageUrl = `${domin}/${this.imageKey[0]}`
       imageApi.saveImageUrl({ image: this.imageKey[0] }).then((res) => {
         // 换图像成功后，更新本地image字段
         if (res.data.msg == 'success') {
