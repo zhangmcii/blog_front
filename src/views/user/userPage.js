@@ -62,7 +62,6 @@ export default {
       posts: [{}],
       currentPage: 1,
       posts_count: 0,
-      followPerm: false,
       loading: {
         userData: false,
         follow: false,
@@ -79,7 +78,7 @@ export default {
       skeletonThrottle: {
         leading: 300,
         trailing: 300,
-        initVal: true
+        initVal: false
       },
       activeName: 'first',
       // 原始文件
@@ -93,6 +92,22 @@ export default {
     const otherUser = useOtherUserStore()
     return { currentUser, otherUser, areaList }
   },
+  // beforeRouteEnter(to, from, next) {
+  //   console.log('to', to)
+  //   console.log('from', from)
+  //   next((vm) => {
+  //     // 不加载
+  //     if (from.name === '1detail') {
+  //       console.log('11111')
+  //       vm.isUserPage = false
+  //       vm.getUser()
+  //       vm.getPosts(to.params.userName, 1)
+  //     } else {
+  //       console.log('222')
+  //       vm.getUser()
+  //     }
+  //   })
+  // },
   // 当从A资料跳转B资料时，更新资料页面
   // created() {
   //   this.$watch(
@@ -103,10 +118,14 @@ export default {
   //     }
   //   )
   // },
-   mounted() {
-    this.getUser()
-    this.getPermission(1)
-    this.getUploadToken()
+  mounted() {
+    if (this.otherUser.userInfo.username === this.$route.params.userName) {
+      this.user = { ...this.otherUser.userInfo }
+      this.setMainProperty()
+      console.log('111', this.user)
+    } else {
+      this.getUser()
+    }
   },
   computed: {
     location() {
@@ -125,9 +144,6 @@ export default {
     },
     isCurrentUser() {
       return this.user.username == this.currentUser.userInfo.username
-    },
-    follow() {
-      return this.followPerm && this.currentUser.userInfo.username != this.user.username
     },
     isFollowCurrentUser() {
       return (
@@ -182,7 +198,7 @@ export default {
     },
     async beforeSwitch() {
       this.loading.switch = true
-      await this.getPosts(this.userName, 1)
+      await this.getPosts(this.$route.params.userName, 1)
       this.loading.switch = false
       return true
     },
@@ -232,16 +248,6 @@ export default {
     },
     editProfileAdmin() {
       this.$router.push(`/editProfileAdmin/${this.user.id}`)
-    },
-    // 查询当前登录用户的权限
-    getPermission(perm) {
-      authApi.getPermission(perm).then((res) => {
-        if (res.data.data) {
-          this.followPerm = true
-        } else {
-          this.followPerm = false
-        }
-      })
     },
     followUser() {
       if (!this.currentUser.isLogin) {
@@ -300,7 +306,7 @@ export default {
     },
     handleCurrentChange() {
       // this.getUserData(this.userName, this.currentPage)
-      this.getPosts(this.userName, this.currentPage)
+      this.getPosts(this.$route.params.userName, this.currentPage)
     },
     async handleFileChange(file, fileList) {
       if (!this.beforePicUpload([file])) {
@@ -391,11 +397,6 @@ export default {
         return
       }
       this.$router.push('/chat')
-    },
-    getUploadToken() {
-      uploadApi.get_upload_token().then((res) => {
-        this.uploadToken = res.data.upload_token
-      })
     }
   }
 }

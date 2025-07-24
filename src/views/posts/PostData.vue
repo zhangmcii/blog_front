@@ -30,9 +30,9 @@ export default {
       showEmoji: false,
       // 延迟渲染会导致与空页面闪烁
       throttle: {
-        // leading: 200,
-        // trailing: 200,
-        // initVal: true
+        leading: 0,
+        trailing: 0,
+        initVal: false
       }
     }
   },

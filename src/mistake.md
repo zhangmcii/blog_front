@@ -540,7 +540,7 @@ A-B={1},代表待删除的。 可以
 
 获取所有用户标签函数调用时机改在打开tag面板时候。
 
-用户资料页：
+# 用户资料页：
 
 路由变化：
 1.使用pinia
@@ -576,3 +576,25 @@ else 跳过
 后端 @main.route('/user/<username>')该路由没有遵循函数功能单一职责原则，它本来是获取用户博客文章的函数，又兼返回用户资料。
 导致后续文章分也请求时，也会返回用户资料。前端对获取到用户资料后的逻辑只需在首次获取后执行一遍即可，但现在后续都会被重复执行。
 现在要将该函数变成职责单一。  解决
+
+
+用户资料页优先使用pinia中数据         解决
+进入自己资料页：currentuser保存自己的， otherCurrentUser也保存自己的信息
+
+进入别人资料页：currentuser不设置， otherCurrentUser保存别人的信息
+
+所以，在模版中直接使用otherCurrentUser对象来渲染即可。
+
+界面加载后，先判断
+if otherCurrentUser.username !== route.params.userName，
+  则请求后端。把请求结果赋值给otherCurrentUser
+else
+  user = otherCurrentUser
+等于则用pinia中的，不请求。
+
+必须用pinia的，不能用该页js的我全局变量，因为每次打开时会消失
+这样做，不会每次打开或者返回该页面时都有加载现象。
+
+
+用户资料页还是放进layout合理，可以享受缓存，而且返回首页式，首页也不用加载，也有函数也不用每次加载。
+但需要调整布局样式了。
