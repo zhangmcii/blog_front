@@ -15,7 +15,8 @@ import date from '@/utils/date.js'
 import dayjs from 'dayjs'
 import emitter from '@/utils/emitter.js'
 import { showConfirmDialog } from 'vant'
-import { loginReminder, compressImages } from '@/utils/common.js'
+import { loginReminder, compressImages, waitImage } from '@/utils/common.js'
+import { ElLoading } from 'element-plus'
 import uploadApi from '@/api/upload/uploadApi.js'
 import imageApi from '@/api/user/imageApi.js'
 import { v4 as uuidv4 } from 'uuid'
@@ -92,25 +93,18 @@ export default {
     const otherUser = useOtherUserStore()
     return { currentUser, otherUser, areaList }
   },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.userName = to.params.userName
-      // vm.getUserData(vm.userName)
-      vm.getUserAndPosts(vm.userName)
-    })
-  },
   // 当从A资料跳转B资料时，更新资料页面
-  created() {
-    this.$watch(
-      () => this.$route.params.userName,
-      (newVal) => {
-        this.userName = newVal
-        // this.getUserData(newVal)
-        this.getUserAndPosts(newVal)
-      }
-    )
-  },
-  async mounted() {
+  // created() {
+  //   this.$watch(
+  //     () => this.$route.params.userName,
+  //     (newVal) => {
+  //       this.userName = newVal
+  //       this.getUser(newVal)
+  //     }
+  //   )
+  // },
+   mounted() {
+    this.getUser()
     this.getPermission(1)
     this.getUploadToken()
   },
@@ -186,43 +180,19 @@ export default {
         root.style.setProperty('background-color', '#fff')
       }
     },
-    beforeSwitch() {
+    async beforeSwitch() {
       this.loading.switch = true
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          this.loading.switch = false
-          return resolve(true)
-        }, 500)
-      })
+      await this.getPosts(this.userName, 1)
+      this.loading.switch = false
+      return true
     },
-
-    // getUserData(userName, page) {
-    //   this.loading.userData = true
-    //   if (!userName) {
-    //     userName = this.otherUser.userInfo.username
-    //   }
-    //   if (!userName) {
-    //     this.$message.error('要显示资料的用户名为空！')
-    //     return
-    //   }
-    //   userApi.get_user(userName, page).then((res) => {
-    //     this.loading.userData = false
-    //     this.user = res.data.data
-    //     // 这里不能保存。当游客访问时，将别人的信息保存成当前用户。会将游客变为已登录用户
-    //     // 保存当前点开的用户资料信息
-    //     this.currentUser.setUserInfo(res.data.data)
-    //     this.otherUser.userInfo = res.data.data
-    //     this.imgList.push(this.user.image)
-    //     this.posts = res.data.posts
-    //     this.posts_count = res.data.total
-    //     // 让chat和关注按钮出现时机与骨架屏同步
-    //     setTimeout(() => {
-    //       this.loading.skeleton = false
-    //       this.setMainProperty()
-    //     }, this.skeletonThrottle.trailing)
-    //   })
-    // },
-    getUserAndPosts(userName) {
+    getUser() {
+      const userName = this.$route.params.userName
+      const loading = ElLoading.service({
+        lock: true,
+        text: '加载中...',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       this.loading.userData = true
       if (!userName) {
         userName = this.otherUser.userInfo.username
@@ -231,26 +201,28 @@ export default {
         this.$message.error('要显示资料的用户名为空！')
         return
       }
-      this.getUser(userName)
-      this.getPosts(userName,1)
-    },
-    getUser(userName) {
       userApi.getUserByUsername(userName).then((res) => {
-         this.loading.userData = false
+        this.loading.userData = false
         this.user = res.data.data
         this.otherUser.userInfo = res.data.data
+        // 这里不能直接保存。当游客访问时，将别人的信息保存成当前用户。会将游客变为已登录用户
         if (this.currentUser.isLogin && this.isCurrentUser) {
           this.currentUser.setUserInfo(res.data.data)
         }
         this.imgList.push(this.user.image)
+        // 让私信和关注按钮与用户数据同时出现
         setTimeout(() => {
           this.loading.skeleton = false
           this.setMainProperty()
+          // 背景图片加载时显示loading
+          waitImage([this.bgImage]).then((res) => {
+            loading.close()
+          })
         }, this.skeletonThrottle.trailing)
       })
     },
-    getPosts(userName, page) {
-      userApi.getPosts(userName, page).then((res) => {
+    async getPosts(userName, page) {
+      await userApi.getPosts(userName, page).then((res) => {
         this.posts = res.data.posts
         this.posts_count = res.data.total
       })
@@ -272,6 +244,10 @@ export default {
       })
     },
     followUser() {
+      if (!this.currentUser.isLogin) {
+        loginReminder('快去登录再私信吧')
+        return
+      }
       this.loading.follow = true
       userApi.follow(this.user.username).then((res) => {
         if (res.data.msg == 'success') {

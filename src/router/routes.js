@@ -8,7 +8,7 @@ const updateUser = [
     path: '/editBackGround',
     name: 'editBackGround',
     component: () => import('../views/user/edit/Background.vue')
-  },
+  }
 ]
 const routes = [
   {
@@ -46,7 +46,7 @@ const routes = [
         component: () => import('../views/user/edit/Interest.vue'),
         meta: { requireAuth: true }
       },
-       {
+      {
         path: '/uploadBg',
         name: 'uploadBg',
         component: () => import('../views/user/admin/BackgoundImage.vue'),
@@ -60,7 +60,8 @@ const routes = [
       {
         path: '/pubImage',
         name: 'pubImage',
-        component: () => import('../views/posts/publish/PublishImage.vue')
+        component: () => import('../views/posts/publish/PublishImage.vue'),
+        meta: { keepAlive: true }
       },
       {
         path: '/chat',
@@ -139,7 +140,7 @@ const routes = [
         path: '/500',
         name: 'networkError',
         component: () => import('../views/error/NetError.vue')
-      },
+      }
     ]
   },
   { path: '/', redirect: '/welcome' },
@@ -168,14 +169,11 @@ const routes = [
     component: () => import('../views/user/UserPage1.vue')
   },
   {
-        path: '/user/:userName',
-        name: 'user',
-        // component: () => import('../views/user/UserData.vue')
-        component: () => import('../views/user/UserPage1.vue')
-      },
+    path: '/user/:userName',
+    name: 'user',
+    // component: () => import('../views/user/UserData.vue')
+    component: () => import('../views/user/UserPage1.vue'),
+  }
 ]
-
-
-
 
 export default routes

@@ -84,7 +84,7 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)'
       })
       await editApi.editUser({ location: this.localUserInfo.location })
-      this.currentUser.setUserInfo(this.localUserInfo)
+      this.currentUser.userInfo = { ...this.currentUser.userInfo, location: this.localUserInfo.location }
       this.cityShow = false
       loading.close()
     },
@@ -96,7 +96,7 @@ export default {
       })
       await editApi.editUser({ sex: value })
       this.localUserInfo.sex = value
-      this.currentUser.setUserInfo(this.localUserInfo)
+      this.currentUser.userInfo = { ...this.currentUser.userInfo, sex: value }
       this.sexShow = false
       loading.close()
     },
@@ -109,7 +109,7 @@ export default {
       editApi.editUserTag({ tagAdd: this.tagAdd, tagRemove: this.tagRemove }).then((res) => {
         if (res.data.msg === 'success') {
           this.localUserInfo.tags = [...this.selectedTags]
-          this.currentUser.setUserInfo(this.localUserInfo)
+          this.currentUser.userInfo = { ...this.currentUser.userInfo, tags: [...this.selectedTags] }
           this.tagShow = false
         } else {
           this.$message.error('标签修改失败')
@@ -198,9 +198,8 @@ export default {
       await imageApi.saveImageUrl({ image: this.imageKey[0] }).then((res) => {
         // 换图像成功后，更新本地image字段
         if (res.data.msg == 'success') {
-          this.currentUser.userInfo = { ...this.currentUser.userInfo, ...{ image: res.data.image } }
-          this.localUserInfo.image = imageUrl
-          this.currentUser.setUserInfo(this.localUserInfo)
+          this.localUserInfo.image = res.data.image
+          this.currentUser.userInfo = { ...this.currentUser.userInfo, image: res.data.image  }
           this.originalFiles = []
           this.compressedImages = []
           this.imgList = []
@@ -265,11 +264,7 @@ export default {
     />
 
     <van-cell title="兴趣图片" class="image" is-link @click="$router.push('/editInterest')" />
-    <van-cell
-      title="背景图片"
-      is-link
-      @click="$router.push('/editBackGround')"
-    />
+    <van-cell title="背景图片" is-link @click="$router.push('/editBackGround')" />
 
     <van-cell
       title="社交账号"
@@ -277,7 +272,6 @@ export default {
       is-link
       @click="$router.push({ path: '/editCommonField', query: { type: 3 } })"
     />
-
     <el-dialog v-model="sexShow" title="设置性别" width="80%" align-center>
       <van-cell title="男" clickable @click="selectSex('男')" />
       <van-cell title="女" clickable @click="selectSex('女')" />

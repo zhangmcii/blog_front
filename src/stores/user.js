@@ -46,7 +46,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
           bilibili: '',
           twitter: ''
         },
-        tag: []
+        tags: []
       },
       notice: {
         Notification_data: [],

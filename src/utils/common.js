@@ -120,7 +120,7 @@ async function compressImages(originalFiles, _compressedImages) {
     compressedImages.push({
       src: compressedFile.base64,
       // 保存 Blob 对象
-      blob, 
+      blob,
       name: rawFile.name,
       uid: rawFile.uid,
       // markdown图片位置
@@ -156,4 +156,47 @@ function beforePicUpload(fileList) {
   return true
 }
 
-export { copy, loginReminder, retry, randomNum, isNode, debounce, compressImages, beforePicUpload }
+function waitImage(imageUrls) {
+  // 返回 Promise，让调用者感知加载状态
+  return new Promise((resolve, reject) => {
+    const imagePromises = imageUrls.map((url) => {
+      return new Promise((resolve, reject) => {
+        const imgs = new Image()
+        imgs.src = url
+        imgs.onload = () => resolve()
+        imgs.onerror = (err) => reject(err)
+      })
+    })
+
+    // 设置超时机制：2.5秒
+    const timeoutPromise = new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('timeout')
+      }, 2500)
+    })
+
+    Promise.race([
+      Promise.all(imagePromises),
+      timeoutPromise
+    ])
+      .then(() => {
+        resolve() // 加载完成，loading 结束
+      })
+      .catch((err) => {
+        console.error('壁纸加载失败:', err)
+        resolve() // 即使失败也结束 loading
+      })
+  })
+}
+
+export {
+  copy,
+  loginReminder,
+  retry,
+  randomNum,
+  isNode,
+  debounce,
+  compressImages,
+  beforePicUpload,
+  waitImage
+}
