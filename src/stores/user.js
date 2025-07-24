@@ -56,7 +56,8 @@ export const useCurrentUserStore = defineStore('currentUser', {
       },
       devUploadBaseUrl: 'dev/',
       // 主页背景库地址
-      userBackgroundUrl: 'userBackground/'
+      userBackgroundUrl: 'userBackground/',
+      defaultBackground: 'http://qn.191718.com/userBackground/static/image-pre3.webp-slim'
     }
   },
   getters: {
@@ -67,6 +68,8 @@ export const useCurrentUserStore = defineStore('currentUser', {
     priorityName: (state) =>
       state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username,
     avatarsUrl: (state) => (state.userInfo.image ? state.userInfo.image : imageCfg.logOut),
+    backGroundUrl: (state) =>
+      state.userInfo.bg_image ? state.userInfo.bg_image : state.defaultBackground,
     cityName: (state) => {
       if (!state.userInfo.location) return ''
       return cityUtil.getCodeToName(state.userInfo.location, areaList)

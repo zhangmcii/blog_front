@@ -158,7 +158,7 @@
       </div> -->
         <div class="bottom"></div>
       </div>
-
+      <!-- 文章区  -->
       <div v-show="!isUserPage" class="posts-container">
         <SkeletonUtil :loading="loading.userData" :row="5" :count="1" :showAvatar="false">
           <PostPreview
