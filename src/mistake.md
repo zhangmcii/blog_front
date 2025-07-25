@@ -598,3 +598,82 @@ else
 
 用户资料页还是放进layout合理，可以享受缓存，而且返回首页式，首页也不用加载，也有函数也不用每次加载。
 但需要调整布局样式了。
+
+
+
+# 反向代理
+目前没有设置反向代理，前端直接用ip返回后端接口，更近一步，用户反问前端是通过nginx代理的，但前端到后端是**直接访问的服务器，并未经过nginx**（已查询nginx日志验证过）.
+
+下面是axios基址的配置
+const $http = axios.create({
+  baseURL: requestUrl.baseUrl + ':' + requestUrl.backendPort,
+  timeout: 10000
+})
+可以看出，基址直接用的ip+端口，所以每次返回后端都是直接用的ip
+当前端查询文章数据时，发出查询：https://xxx.com:4289/?page=1&tabName=all
+
+现在要把基址改为/api, 通过vite本地服务器进行代理到正在的后端
+现在发出查询：https://localhost:5172/api/?page=1&tabName=all
+会被代理到：https://xxx.com:4289/?page=1&tabName=
+
+成功了！
+
+我原以为要在后端接口前统一加上/api, 原来这个代理是在前端做功夫， 设置/api为后端入口，由代理服务器进行转发到真正的后端地址处。这会让用户觉得/api是后端入口，做到了反向代理。
+
+
+
+生产环境中，我以为反向代理到后端也用https，实际情况是用http返回后端。
+
+为什么 Nginx 到后端用 HTTP？
+SSL 终止（SSL Termination）
+Nginx 作为前端的入口，负责处理 HTTPS 加密和解密（SSL 终止），之后与后端的通信可以使用普通 HTTP。这样做的好处是：
+减少后端服务器的加密解密负担（尤其对高并发场景）。
+集中管理 SSL 证书（只需在 Nginx 配置，无需在每个后端服务配置）。
+简化后端配置
+后端服务无需关心 HTTPS 细节，只需专注业务逻辑，降低部署和维护成本。
+
+总结
+推荐配置：Nginx 处理 HTTPS（前端 → Nginx 用 HTTPS），Nginx → 后端用 HTTP，并通过 X-Forwarded-Proto 告诉后端实际协议。
+优势：简化配置、降低后端负担、集中管理 SSL。
+
+
+代理websocket:
+
+踩坑点：
+开始的写法： 
+'/socket.io/': {
+          target: `${loadEnv(mode, process.cwd()).VITE_SERVE}`,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/socket.io/, ''),
+          ws: true, // 启用 WebSocket 代理
+        }
+
+我在请求路径上根本没写socket.io，他是所有请求都默认加上的，所以在做代理时就用他来做代理路径（不是可以，是唯一，如果你在创建socket的请求使用其他路径来做代理，那不好意思，会发生错误，错误一般是invaid namespace）。
+
+
+
+我们已经知道socket.io会在所有请求中加上前缀"/socket.io/"，所以我们在代理时将它去掉，但这会引发错误，导致链连接失败。
+正确的做法是，保留"/socket.io/"，换句话说就是 什么也别干
+
+'/socket.io/': {
+          target: `${loadEnv(mode, process.cwd()).VITE_SERVE}`,
+          changeOrigin: true,
+          ws: true, // 启用 WebSocket 代理
+        }
+
+
+你上面说要把websocket的http换成https, 又说反向代理后依然用http返回后端， 这不是冲突了吗
+不冲突，这是两个不同的通信环节，需要区分清楚 “客户端 ↔ Nginx” 和 “Nginx ↔ 后端服务器” 这两个链路的协议：
+
+心区别：两个通信链路
+通信链路	协议选择	作用
+客户端（浏览器）→ Nginx    	HTTPS（wss://）	保证公网传输的安全性（加密）
+Nginx → 后端服务器	       HTTP（ws://）	内部网络通信，无需重复加密（高效）
+
+现在返回io(http://xx.com) 会代理到http:后端//
+
+
+主要是在前端axio设置基址，代理基址
+socket是在代理'/socket.io/'即可
+
+就这样简单

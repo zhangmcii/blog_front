@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { io } from 'socket.io-client'
-import requestUrl from '@/config/requestUrl.js'
 import imageCfg from '@/config/image.js'
 import cityUtil from '@/utils/cityUtil.js'
 import { areaList } from '@vant/area-data'
@@ -126,7 +125,8 @@ export const useCurrentUserStore = defineStore('currentUser', {
     },
     connectSocket() {
       if (!this.socket) {
-        this.socket = io(`${requestUrl.baseUrl}:${requestUrl.backendPort}`, {
+        this.socket = io('', {
+          path: '/socket.io',
           auth: { Authorization: this.token },
           query: { token: this.token },
           transports: ['websocket'],

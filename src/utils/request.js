@@ -1,14 +1,14 @@
 import { ElMessage } from 'element-plus'
 import router from '../router/index.js'
 import axios from 'axios'
-import requestUrl from '@/config/requestUrl.js'
 import { useCurrentUserStore } from '@/stores/user'
 
 
 const currentUser = useCurrentUserStore()
 
 const $http = axios.create({
-  baseURL: requestUrl.baseUrl + ':' + requestUrl.backendPort,
+  // 后端api的base_url
+  baseURL: import.meta.env.VITE_APP_BASE_API ?? '/', 
   timeout: 10000
 })
 
