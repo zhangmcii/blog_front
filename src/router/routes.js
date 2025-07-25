@@ -27,6 +27,13 @@ const routes = [
       //   name: 'user',
       //   component: () => import('../views/user/UserData.vue')
       // },
+      {
+        path: '/user/:userName',
+        name: 'user',
+        // component: () => import('../views/user/UserData.vue')
+        component: () => import('../views/user/UserPage1.vue'),
+        meta: { keepAlive: true }
+      },
       ...updateUser,
       {
         path: '/editProfile',
@@ -167,13 +174,13 @@ const routes = [
     path: '/pc',
     name: 'pc',
     component: () => import('../views/user/UserPage1.vue')
-  },
-  {
-    path: '/user/:userName',
-    name: 'user',
-    // component: () => import('../views/user/UserData.vue')
-    component: () => import('../views/user/UserPage1.vue'),
   }
+  // {
+  //   path: '/user/:userName',
+  //   name: 'user',
+  //   // component: () => import('../views/user/UserData.vue')
+  //   component: () => import('../views/user/UserPage1.vue'),
+  // }
 ]
 
 export default routes

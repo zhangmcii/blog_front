@@ -1,6 +1,6 @@
 <template>
   <div class="vapp-fullscreen-background">
-    <el-page-header @back="$router.back()" title="返回" />
+    <el-page-header :style="{ color: backColor }" @back="$router.back()" title="返回" />
 
     <el-switch
       v-model="isUserPage"
@@ -237,7 +237,7 @@
   --leleo-background-image-url: none;
 }
 .vapp-fullscreen-background {
-  position: fixed;
+  position: position;
   height: 100%;
   width: 100%;
   top: 0;
@@ -259,10 +259,10 @@
   filter: brightness(85%);
 }
 .el-page-header {
-  position: absolute;
-  top: 10px;
+  position: fixed;
+  top: 56px;
   left: 10px;
-  color: #fff;
+  z-index: 99;
 }
 
 .el-switch {
@@ -418,7 +418,7 @@
   align-items: center;
 }
 .bottom {
-  height: 500px;
+  height: 1500px;
   width: 100%;
 }
 .posts-container {

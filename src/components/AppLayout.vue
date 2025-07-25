@@ -1,7 +1,13 @@
 <script setup>
 import AppHeader from './AppHeader.vue'
 import { Scrollbar } from 'vue-amazing-ui'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 import 'vue-amazing-ui/es/scrollbar/Scrollbar.css'
+
+const route = useRoute()
+// 判断是否为 用户资料页面
+const isUserPage = computed(() => route.name === 'user')
 </script>
 
 <template>
@@ -10,7 +16,7 @@ import 'vue-amazing-ui/es/scrollbar/Scrollbar.css'
       <AppHeader />
     </el-header>
     <el-divider />
-    <el-main>
+    <el-main :class="{ 'no-padding': isUserPage }">
       <Scrollbar ref="scrollbar" class="Scrollbar" style="--scrollbar-color: rgba(0, 0, 0, 0)">
         <router-view v-slot="{ Component, route }">
           <keep-alive>
@@ -30,16 +36,18 @@ body {
 }
 .el-header {
   height: 45px;
-  padding:0px;
+  padding: 0px;
 }
-.el-main{
+.el-main {
   padding: 10px 20px 0px 20px;
 }
-/* 45px header高度
-     3vh 是随机添加的
-  */
+.el-main.no-padding {
+  padding: 0 !important;
+}
+
+/* 10px是随机添加的，出现阻尼效果 并且页头不会消失 */
 .Scrollbar {
-  height: calc(100vh - 45px - var(--el-main-padding) * 2 - 3vh);
+  height: calc(100vh - var(--el-main-padding) * 2 - 10px);
 }
 
 .el-divider--horizontal {
