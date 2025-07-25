@@ -4,6 +4,7 @@ import userApi from '@/api/user/userApi.js'
 import { areaList } from '@vant/area-data'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import { useCurrentUserStore } from '@/stores/user'
+import { useOtherUserStore } from '@/stores/otherUser'
 import { cloneDeep } from '@pureadmin/utils'
 import { ElLoading } from 'element-plus'
 import { compressImages } from '@/utils/common.js'
@@ -42,7 +43,8 @@ export default {
   },
   setup() {
     const currentUser = useCurrentUserStore()
-    return { areaList, currentUser }
+    const other = useOtherUserStore()
+    return { areaList, currentUser,other }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -85,6 +87,7 @@ export default {
       })
       await editApi.editUser({ location: this.localUserInfo.location })
       this.currentUser.userInfo = { ...this.currentUser.userInfo, location: this.localUserInfo.location }
+       this.other.userInfo = { ...this.other.userInfo, location: this.localUserInfo.location }
       this.cityShow = false
       loading.close()
     },
@@ -97,6 +100,7 @@ export default {
       await editApi.editUser({ sex: value })
       this.localUserInfo.sex = value
       this.currentUser.userInfo = { ...this.currentUser.userInfo, sex: value }
+      this.other.userInfo = { ...this.other.userInfo, sex: value }
       this.sexShow = false
       loading.close()
     },
@@ -110,6 +114,7 @@ export default {
         if (res.data.msg === 'success') {
           this.localUserInfo.tags = [...this.selectedTags]
           this.currentUser.userInfo = { ...this.currentUser.userInfo, tags: [...this.selectedTags] }
+          this.other.userInfo = { ...this.other.userInfo, tags: [...this.selectedTags] }
           this.tagShow = false
         } else {
           this.$message.error('标签修改失败')
@@ -200,6 +205,7 @@ export default {
         if (res.data.msg == 'success') {
           this.localUserInfo.image = res.data.image
           this.currentUser.userInfo = { ...this.currentUser.userInfo, image: res.data.image  }
+          this.other.userInfo = { ...this.other.userInfo, image: res.data.image  }
           this.originalFiles = []
           this.compressedImages = []
           this.imgList = []

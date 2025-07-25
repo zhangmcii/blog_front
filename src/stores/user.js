@@ -56,7 +56,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
       devUploadBaseUrl: 'dev/',
       // 主页背景库地址
       userBackgroundUrl: 'userBackground/',
-      defaultBackground: 'http://qn.191718.com/userBackground/static/image-pre3.webp-slim'
+      defaultBackground: 'https://www.191718.com/userBackground/static/image-pre3.webp-slim'
     }
   },
   getters: {

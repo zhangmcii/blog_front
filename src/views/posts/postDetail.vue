@@ -6,6 +6,7 @@ import CommentCard from '@/views/comment/ComCard.vue'
 import PostHeader from '@/views/posts/components/PostHeader.vue'
 import PostContent from '@/views/posts/components/PostContent.vue'
 import postApi from '@/api/posts/postApi.js'
+import { Scrollbar } from 'vue-amazing-ui'
 
 export default {
   components: {
@@ -66,15 +67,18 @@ export default {
 <template>
   <PageHeadBack>
     <PostHeader :post="post" />
-    <PostContent :postContent="post.body_html?post.body_html:post.body" />
+    <PostContent :postContent="post.body_html ? post.body_html : post.body" />
     <PostImage :postImages="post.post_images" />
 
-    <PostAction :post="post" :showShare="true" :showEdit="true"/>
+    <PostAction :post="post" :showShare="true" :showEdit="true" />
     <CommentCard :post-id="postId" />
   </PageHeadBack>
 </template>
 <style scoped lang="scss">
 .el-button {
   margin-top: 10px;
+}
+.Scrollbar {
+  height: calc(100vh - var(--el-main-padding) * 2 - 50px);
 }
 </style>

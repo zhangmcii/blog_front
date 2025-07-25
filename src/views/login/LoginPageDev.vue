@@ -111,7 +111,7 @@ export default {
 <template>
   <div class="header">
     <h2>欢迎回来 👋🏻</h2>
-    <p>请输入您的账号信息来开始您的博客之旅</p>
+    <p>云端阁楼，随想悠悠，静候时光</p>
   </div>
 
   <el-form

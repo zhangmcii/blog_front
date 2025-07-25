@@ -18,15 +18,18 @@ export default ({ mode }) => {
       host: '0.0.0.0',
       port: VITE_PORT,
       proxy: {
+        // 后端接口代理
         '/api': {
           target: `${loadEnv(mode, process.cwd()).VITE_SERVE}`,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
+        // websocket代理
         '/socket.io/': {
           target: `${loadEnv(mode, process.cwd()).VITE_SERVE}`,
           changeOrigin: true,
-          ws: true, // 启用 WebSocket 代理
+          // 启用 WebSocket 代理
+          ws: true
         }
       }
     },

@@ -138,7 +138,8 @@ export default {
 
 .base {
   // 0.875rem = 14px
-  font-size: 0.875rem;
+  // font-size: 0.875rem;
+  // font-size: 1.5rem;
   line-height: 1.6;
   letter-spacing: 0.04em;
 }
