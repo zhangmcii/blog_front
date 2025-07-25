@@ -7,7 +7,7 @@ export const useOtherUserStore = defineStore('otherUser', {
       username: '',
       nickname: '',
     },
-    defaultBackground: 'http://qn.191718.com/userBackground/static/image-pre3.webp-slim'
+    defaultBackground: 'https://www.191718.com/userBackground/static/image-pre3.webp-slim'
   }),
   getters: {
     isCommentManage: (state) => state.userInfo.roleId >= 2,
@@ -18,6 +18,9 @@ export const useOtherUserStore = defineStore('otherUser', {
       state.userInfo.bg_image ? state.userInfo.bg_image : state.defaultBackground,
   },
   actions: {
+      setUserInfo(val) {
+      this.userInfo = val
+    }
   },
   persist: {
     key: 'blogOtherUser',

@@ -118,15 +118,6 @@ export default {
   //     }
   //   )
   // },
-  mounted() {
-    if (this.otherUser.userInfo.username === this.$route.params.userName) {
-      this.user = { ...this.otherUser.userInfo }
-      this.setMainProperty()
-      console.log('111', this.user)
-    } else {
-      this.getUser()
-    }
-  },
   computed: {
     location() {
       if (this.user.location && !isNaN(this.user.location)) {
@@ -171,9 +162,18 @@ export default {
       return this.isCurrentUser ? this.currentUser.backGroundUrl : this.otherUser.backGroundUrl
     }
   },
+  mounted() {
+    if (this.otherUser.userInfo.username === this.$route.params.userName) {
+      this.user = { ...this.otherUser.userInfo }
+      this.setMainProperty()
+    } else {
+      this.getUser()
+    }
+  },
   methods: {
     setMainProperty() {
       const root = document.documentElement
+      console.log('image:', this.bgImage)
       root.style.setProperty('--leleo-background-image-url', `url('${this.bgImage}')`)
     },
     // 每次点击tag触发动画

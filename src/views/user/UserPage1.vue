@@ -78,16 +78,18 @@
                       <el-col :xs="6" :xl="4">账号</el-col>
                       <el-col :xs="16" :xl="10">{{ user.username }}</el-col>
                     </el-row>
-
-                    <el-row>
-                      <el-col :xs="6" :xl="4">生日</el-col>
-                      <el-col :xs="15" :xl="10">{{ member_since }}</el-col>
-                    </el-row>
                     <el-row v-if="user.location">
                       <el-col :xs="6" :xl="4">所在地</el-col>
                       <el-col :xs="16" :xl="10">{{ location }}</el-col>
                     </el-row>
-
+                    <el-row>
+                      <el-col :xs="6" :xl="4">性别</el-col>
+                      <el-col :xs="15" :xl="10">{{ user.sex }}</el-col>
+                    </el-row>
+                    <el-row>
+                      <el-col :xs="6" :xl="4">生日</el-col>
+                      <el-col :xs="15" :xl="10">{{ member_since }}</el-col>
+                    </el-row>
                     <el-row>
                       <el-col :xs="8" :xl="4">上线时间</el-col>
                       <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>

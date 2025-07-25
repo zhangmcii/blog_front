@@ -1,6 +1,7 @@
 <!-- 修改昵称，签名，社交账号 -->
 <script setup>
 import { useCurrentUserStore } from '@/stores/user'
+import { useOtherUserStore } from '@/stores/otherUser'
 import { cloneDeep } from '@pureadmin/utils'
 import { ElLoading } from 'element-plus'
 import { useRouter, useRoute } from 'vue-router'
@@ -9,6 +10,7 @@ import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import socialLinks from '@/config/socialLinks.json'
 import { useChange } from '@/utils/composedFunc/change.js'
 const user = useCurrentUserStore()
+const other = useOtherUserStore()
 const router = useRouter()
 const route = useRoute()
 
@@ -56,6 +58,7 @@ async function save() {
     await saveSocialLinks()
   }
   user.setUserInfo(data.localUserInfo)
+  other.setUserInfo(data.localUserInfo)
   loading.close()
   router.back()
 }

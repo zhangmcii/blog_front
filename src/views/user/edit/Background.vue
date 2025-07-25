@@ -64,6 +64,7 @@ async function submitdata() {
   const startTime = Date.now()
   // 保存url
   await editApi.editUser({ bg_image: radio.value })
+  currentUser.userInfo = { ...currentUser.userInfo, bg_image: radio.value }
   const elapsedTime = Date.now() - startTime
   const delayTime = Math.max(0, 1000 - elapsedTime)
   setTimeout(() => {

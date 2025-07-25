@@ -585,6 +585,10 @@ else 跳过
 
 所以，在模版中直接使用otherCurrentUser对象来渲染即可。
 
+-> 有个问题,编辑资料返回主页，修改的信息不变化，除非模版用的是currentUser
+解决办法： 写currentUser时，同时写入otherUse对应字段. 代码性能开销几乎不计，存储开销也很少，因为字段很有限
+
+
 界面加载后，先判断
 if otherCurrentUser.username !== route.params.userName，
   则请求后端。把请求结果赋值给otherCurrentUser
