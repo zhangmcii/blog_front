@@ -28,9 +28,9 @@ onMounted(() => {
 
 function getBackgroundImage() {
   imageApi.getBackgroundImage(query.currentPage, query.size).then((res) => {
-    if (res.msg == 'success') {
-      images.value = [...res.data]
-      query.total = res.total
+    if (res.data.msg == 'success') {
+      images.value = [...res.data.data]
+      query.total = res.data.total
     }
   })
 }
@@ -64,6 +64,7 @@ async function submitdata() {
   const startTime = Date.now()
   // 保存url
   await editApi.editUser({ bg_image: radio.value })
+  currentUser.userInfo = { ...currentUser.userInfo, bg_image: radio.value }
   const elapsedTime = Date.now() - startTime
   const delayTime = Math.max(0, 1000 - elapsedTime)
   setTimeout(() => {

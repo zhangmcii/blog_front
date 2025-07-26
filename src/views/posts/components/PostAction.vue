@@ -2,7 +2,6 @@
 import { useCurrentUserStore } from '@/stores/user'
 import { loginReminder } from '@/utils/common.js'
 import { copy } from '@/utils/common.js'
-import requestUrl from '@/config/requestUrl.js'
 import praise from '@/api/praise/praiseApi.js'
 
 export default {
@@ -98,7 +97,7 @@ export default {
     },
     shareSelect(option) {
       if (option.name === '复制链接') {
-        copy(`${requestUrl.baseUrl}/postDetail/${this.post.id}`)
+        copy(`${import.meta.env.VITE_DOMIN}/postDetail/${this.post.id}`)
       } else {
         this.$message.info(option.name)
       }

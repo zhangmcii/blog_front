@@ -1,6 +1,6 @@
 <template>
   <div class="vapp-fullscreen-background">
-    <el-page-header @back="$router.back()" title="返回" />
+    <el-page-header :style="{ color: backColor }" @back="$router.back()" title="返回" />
 
     <el-switch
       v-model="isUserPage"
@@ -78,16 +78,18 @@
                       <el-col :xs="6" :xl="4">账号</el-col>
                       <el-col :xs="16" :xl="10">{{ user.username }}</el-col>
                     </el-row>
-
-                    <el-row>
-                      <el-col :xs="6" :xl="4">生日</el-col>
-                      <el-col :xs="15" :xl="10">{{ member_since }}</el-col>
-                    </el-row>
                     <el-row v-if="user.location">
                       <el-col :xs="6" :xl="4">所在地</el-col>
                       <el-col :xs="16" :xl="10">{{ location }}</el-col>
                     </el-row>
-
+                    <el-row>
+                      <el-col :xs="6" :xl="4">性别</el-col>
+                      <el-col :xs="15" :xl="10">{{ user.sex }}</el-col>
+                    </el-row>
+                    <el-row>
+                      <el-col :xs="6" :xl="4">生日</el-col>
+                      <el-col :xs="15" :xl="10">{{ member_since }}</el-col>
+                    </el-row>
                     <el-row>
                       <el-col :xs="8" :xl="4">上线时间</el-col>
                       <el-col :xs="8" :xl="10" :offset="2">{{ from_now }}</el-col>
@@ -235,7 +237,7 @@
   --leleo-background-image-url: none;
 }
 .vapp-fullscreen-background {
-  position: fixed;
+  position: position;
   height: 100%;
   width: 100%;
   top: 0;
@@ -257,10 +259,10 @@
   filter: brightness(85%);
 }
 .el-page-header {
-  position: absolute;
-  top: 10px;
+  position: fixed;
+  top: 56px;
   left: 10px;
-  color: #fff;
+  z-index: 99;
 }
 
 .el-switch {
@@ -416,7 +418,7 @@
   align-items: center;
 }
 .bottom {
-  height: 500px;
+  height: 1500px;
   width: 100%;
 }
 .posts-container {

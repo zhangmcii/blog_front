@@ -1,14 +1,12 @@
 import { fileURLToPath, URL } from 'node:url'
-import { include, exclude } from "./build/optimize";
-import { loadEnv } from "vite";
+import { include, exclude } from './build/optimize'
+import { loadEnv } from 'vite'
 import { getPluginsList } from './build/plugins'
 import { root, wrapperEnv } from './build/utils'
 
 export default ({ mode }) => {
-  const { VITE_COMPRESSION, VITE_PORT } = wrapperEnv(
-    loadEnv(mode, root)
-  )
-  
+  const { VITE_COMPRESSION, VITE_PORT } = wrapperEnv(loadEnv(mode, root))
+
   return {
     plugins: getPluginsList(VITE_COMPRESSION),
     resolve: {
@@ -18,15 +16,30 @@ export default ({ mode }) => {
     },
     server: {
       host: '0.0.0.0',
-      port: VITE_PORT
+      port: VITE_PORT,
+      proxy: {
+        // 后端接口代理
+        '/api': {
+          target: `${loadEnv(mode, process.cwd()).VITE_SERVE}`,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        },
+        // websocket代理
+        '/socket.io/': {
+          target: `${loadEnv(mode, process.cwd()).VITE_SERVE}`,
+          changeOrigin: true,
+          // 启用 WebSocket 代理
+          ws: true
+        }
+      }
     },
     define: {
       // enable hydration mismatch details in production build
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true'
     },
     optimizeDeps: {
-        include,
-        exclude
+      include,
+      exclude
     },
     build: {
       rollupOptions: {
@@ -37,6 +50,6 @@ export default ({ mode }) => {
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
         }
       }
-    },
+    }
   }
 }

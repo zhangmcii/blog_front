@@ -92,41 +92,6 @@ export default {
     const otherUser = useOtherUserStore()
     return { currentUser, otherUser, areaList }
   },
-  // beforeRouteEnter(to, from, next) {
-  //   console.log('to', to)
-  //   console.log('from', from)
-  //   next((vm) => {
-  //     // 不加载
-  //     if (from.name === '1detail') {
-  //       console.log('11111')
-  //       vm.isUserPage = false
-  //       vm.getUser()
-  //       vm.getPosts(to.params.userName, 1)
-  //     } else {
-  //       console.log('222')
-  //       vm.getUser()
-  //     }
-  //   })
-  // },
-  // 当从A资料跳转B资料时，更新资料页面
-  // created() {
-  //   this.$watch(
-  //     () => this.$route.params.userName,
-  //     (newVal) => {
-  //       this.userName = newVal
-  //       this.getUser(newVal)
-  //     }
-  //   )
-  // },
-  mounted() {
-    if (this.otherUser.userInfo.username === this.$route.params.userName) {
-      this.user = { ...this.otherUser.userInfo }
-      this.setMainProperty()
-      console.log('111', this.user)
-    } else {
-      this.getUser()
-    }
-  },
   computed: {
     location() {
       if (this.user.location && !isNaN(this.user.location)) {
@@ -169,10 +134,30 @@ export default {
     },
     bgImage() {
       return this.isCurrentUser ? this.currentUser.backGroundUrl : this.otherUser.backGroundUrl
+    },
+    backColor() {
+      return this.isUserPage ? '#ffffff' : '#000000'
     }
   },
+  // 在首次挂载、以及每次从缓存中被重新插入的时候调用
+  activated() {
+    // 还是上一个用户资料
+    if (this.otherUser.userInfo.username === this.$route.params.userName) {
+      this.user = { ...this.otherUser.userInfo }
+      this.setMainProperty()
+    }
+    // 进入新的用户资料
+    else {
+      this.isUserPage = true
+      this.getUser()
+    }
+  },
+  mounted() {},
   methods: {
     setMainProperty() {
+      if (!this.isUserPage) {
+        return
+      }
       const root = document.documentElement
       root.style.setProperty('--leleo-background-image-url', `url('${this.bgImage}')`)
     },

@@ -1,5 +1,3 @@
-import requestUrl from '@/config/requestUrl.js'
-
 /** Website 分类配置 */
 const WEBSITE_SORTS = [
   {
