@@ -56,7 +56,7 @@ export default {
   mounted() {
     this.initSocket()
   },
-  beforeMounted() {
+  beforeUnmount() {
     this.currentUser.socket?.off('new_notification')
     if (this.currentUser.socket) {
       this.currentUser.disconnectSocket()
