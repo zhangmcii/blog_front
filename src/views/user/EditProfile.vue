@@ -20,6 +20,9 @@ export default {
   },
   data() {
     return {
+      loading: {
+        tag: false
+      },
       tagList: [],
       selectedTags: [],
 
@@ -44,13 +47,7 @@ export default {
   setup() {
     const currentUser = useCurrentUserStore()
     const other = useOtherUserStore()
-    return { areaList, currentUser,other }
-  },
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      vm.getTagList()
-      vm.$nextTick(() => {})
-    })
+    return { areaList, currentUser, other }
   },
   computed: {
     tagAdd() {
@@ -74,10 +71,12 @@ export default {
   },
   methods: {
     getTagList() {
+      this.loading.tag = true
       userApi.get_tag_list().then((res) => {
         if (res.data.msg == 'success') {
           this.tagList = res.data.data
         }
+        this.loading.tag = false
       })
     },
     async setCity() {
@@ -87,8 +86,11 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)'
       })
       await editApi.editUser({ location: this.localUserInfo.location })
-      this.currentUser.userInfo = { ...this.currentUser.userInfo, location: this.localUserInfo.location }
-       this.other.userInfo = { ...this.other.userInfo, location: this.localUserInfo.location }
+      this.currentUser.userInfo = {
+        ...this.currentUser.userInfo,
+        location: this.localUserInfo.location
+      }
+      this.other.userInfo = { ...this.other.userInfo, location: this.localUserInfo.location }
       this.cityShow = false
       loading.close()
     },
@@ -122,6 +124,10 @@ export default {
         }
         loading.close()
       })
+    },
+    openTag() {
+      this.tagShow = !this.tagShow
+      this.getTagList()
     },
     beforePicUpload(fileList) {
       for (const file of fileList) {
@@ -205,8 +211,8 @@ export default {
         // 换图像成功后，更新本地image字段
         if (res.data.msg == 'success') {
           this.localUserInfo.image = res.data.image
-          this.currentUser.userInfo = { ...this.currentUser.userInfo, image: res.data.image  }
-          this.other.userInfo = { ...this.other.userInfo, image: res.data.image  }
+          this.currentUser.userInfo = { ...this.currentUser.userInfo, image: res.data.image }
+          this.other.userInfo = { ...this.other.userInfo, image: res.data.image }
           this.originalFiles = []
           this.compressedImages = []
           this.imgList = []
@@ -262,7 +268,7 @@ export default {
     <van-cell title="账号" :value="localUserInfo.username" />
     <van-cell title="性别" is-link :value="localUserInfo.sex" @click="sexShow = !sexShow" />
     <van-cell title="所在地" is-link :value="currentUser.cityName" @click="cityShow = !cityShow" />
-    <van-cell title="标签" is-link :value="tag" @click="tagShow = !tagShow" />
+    <van-cell title="标签" is-link :value="tag" @click="openTag" />
     <van-cell
       title="签名"
       is-link
@@ -288,7 +294,7 @@ export default {
     </van-action-sheet>
 
     <van-action-sheet v-model:show="tagShow" title="选择标签">
-      <div class="tag-container">
+      <div class="tag-container" v-loading="loading.tag">
         <el-checkbox-group v-model="selectedTags" :min="0" :max="3">
           <el-checkbox v-for="tag in tagList" :key="tag" :value="tag" size="large">
             <template #default>

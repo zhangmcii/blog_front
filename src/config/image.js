@@ -1,26 +1,23 @@
-import image_1 from '../asset/image_1.ico'
-import image_2 from '../asset/image_2.ico'
-import image_4 from '../asset/image_4.ico'
-import image_5 from '../asset/image_5.ico'
-import image_6 from '../asset/image_6.ico'
-import image_7 from '../asset/image_7.ico'
-import image_8 from '../asset/image_8.ico'
 import logOut from '../asset/logOut.png'
 import cherry from '../asset/cherry5.jpg'
 import loading from '../asset/loading.gif'
 import book1 from '../asset/book/book1.webp'
 import book2 from '../asset/book/book2.webp'
 import book3 from '../asset/book/book3.webp'
+import imageApi from '@/api/user/imageApi.js'
 
-const arr = [image_1, image_2, image_4, image_5, image_6, image_7, image_8]
 function getRandomImage() {
-  // 确保数组不为空
-  if (arr && arr.length) {
-    const randomIndex = Math.floor(Math.random() * arr.length)
-    return arr[randomIndex]
-  }
-  return null
+  return imageApi.getBackgroundImage(1, 10, 'userAvatars/', 0).then((res) => {
+    if (res.data.msg === 'success' && res.data.data?.length) {
+      const avatarts = [...res.data.data]
+      // 确保数组不为空
+      const randomIndex = Math.floor(Math.random() * avatarts.length)
+      return avatarts[randomIndex]
+    }
+    return null
+  })
 }
+
 const imageCfg = {
   random: getRandomImage,
   // login: 'https://www.helloimg.com/i/2025/01/15/6787d90f29c4f.jpg',
@@ -28,6 +25,6 @@ const imageCfg = {
   loginFail: cherry,
   logOut: logOut,
   preLoading: loading,
-  book: [book1, book2, book3],
+  book: [book1, book2, book3]
 }
 export default imageCfg

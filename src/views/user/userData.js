@@ -137,6 +137,11 @@ export default {
     },
     backColor() {
       return this.isUserPage ? '#ffffff' : '#000000'
+    },
+    socialCount() {
+      return Object.values(this.currentUser.userInfo.social_account).every(
+        (value) => value === '' || value === null || value === undefined
+      )
     }
   },
   // 在首次挂载、以及每次从缓存中被重新插入的时候调用

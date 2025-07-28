@@ -107,39 +107,47 @@ export default {
     }
   },
   methods: {
-    register() {
-      this.$refs.ruleForm.validate((valid) => {
-        if (valid) {
-          this.loading = true
-          authApi
-            .register({
-              email: this.ruleForm.email,
-              username: this.ruleForm.user,
-              password: this.ruleForm.password,
-              image: imageCfg.random()
-            })
-            .then((res) => {
-              this.loading = false
-              if (res.data.msg == 'success') {
-                this.congratulation()
-                this.$message.success('注册成功')
-                setTimeout(() => {
-                  this.$router.push({
-                    path: '/login',
-                    query: {
-                      username: this.ruleForm.user
-                    },
-                    hash: false
-                  })
-                }, 700)
-              } else {
-                this.$message.error(res.data.detail)
-              }
-            })
-        } else {
-          this.$message.error('请修正表单中的错误')
-        }
+    // 封装验证方法为 Promise
+    validateForm() {
+      return new Promise((resolve) => {
+        this.$refs.ruleForm.validate((valid) => {
+          resolve(valid)
+        })
       })
+    },
+    async register() {
+      const valid = await this.validateForm()
+      if (valid) {
+        this.loading = true
+        const image = await imageCfg.random()
+        authApi
+          .register({
+            email: this.ruleForm.email,
+            username: this.ruleForm.user,
+            password: this.ruleForm.password,
+            image: image
+          })
+          .then((res) => {
+            this.loading = false
+            if (res.data.msg == 'success') {
+              this.congratulation()
+              this.$message.success('注册成功')
+              setTimeout(() => {
+                this.$router.push({
+                  path: '/login',
+                  query: {
+                    username: this.ruleForm.user
+                  },
+                  hash: false
+                })
+              }, 700)
+            } else {
+              this.$message.error(res.data.detail)
+            }
+          })
+      } else {
+        this.$message.error('请修正表单中的错误')
+      }
     },
     congratulation() {
       confetti({
