@@ -1,10 +1,6 @@
 import { ElMessage } from 'element-plus'
 import router from '../router/index.js'
 import axios from 'axios'
-import { useCurrentUserStore } from '@/stores/user'
-
-
-const currentUser = useCurrentUserStore()
 
 const $http = axios.create({
   // 后端api的base_url
@@ -20,8 +16,8 @@ function setInterceptors(...instance) {
     // 添加请求拦截器
     i.interceptors.request.use(
       function (config) {
-        // 从localStorage中获取token
-        const token = currentUser.token
+        // 从localStorage中获取token。注意，不可以从pinia中读取，因为刷新页面，此时组件可能还未初始化完
+        const token = JSON.parse(localStorage.getItem('blog')).token
         if (token) {
           config.headers['Authorization'] = token
         }
