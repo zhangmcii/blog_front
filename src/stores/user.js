@@ -211,7 +211,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
       }
     },
     setUserInfo(val) {
-      this.userInfo = val
+      this.userInfo = {...this.userInfo, ...val}
     }
   },
   persist: {

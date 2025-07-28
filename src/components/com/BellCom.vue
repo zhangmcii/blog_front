@@ -3,6 +3,8 @@ import notificationApi from '@/api/notification/notificationApi.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
 import NotificationDetail from '@/components/com/NotificationDetail.vue'
+import emitter from '@/utils/emitter.js'
+
 export default {
   components: {
     NotificationDetail
@@ -15,7 +17,8 @@ export default {
         comment: [],
         praise: [],
         at: [],
-        chat: []
+        chat: [],
+        newPost: []
       }
     }
   },
@@ -35,7 +38,7 @@ export default {
   },
   computed: {
     showDot() {
-      return this.notifications.some((item) => !item.isRead)
+      return this.notifications.some((item) => item.type !=='新文章' && !item.isRead)
     },
     atUnreadNum() {
       return this.calculateUnreadCount('at')
@@ -150,6 +153,10 @@ export default {
       this.classification.praise = this.notifications.filter((item) => item.type === '点赞')
       this.classification.at = this.notifications.filter((item) => item.type === '@')
       this.classification.chat = this.notifications.filter((item) => item.type === '私信')
+      this.classification.newPost = this.notifications.filter((item) => item.type === '新文章')
+      if (this.classification.newPost.length > 0) {
+        emitter.emit('followPost', this.classification.newPost)
+      }
     },
     handleClick(tab) {
       this.activeName = tab.name

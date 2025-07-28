@@ -144,6 +144,15 @@ export default {
       )
     }
   },
+    // 当从A资料跳转B资料时，更新资料页面
+  created() {
+    this.$watch(
+      () => this.$route.params.userName,
+      () => {
+        this.getUser()
+      }
+    )
+  },
   // 在首次挂载、以及每次从缓存中被重新插入的时候调用
   activated() {
     // 还是上一个用户资料

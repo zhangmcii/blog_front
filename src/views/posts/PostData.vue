@@ -1,6 +1,7 @@
 <script>
 import PostPreview from '@/views/posts/components/PostPreview.vue'
 import PostImage from '@/views/posts/components/PostImage.vue'
+import notificationApi from '@/api/notification/notificationApi.js'
 import postApi from '@/api/posts/postApi.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { GradientText } from 'vue-amazing-ui'
@@ -33,7 +34,9 @@ export default {
         leading: 0,
         trailing: 0,
         initVal: false
-      }
+      },
+      showDot: false,
+      followPost: []
     }
   },
   setup() {
@@ -42,8 +45,15 @@ export default {
   },
   mounted() {
     this.getPosts(this.currentPage, this.activeName)
+    // 自己发布的文章
     emitter.on('newPost', (post) => {
       this.posts.unshift(...post)
+    })
+    // 关注的用户发布了新文章
+    emitter.on('followPost', (newPost) => {
+      this.showDot = true
+      this.followPost = [...newPost]
+      console.log('newPost', this.followPost)
     })
   },
   methods: {
@@ -55,6 +65,16 @@ export default {
     },
     getPosts(page, tabName) {
       this.loading.card = true
+      if (tabName === 'showFollowed' && this.showDot) {
+        const ids = []
+        this.followPost.forEach((item) => {
+          ids.push(item.id)
+        })
+        // 全部标记为已读
+        notificationApi.markRead({ ids: ids }).then(() => {
+          this.showDot = false
+        })
+      }
       postApi.getPosts(page, tabName).then((res) => {
         this.loading.card = false
         this.posts = res.data.data
@@ -107,7 +127,10 @@ export default {
         </PostPreview>
       </SkeletonUtil>
     </el-tab-pane>
-    <el-tab-pane label="关注" name="showFollowed" v-if="currentUser.isLogin">
+    <el-tab-pane name="showFollowed" v-if="currentUser.isLogin">
+      <template #label>
+        <van-badge :dot="showDot" :offset="[1, -1]"> 关注 </van-badge>
+      </template>
       <el-empty
         :image-size="200"
         v-if="activeName == 'showFollowed' && posts_count == 0 && !loading.card"

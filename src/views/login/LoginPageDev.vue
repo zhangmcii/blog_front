@@ -60,7 +60,7 @@ export default {
               // 判断是否勾选记住密码
               this.hasRemember()
               const u = res.data.data
-              this.currentUser.userInfo = u
+              this.currentUser.setUserInfo(u)
               this.currentUser.token = res.data.token
               this.$message({
                 message: '登录成功',
