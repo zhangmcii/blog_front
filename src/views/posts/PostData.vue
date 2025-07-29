@@ -177,6 +177,8 @@ export default {
 }
 .demo-tabs {
   margin-top: 20px;
+  /* 当内容较少时，让icp出现在最下方，而不是中间 */
+  min-height: 57vh;
 }
 
 .demo-tabs > .el-tabs__content {

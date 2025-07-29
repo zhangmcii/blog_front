@@ -1,7 +1,6 @@
 <script setup>
-import { computed } from 'vue'
 // import gonganCodeIcon from '../assets/img/gongan-code-icon.png'
-
+import { ref, onMounted, onUnmounted } from 'vue'
 let beginYear = '2024'
 let currentYear = new Date().getFullYear()
 let author = {
@@ -28,10 +27,33 @@ let otherItems = [
     link: ''
   }
 ]
+// const isFixed = ref(false)
+
+// function checkFooterPosition() {
+//   const bodyHeight = document.body.scrollHeight
+//   const windowHeight = window.innerHeight
+//   // 如果内容高度小于视口高度，ICP需要固定在底部
+//   console.log('bodyHeight', bodyHeight)
+//   console.log('windowHeight', windowHeight)
+//   isFixed.value = bodyHeight <= windowHeight
+//   console.log('11', isFixed.value)
+// }
+
+// onMounted(() => {
+//   window.addEventListener('resize', checkFooterPosition)
+//   window.addEventListener('scroll', checkFooterPosition)
+//   checkFooterPosition()
+// })
+
+// onUnmounted(() => {
+//   window.removeEventListener('resize', checkFooterPosition)
+//   window.removeEventListener('scroll', checkFooterPosition)
+// })
 </script>
 
 <template>
   <div id="copyright-icp-footer" class="footer">
+    <!-- <div id="copyright-icp-footer" class="footer" :class="{ fixed: isFixed }"></div> -->
     <ul id="copyright-icp-ul">
       <li v-if="icp.code">
         <svg
@@ -77,6 +99,22 @@ let otherItems = [
 .footer {
   margin-bottom: 10px;
 }
+// .footer {
+//   margin-bottom: 10px;
+//   transition:
+//     left 0.2s,
+//     right 0.2s,
+//     bottom 0.2s;
+// }
+// .footer.fixed {
+//   position: fixed;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   z-index: 99;
+//   background: #fff;
+//   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.03);
+// }
 ul {
   display: flex;
   align-items: center;
