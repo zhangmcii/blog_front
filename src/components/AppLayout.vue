@@ -4,6 +4,7 @@ import { Scrollbar } from 'vue-amazing-ui'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import 'vue-amazing-ui/es/scrollbar/Scrollbar.css'
+import MobileRemind from '@/utils/components/MobileRemind.vue'
 
 const route = useRoute()
 // 判断是否为 用户资料页面
@@ -26,6 +27,7 @@ const isUserPage = computed(() => route.name === 'user')
         </router-view>
       </Scrollbar>
     </el-main>
+    <MobileRemind />
   </el-container>
 </template>
 
@@ -33,6 +35,10 @@ const isUserPage = computed(() => route.name === 'user')
 body {
   /* 移动端点击可点击元素时，出现蓝色默认背景色 */
   -webkit-tap-highlight-color: transparent;
+}
+.el-container {
+  width: 100%;
+  height: 100%;
 }
 .el-header {
   height: 45px;
