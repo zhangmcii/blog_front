@@ -7,7 +7,7 @@ export const useOtherUserStore = defineStore('otherUser', {
       username: '',
       nickname: '',
     },
-    defaultBackground: 'https://www.191718.com/userBackground/static/image-pre3.webp-slim'
+    defaultBackground: `${import.meta.env.VITE_QINIU_DOMAIN}/userBackground/static/image-pre3.webp-slim`
   }),
   getters: {
     isCommentManage: (state) => state.userInfo.roleId >= 2,
