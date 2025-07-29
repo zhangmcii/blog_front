@@ -202,7 +202,7 @@ export default {
       return true
     },
     getUser() {
-      const userName = this.$route.params.userName
+      let userName = this.$route.params.userName
       const loading = ElLoading.service({
         lock: true,
         text: '加载中...',

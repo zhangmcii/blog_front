@@ -7,6 +7,7 @@ import { useCurrentUserStore } from '@/stores/user'
 import { GradientText } from 'vue-amazing-ui'
 import 'vue-amazing-ui/es/gradienttext/GradientText.css'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
+import ICP from '@/utils/components/ICP.vue'
 import PostPublish from './PostPublish.vue'
 import emitter from '@/utils/emitter.js'
 
@@ -16,7 +17,8 @@ export default {
     PostImage,
     PostPublish,
     GradientText,
-    SkeletonUtil
+    SkeletonUtil,
+    ICP
   },
   data() {
     return {
@@ -160,6 +162,7 @@ export default {
     :hide-on-single-page="true"
     :pager-count="5"
   />
+  <ICP />
 </template>
 <style scoped>
 .gradient-text {
@@ -167,7 +170,10 @@ export default {
 }
 
 .el-pagination {
-  float: right;
+  /* float: right; */
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
 }
 .demo-tabs {
   margin-top: 20px;
