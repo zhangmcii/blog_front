@@ -142,6 +142,9 @@ export default {
       return Object.values(this.currentUser.userInfo.social_account).every(
         (value) => value === '' || value === null || value === undefined
       )
+    },
+    srcList(){
+      return [this.user.image]
     }
   },
     // 当从A资料跳转B资料时，更新资料页面

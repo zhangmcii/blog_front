@@ -57,7 +57,7 @@ body {
 }
 
 .el-divider--horizontal {
-  margin: 2px 0px;
   margin: 2px 0px 0px 0px;
+  height: 0px;
 }
 </style>

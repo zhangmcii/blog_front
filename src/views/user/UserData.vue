@@ -15,11 +15,12 @@
     />
     <div class="area-container">
       <div class="avatar" style="margin-top: 1rem">
-        <el-avatar
+        <el-image
           fit="fill"
           style="border-radius: 50%; width: 120px; height: 120px"
           alt="用户图像"
           :src="user.image"
+          :preview-src-list="srcList"
         />
       </div>
 
