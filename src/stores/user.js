@@ -58,7 +58,7 @@ export const useCurrentUserStore = defineStore('currentUser', {
       userBackgroundUrl: 'userBackground/',
       // 用户头像库地址
       userAvatars: 'userAvatars/',
-      defaultBackground: 'https://www.191718.com/userBackground/static/image-pre3.webp-slim'
+      defaultBackground: `${import.meta.env.VITE_QINIU_DOMAIN}/userBackground/static/image-pre3.webp-slim`
     }
   },
   getters: {
