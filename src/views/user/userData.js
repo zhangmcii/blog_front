@@ -143,16 +143,19 @@ export default {
         (value) => value === '' || value === null || value === undefined
       )
     },
-    srcList(){
+    srcList() {
       return [this.user.image]
     }
   },
-    // 当从A资料跳转B资料时，更新资料页面
+  // 当从A资料跳转B资料时，更新资料页面
   created() {
     this.$watch(
       () => this.$route.params.userName,
       () => {
-        this.getUser()
+        // 跳转到用户资料才会执行(避免切换出也调用) ，并且优先使用缓存
+        if (this.$route.name === 'user' && this.otherUser.userInfo.username !== this.$route.params.userName) {
+          this.getUser()
+        }
       }
     )
   },
@@ -307,7 +310,6 @@ export default {
       this.$router.push(`/follow/${f}/${this.user.username}`)
     },
     handleCurrentChange() {
-      // this.getUserData(this.userName, this.currentPage)
       this.getPosts(this.$route.params.userName, this.currentPage)
     },
     async handleFileChange(file, fileList) {

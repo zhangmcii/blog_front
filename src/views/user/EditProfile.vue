@@ -65,7 +65,6 @@ export default {
   },
   mounted() {
     this.localUserInfo = cloneDeep(this.currentUser.userInfo)
-    console.log('userInfo.tags', this.currentUser.userInfo.tags)
     this.selectedTags = [...this.currentUser.userInfo.tags]
     this.imgList.push(this.currentUser.userInfo.image)
   },

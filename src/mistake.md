@@ -696,3 +696,100 @@ socket是在代理'/socket.io/'即可
 当用户切换到关注的tab后，会向后端发送所有文章已读，小红点消失
 
 每次打开首页时，同样会拉取未读的关注消息
+
+# 将图片上传逻辑抽成功能函数
+## 用户图像上传：
+选择后自动上传
+定义：
+data(){
+    uploadToken: '',
+    imageKey: [],
+    imageUrls: [],
+
+    // 原始文件
+    originalFiles: [],
+    // 压缩后的文件
+    compressedImages: []
+}
+压缩选择的图像。  compressImages()
+
+上传至七牛云。    uploadFiles()
+   需要：已压缩的图片， 图片存储地址，token（可以放在函数内一起完成）
+   返回：key数组， 完整url数组
+
+url保存至后端。  submitAvatars()
+  需要：图像的key数组
+
+## 文章图片上传：
+选择后后立刻压缩，点击按钮才会执行上传
+
+
+data(){
+      uploadToken: '',
+      imageUrls: [],
+      imageKey: [],
+
+      // 原始文件
+      originalFiles: [],
+      // 压缩后的文件
+      compressedImages: [],
+      // 默认压缩比率为80%
+      compressedRatio: 80
+}
+
+压缩选择的图像。compressImages()
+上传图片。uploadFiles()
+  需要：已压缩的图片， 图片存储地址，token
+  返回：key数组， 完整url数组
+url保存至后端。  submitBlog()
+  需要：图片的key数组
+
+
+## 兴趣图片上传
+选择后后立刻压缩，点击按钮才会执行上传
+
+data(){
+      uploadToken: '',
+      // 上传成功后得到的key
+      imageKey: [],
+      // 上传成功后完整的url
+      imageUrls: [],
+
+      // 原始文件
+      originalFiles: [],
+      // 压缩后的文件
+      compressedImages: [],
+      // 默认压缩比率为80%
+      compressedRatio: 80,
+}
+
+压缩选择的图像。compressImages()
+上传图片。uploadFiles()
+  需要：已压缩的图片， 图片存储地址，token
+  返回：key数组， 完整url数组
+url保存至后端。 submitBlog()
+  需要：图片的key数组
+
+## md文章图片上传
+选择后后立刻压缩，点击按钮才会执行上传
+data(){
+    uploadToken: '',
+      imageUrls: [],
+      imageKey: [],
+
+      // 原始文件
+      originalFiles: [],
+      // 压缩后的文件
+      compressedImages: [],
+      // 默认压缩比率为80%
+      compressedRatio: 80
+}
+压缩选择的图像。compressImages()
+上传图片。uploadFiles()
+  需要：已压缩的图片， 图片存储地址，token
+  返回：key数组， 完整url数组
+url保存至后端。 richEditorPublish()
+  需要：图片的key数组
+
+
+  
