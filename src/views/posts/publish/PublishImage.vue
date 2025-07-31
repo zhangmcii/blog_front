@@ -50,9 +50,7 @@ import { useCurrentUserStore } from '@/stores/user'
 import uploadApi from '@/api/upload/uploadApi.js'
 import postApi from '@/api/posts/postApi.js'
 import emitter from '@/utils/emitter.js'
-import { v4 as uuidv4 } from 'uuid'
-import * as qiniu from 'qiniu-js'
-import lrz from 'lrz'
+import { compressImages, uploadFiles, beforePicUpload } from '@/utils/common.js'
 
 export default {
   name: 'BlogPost',
@@ -80,9 +78,7 @@ export default {
       // 原始文件
       originalFiles: [],
       // 压缩后的文件
-      compressedImages: [],
-      // 默认压缩比率为80%
-      compressedRatio: 80
+      compressedImages: []
     }
   },
   setup() {
@@ -93,12 +89,6 @@ export default {
     ban_pub() {
       return this.content === '' || this.originalFiles.length === 0
     }
-  },
-  created() {
-    this.debounceCompress = this.debounce(this.compressImages, 100)
-  },
-  mounted() {
-    this.getUploadToken()
   },
   methods: {
     async getUploadToken() {
@@ -115,50 +105,16 @@ export default {
         }, wait)
       }
     },
-    handleFileChange(file, fileList) {
-      if (!this.beforePicUpload([file])) {
+    async handleFileChange(file, fileList) {
+      if (!beforePicUpload([file])) {
         return
       }
       // 确保只添加新的文件
       const newFiles = fileList.filter((f) => !this.originalFiles.some((of) => of.uid === f.uid))
       this.originalFiles = [...this.originalFiles, ...newFiles]
       // console.log('文件列表:', this.originalFiles)
-      this.debounceCompress()
-    },
-
-    async compressImages() {
-      const compressionRatio = this.compressedRatio / 100
-
-      // 找出未压缩的文件
-      const uncompressedFiles = this.originalFiles.filter(
-        (file) => !this.compressedImages.some((img) => img.uid === file.uid)
-      )
-
-      for (const file of uncompressedFiles) {
-        const rawFile = file.raw
-        const compressedFile = await lrz(rawFile, { quality: compressionRatio })
-
-        // console.log('压缩后的文件:', compressedFile)
-        // console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
-
-        // 将 base64 转换为 Blob
-        const byteString = atob(compressedFile.base64.split(',')[1])
-        const mimeString = compressedFile.base64.split(',')[0].split(':')[1].split(';')[0]
-        const arrayBuffer = new ArrayBuffer(byteString.length)
-        const uintArray = new Uint8Array(arrayBuffer)
-        for (let i = 0; i < byteString.length; i++) {
-          uintArray[i] = byteString.charCodeAt(i)
-        }
-        const blob = new Blob([arrayBuffer], { type: mimeString })
-
-        this.compressedImages.push({
-          src: compressedFile.base64,
-          blob, // 保存 Blob 对象
-          name: rawFile.name,
-          uid: rawFile.uid,
-          sizeInfo: `压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`
-        })
-      }
+      // 压缩图像
+      this.compressedImages = await compressImages(this.originalFiles, this.compressedImages)
     },
     handleFileRemove(file, fileList) {
       // 删除原始文件
@@ -170,61 +126,6 @@ export default {
       // console.log('当前原始文件列表:', this.originalFiles)
       // console.log('当前压缩文件列表:', this.compressedImages)
     },
-    beforePicUpload(fileList) {
-      for (const file of fileList) {
-        const isImage = file.raw.type.startsWith('image/')
-        if (!isImage) {
-          this.$message.error('只能上传图片格式文件！')
-          return false
-        }
-        const limitPic =
-          file.raw.type === 'image/png' ||
-          file.raw.type === 'image/jpg' ||
-          file.raw.type === 'image/jpeg'
-        if (!limitPic) {
-          this.$message.warning('请上传格式为png/jpg/jpeg的图片')
-          return false
-        }
-      }
-      return true
-    },
-    async uploadFiles() {
-      const domin = import.meta.env.VITE_QINIU_DOMAIN
-      this.uploading = true
-      try {
-        const putExtra = {}
-        const config = {
-          // 存储区域
-          region: qiniu.region.z0
-        }
-        for (const file of this.compressedImages) {
-          const folder = this.currentUser.uploadArticlesBaseUrl
-          const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
-          const key = folder + uniqueFileName
-          const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
-          await new Promise((resolve, reject) => {
-            // 保存 this 上下文
-            const self = this
-            observable.subscribe({
-              next() {},
-              error(err) {
-                reject(err)
-              },
-              complete(res) {
-                self.imageKey.push(res.key)
-                const imageUrl = `${domin}/${res.key}`
-                self.imageUrls.push(imageUrl)
-                resolve()
-              }
-            })
-          })
-        }
-      } catch (error) {
-        console.error('Upload failed:', error)
-      } finally {
-        this.uploading = false
-      }
-    },
     async submitBlog() {
       if (this.content === '') {
         this.$message.error('内容不能为空')
@@ -233,7 +134,7 @@ export default {
         this.$message.error('图片不能为空')
         return
       }
-      if (!this.beforePicUpload(this.originalFiles)) {
+      if (!beforePicUpload(this.originalFiles)) {
         return
       }
       const loadingInstance = this.$loading({
@@ -242,8 +143,17 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)'
       })
       try {
-        await this.uploadFiles()
-        const formattedContent = this.content.replace(/\n/g,'<br>')
+        // 获取上传凭证
+        await this.getUploadToken()
+        // 上传图片
+        const { imageKey, imageUrls } = await uploadFiles(
+          this.compressedImages,
+          this.currentUser.uploadArticlesBaseUrl,
+          this.uploadToken
+        )
+        this.imageKey = imageKey
+        this.imageUrls = imageUrls
+        const formattedContent = this.content.replace(/\n/g, '<br>')
         postApi
           .publishRichPost({ content: formattedContent, imageUrls: this.imageKey })
           .then((response) => {

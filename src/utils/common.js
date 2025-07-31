@@ -1,6 +1,8 @@
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { ElMessage } from 'element-plus'
 import { showConfirmDialog } from 'vant'
+import { v4 as uuidv4 } from 'uuid'
+import * as qiniu from 'qiniu-js'
 import router from '@/router'
 import lrz from 'lrz'
 
@@ -88,8 +90,8 @@ function debounce(func, wait) {
  * @return {Array} compressedImages 压缩后的图片列表
  */
 async function compressImages(originalFiles, _compressedImages) {
-  console.log('开始压缩图片:', originalFiles)
-  console.log('已压缩的图片:', _compressedImages)
+  // console.log('开始压缩图片:', originalFiles)
+  // console.log('已压缩的图片:', _compressedImages)
   const compressedRatio = 80
   const compressedImages = [..._compressedImages]
   const compressionRatio = compressedRatio / 100
@@ -98,14 +100,14 @@ async function compressImages(originalFiles, _compressedImages) {
   const uncompressedFiles = originalFiles.filter(
     (file) => !compressedImages.some((img) => img.uid === file.uid)
   )
-  console.log('未压缩的文件:', uncompressedFiles)
+  // console.log('未压缩的文件:', uncompressedFiles)
 
   for (const file of uncompressedFiles) {
     const rawFile = file.raw
     const compressedFile = await lrz(rawFile, { quality: compressionRatio })
 
-    // console.log('压缩后的文件:', compressedFile)
-    // console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
+    console.log('压缩后的文件:', compressedFile)
+    console.log(`压缩后大小: ${(compressedFile.file.size / 1024).toFixed(2)} KB`)
 
     // 将 base64 转换为 Blob
     const byteString = atob(compressedFile.base64.split(',')[1])
@@ -156,6 +158,50 @@ function beforePicUpload(fileList) {
   return true
 }
 
+// 文件上传至七牛云
+// compressedImages：已压缩的文件
+// targetPath： 七牛云存储的路径
+// uploadToken： 上传的凭证
+// 返回：key数组， 完整url数组
+async function uploadFiles(compressedImages, targetPath, uploadToken) {
+  const putExtra = {}
+  const config = {
+    // 存储区域
+    region: qiniu.region.z0
+  }
+  const imageKey = []
+  const imageUrls = []
+  try {
+    for (const file of compressedImages) {
+      const folder = targetPath
+      const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
+      const key = folder + uniqueFileName
+      const observable = qiniu.upload(file.blob, key, uploadToken, putExtra, config)
+      await new Promise((resolve, reject) => {
+        observable.subscribe({
+          next() {},
+          error(err) {
+            reject(err)
+          },
+          complete(res) {
+            imageKey.push(res.key)
+            const imageUrl = `${import.meta.env.VITE_QINIU_DOMAIN}/${res.key}`
+            imageUrls.push(imageUrl)
+            resolve()
+          }
+        })
+      })
+    }
+  } catch (error) {
+    console.error('Upload failed:', error)
+  } finally {
+    return {
+      imageKey,
+      imageUrls
+    }
+  }
+}
+
 function waitImage(imageUrls) {
   // 返回 Promise，让调用者感知加载状态
   return new Promise((resolve, reject) => {
@@ -175,10 +221,7 @@ function waitImage(imageUrls) {
       }, 2500)
     })
 
-    Promise.race([
-      Promise.all(imagePromises),
-      timeoutPromise
-    ])
+    Promise.race([Promise.all(imagePromises), timeoutPromise])
       .then(() => {
         resolve() // 加载完成，loading 结束
       })
@@ -197,6 +240,7 @@ export {
   isNode,
   debounce,
   compressImages,
+  uploadFiles,
   beforePicUpload,
   waitImage
 }
