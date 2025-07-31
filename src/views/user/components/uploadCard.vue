@@ -3,6 +3,7 @@ import ButtonClick from '@/utils/components/ButtonClick.vue'
 import imageApi from '@/api/user/imageApi.js'
 import uploadApi from '@/api/upload/uploadApi.js'
 import { useCurrentUserStore } from '@/stores/user'
+import { useOtherUserStore } from '@/stores/otherUser'
 import { compressImages, uploadFiles, beforePicUpload } from '@/utils/common.js'
 
 export default {
@@ -38,7 +39,6 @@ export default {
 
   data() {
     return {
-      uploadToken: '',
       movies: [],
       // 封面对应的名称
       imageNames: [],
@@ -61,7 +61,8 @@ export default {
   },
   setup() {
     const currentUser = useCurrentUserStore()
-    return { currentUser }
+    const otherUser = useOtherUserStore()
+    return { currentUser, otherUser }
   },
   computed: {
     selectShow() {
@@ -88,7 +89,7 @@ export default {
   methods: {
     async getUploadToken() {
       const response = await uploadApi.get_upload_token()
-      this.uploadToken = response.data.upload_token
+      return response.data.upload_token
     },
     async handleChange(file, fileList) {
       if (!beforePicUpload([file])) {
@@ -156,16 +157,17 @@ export default {
       this.button.loading = true
       try {
         // 获取上传凭证
-        await this.getUploadToken()
+        const uploadToken = await this.getUploadToken()
         // 上传图片
         const { imageKey, imageUrls } = await uploadFiles(
           this.compressedImages,
           this.currentUser.uploadInterestBaseUrl,
-          this.uploadToken
+          uploadToken
         )
         this.imageKey = imageKey
         this.imageUrls = imageUrls
-        console.log('imageUrls', this.imageUrls)
+        // 更新本地缓存
+        this.updateLocalUser(this.imageUrls, this.imageNames, this.type)
         imageApi
           .saveInterestImage(this.currentUser.userInfo.id, {
             urls: this.imageKey,
@@ -174,22 +176,15 @@ export default {
           })
           .then((response) => {
             if (response.data.msg === 'success') {
-              // const interestType = this.type === 'movie' ? '电影封面' : '书籍封面'
-              // this.$message.success(`${interestType}提交成功`)
               this.button.loading = false
               this.button.type = 'success'
               this.button.text = '提交成功'
               this.button.disabled = true
               this.button.icon = 'Check'
-              // 提交成功后改变提交按钮颜色和文字
-
-              // this.originalFiles = []
-              // this.$router.push('/user/')
             }
           })
           .catch((error) => {
             this.button.loading = false
-            console.log('555', error)
             if (error.response && error.response.status === 429) {
               uploadApi.del_image(this.imageKey)
               this.$message.info('今天的发布次数已达上限～')
@@ -197,6 +192,21 @@ export default {
           })
       } catch (error) {
         this.button.loading = false
+      }
+    },
+    updateLocalUser(urls, describe, _type) {
+      const arr = urls.map((item, index) => {
+        return {
+          url: item,
+          describe: describe[index]
+        }
+      })
+      if (_type === 'movie') {
+        this.currentUser.userInfo.interest = { ...this.currentUser.userInfo.interest, movies: arr }
+        this.otherUser.userInfo.interest = { ...this.otherUser.userInfo.interest, movies: arr }
+      } else if (_type === 'book') {
+        this.currentUser.userInfo.interest = { ...this.currentUser.userInfo.interest, books: arr }
+        this.otherUser.userInfo.interest = { ...this.otherUser.userInfo.interest, movies: arr }
       }
     }
   }

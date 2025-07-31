@@ -62,7 +62,6 @@ export default {
   data() {
     return {
       content: '',
-      uploadToken: '',
       imageUrls: [],
       uploading: false,
       imageKey: [],
@@ -93,17 +92,7 @@ export default {
   methods: {
     async getUploadToken() {
       const response = await uploadApi.get_upload_token()
-      this.uploadToken = response.data.upload_token
-    },
-    debounce(func, wait) {
-      let timeout
-      return function (...args) {
-        const context = this
-        clearTimeout(timeout)
-        timeout = setTimeout(() => {
-          func.apply(context, args)
-        }, wait)
-      }
+      return response.data.upload_token
     },
     async handleFileChange(file, fileList) {
       if (!beforePicUpload([file])) {
@@ -144,12 +133,12 @@ export default {
       })
       try {
         // 获取上传凭证
-        await this.getUploadToken()
+        const uploadToken = await this.getUploadToken()
         // 上传图片
         const { imageKey, imageUrls } = await uploadFiles(
           this.compressedImages,
           this.currentUser.uploadArticlesBaseUrl,
-          this.uploadToken
+          uploadToken
         )
         this.imageKey = imageKey
         this.imageUrls = imageUrls
