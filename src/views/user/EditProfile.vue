@@ -1,18 +1,16 @@
 <script>
-import editApi from '@/api/user/editApi.js'
-import userApi from '@/api/user/userApi.js'
-import { areaList } from '@vant/area-data'
+import { compressImages, uploadFiles, beforePicUpload } from '@/utils/common.js'
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
 import { cloneDeep } from '@pureadmin/utils'
+import { areaList } from '@vant/area-data'
 import { ElLoading } from 'element-plus'
-import { compressImages } from '@/utils/common.js'
 import uploadApi from '@/api/upload/uploadApi.js'
-import imageApi from '@/api/user/imageApi.js'
 import emitter from '@/utils/emitter.js'
-import { v4 as uuidv4 } from 'uuid'
-import * as qiniu from 'qiniu-js'
+import imageApi from '@/api/user/imageApi.js'
+import editApi from '@/api/user/editApi.js'
+import userApi from '@/api/user/userApi.js'
 
 export default {
   components: {
@@ -128,28 +126,9 @@ export default {
       this.tagShow = !this.tagShow
       this.getTagList()
     },
-    beforePicUpload(fileList) {
-      for (const file of fileList) {
-        const isImage = file.raw.type.startsWith('image/')
-        if (!isImage) {
-          this.$message.error('只能上传图片格式文件！')
-          return false
-        }
-        const limitPic =
-          file.raw.type === 'image/png' ||
-          file.raw.type === 'image/jpg' ||
-          file.raw.type === 'image/jpeg'
-        if (!limitPic) {
-          this.$message.warning('请上传格式为png/jpg/jpeg的图片')
-          return false
-        }
-      }
-      return true
-    },
     async handleFileChange(file, fileList) {
-      console.log('文件变化11', file.status)
       // 如果文件列表为空，直接返回
-      if (!this.beforePicUpload([file])) {
+      if (!beforePicUpload([file])) {
         return
       }
       const loading = ElLoading.service({
@@ -160,48 +139,20 @@ export default {
       this.originalFiles = [...fileList]
       // 压缩图像
       this.compressedImages = await compressImages(this.originalFiles, this.compressedImages)
+
       // 获取上传凭证
       await this.getUploadToken()
-      // 上传至七牛云
-      await this.uploadFiles()
+      // 上传图片
+      const { imageKey, imageUrls } = await uploadFiles(
+        this.compressedImages,
+        this.currentUser.uploadAvatarsBaseUrl,
+        this.uploadToken
+      )
+      this.imageKey = imageKey
+      this.imageUrls = imageUrls
       // url保存至后端
       await this.submitAvatars()
       loading.close()
-    },
-    async uploadFiles() {
-      console.log('开始上传图片', this.uploadToken)
-      const domin = import.meta.env.VITE_QINIU_DOMAIN
-      try {
-        const putExtra = {}
-        const config = {
-          // 存储区域
-          region: qiniu.region.z0
-        }
-        for (const file of this.compressedImages) {
-          const folder = this.currentUser.uploadAvatarsBaseUrl
-          const uniqueFileName = `${uuidv4()}.${file.name.split('.').pop()}`
-          const key = folder + uniqueFileName
-          const observable = qiniu.upload(file.blob, key, this.uploadToken, putExtra, config)
-          await new Promise((resolve, reject) => {
-            // 保存 this 上下文
-            const self = this
-            observable.subscribe({
-              next() {},
-              error(err) {
-                reject(err)
-              },
-              complete(res) {
-                self.imageKey.push(res.key)
-                const imageUrl = `http://${domin}/${res.key}`
-                self.imageUrls.push(imageUrl)
-                resolve()
-              }
-            })
-          })
-        }
-      } catch (error) {
-        console.error('Upload failed:', error)
-      }
     },
     async submitAvatars() {
       const domin = import.meta.env.VITE_QINIU_DOMAIN
