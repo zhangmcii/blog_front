@@ -29,7 +29,6 @@ export default {
       cityShow: false,
       tagShow: false,
 
-      uploadToken: '',
       imageKey: [],
       imageUrls: [],
       // 原始文件
@@ -141,12 +140,12 @@ export default {
       this.compressedImages = await compressImages(this.originalFiles, this.compressedImages)
 
       // 获取上传凭证
-      await this.getUploadToken()
+      const uploadToken = await this.getUploadToken()
       // 上传图片
       const { imageKey, imageUrls } = await uploadFiles(
         this.compressedImages,
         this.currentUser.uploadAvatarsBaseUrl,
-        this.uploadToken
+        uploadToken
       )
       this.imageKey = imageKey
       this.imageUrls = imageUrls
@@ -177,7 +176,7 @@ export default {
     // 改为异步获取上传凭证
     async getUploadToken() {
       await uploadApi.get_upload_token().then((res) => {
-        this.uploadToken = res.data.upload_token
+       return res.data.upload_token
       })
     }
   }

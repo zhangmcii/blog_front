@@ -9,6 +9,10 @@ export default {
     isActive: {
       type: Boolean,
       default: false
+    },
+    fontColor:{
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -18,7 +22,9 @@ export default {
 }
 </script>
 <template>
-  <div class="btn java" :class="{ active: isActive }" @click="$emit('click')">{{ content }}</div>
+  <div class="btn java" :class="{ active: isActive, fontColor: fontColor }" @click="$emit('click')">
+    {{ content }}
+  </div>
 </template>
 <style lang="scss" scoped>
 //设置为毛玻璃样式
@@ -57,5 +63,8 @@ export default {
 }
 .active {
   border: 1px solid rgb(4, 122, 239);
+}
+.fontColor {
+  color: #000;
 }
 </style>

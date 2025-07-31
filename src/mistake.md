@@ -773,7 +773,7 @@ url保存至后端。 submitBlog()
 ## md文章图片上传
 选择后后立刻压缩，点击按钮才会执行上传
 data(){
-    uploadToken: '',
+      uploadToken: '',
       imageUrls: [],
       imageKey: [],
 
@@ -787,7 +787,7 @@ data(){
 压缩选择的图像。compressImages()
 上传图片。uploadFiles()
   需要：已压缩的图片， 图片存储地址，token
-  返回：key数组， 完整url数组
+  返回：携带pos位置的key对象数组， 完整url数组
 url保存至后端。 richEditorPublish()
   需要：图片的key数组
 

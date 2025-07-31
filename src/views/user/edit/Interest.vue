@@ -1,6 +1,7 @@
 <script>
 import PageHeadBack from '@/utils/components/PageHeadBack.vue'
 import uploadCard from '@/views/user/components/uploadCard.vue'
+import ButtonAnimate from '@/utils/components/ButtonAnimate.vue'
 import interest from '@/views/user/components/Interest.vue'
 
 export default {
@@ -9,7 +10,8 @@ export default {
   components: {
     PageHeadBack,
     uploadCard,
-    interest
+    interest,
+    ButtonAnimate
   },
   data() {
     return {
@@ -30,7 +32,8 @@ export default {
       preData: {
         movies: [],
         books: []
-      }
+      },
+      activeInterest: 'movie'
     }
   },
   computed: {
@@ -59,6 +62,10 @@ export default {
         })
       }
       this.showPre = !this.showPre
+      console.log('11', this.preData)
+    },
+    setActive(type) {
+      this.activeInterest = type
     }
   }
 }
@@ -78,7 +85,19 @@ export default {
     <uploadCard ref="book" v-model:formData="formDataBook" type="book" />
 
     <el-dialog v-model="showPre" width="400">
-      <interest :interest="preData" />
+      <ButtonAnimate
+        content="喜欢的电影"
+        :isActive="activeInterest === 'movie'"
+        :fontColor="true"
+        @click="setActive('movie')"
+      />
+      <ButtonAnimate
+        content="在看的书籍"
+        :isActive="activeInterest === 'book'"
+        :fontColor="true"
+        @click="setActive('book')"
+      />
+      <interest :interest="preData" :showInterest="activeInterest" />
     </el-dialog>
   </PageHeadBack>
 </template>
