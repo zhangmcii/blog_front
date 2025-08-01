@@ -90,7 +90,7 @@ export default {
 <template>
   <div :style="containerStyle">
     <PostHeader :post="post" />
-    <PostContent :postContent="post.body_html?post.body_html:post.body" :preview="true" />
+     <PostContent :postContent="post.body" :preview="true" />
     <slot name="image"></slot>
 
     <PostAction :post="post" />

@@ -67,7 +67,7 @@ export default {
 <template>
   <PageHeadBack>
     <PostHeader :post="post" />
-    <PostContent :postContent="post.body_html ? post.body_html : post.body" />
+    <PostContent :postContent="post.body" />
     <PostImage :postImages="post.post_images" />
 
     <PostAction :post="post" :showShare="true" :showEdit="true" />

@@ -78,7 +78,7 @@ export default {
     <el-text>你在想什么？</el-text>
   </div>
   <Transition mode="out-in">
-    <MarkdownEditor ref="md" v-if="activeRichEditor" @contentChange="(n) => (richContent = n)" @uploadComplete=""/>
+    <MarkdownEditor ref="md" v-if="activeRichEditor" @contentChange="(n) => (richContent = n)"/>
     <div v-else>
       <el-input
         v-model="content"
