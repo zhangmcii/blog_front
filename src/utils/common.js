@@ -185,9 +185,9 @@ async function uploadFiles(compressedImages, targetPath, uploadToken) {
           },
           complete(res) {
             // markdown场景中，file会携带pos属性
-            file.hasOwnProperty('pos')
-              ? imageKey.push({ pos: file.pos, url: res.key })
-              : imageKey.push(res.key)
+            file.pos === undefined
+              ? imageKey.push(res.key)
+              : imageKey.push({ pos: file.pos, url: res.key })
             const imageUrl = `${import.meta.env.VITE_QINIU_DOMAIN}/${res.key}`
             imageUrls.push(imageUrl)
             resolve()
