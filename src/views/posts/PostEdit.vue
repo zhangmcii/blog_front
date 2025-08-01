@@ -101,7 +101,6 @@ export default {
       ref="md"
       v-if="activeRichEditor"
       :bodyInit="post.body"
-      :bodyHtmlInit="post.body_html"
       @contentChange="(n) => (richContent = n)"
     />
     <el-input
