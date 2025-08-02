@@ -81,7 +81,7 @@ export default {
         >
       </Transition>
     </div>
-    <uploadCard ref="movie" v-model:formData="formDataMovie" class="upload-card" />
+    <uploadCard ref="movie" v-model:formData="formDataMovie" type="movie" class="upload-card" />
     <uploadCard ref="book" v-model:formData="formDataBook" type="book" />
 
     <el-dialog v-model="showPre" width="400">

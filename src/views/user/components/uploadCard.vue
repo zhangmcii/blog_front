@@ -206,7 +206,7 @@ export default {
         this.otherUser.userInfo.interest = { ...this.otherUser.userInfo.interest, movies: arr }
       } else if (_type === 'book') {
         this.currentUser.userInfo.interest = { ...this.currentUser.userInfo.interest, books: arr }
-        this.otherUser.userInfo.interest = { ...this.otherUser.userInfo.interest, movies: arr }
+        this.otherUser.userInfo.interest = { ...this.otherUser.userInfo.interest, books: arr }
       }
     }
   }
