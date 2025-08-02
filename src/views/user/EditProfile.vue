@@ -175,9 +175,8 @@ export default {
     },
     // 改为异步获取上传凭证
     async getUploadToken() {
-      await uploadApi.get_upload_token().then((res) => {
-       return res.data.upload_token
-      })
+      const response = await uploadApi.get_upload_token()
+      return response.data.upload_token
     }
   }
 }
