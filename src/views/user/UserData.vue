@@ -16,7 +16,7 @@
     <div class="area-container">
       <div class="avatar" style="margin-top: 1rem">
         <el-image
-          fit="fill"
+          fit="cover"
           style="border-radius: 50%; width: 120px; height: 120px"
           alt="用户图像"
           :src="user.image"
