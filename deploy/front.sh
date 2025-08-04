@@ -12,7 +12,7 @@ function front_to_remote(){
         # 检测Mac的芯片类型
         if sysctl -n machdep.cpu.brand_string | grep -q "Apple"; then
             echo "芯片类型: Apple M系列 (ARM架构)"
-            base_path=""
+            base_path="/Users/nizhenshi/Documents/proj/blog/blog_front"
         else
             echo "芯片类型: Intel (x86_64架构)"
             base_path="/Users/v/Documents/proj/blog/blog_front"
