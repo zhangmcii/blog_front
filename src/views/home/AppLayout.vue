@@ -4,7 +4,7 @@ import { Scrollbar } from 'vue-amazing-ui'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
 import 'vue-amazing-ui/es/scrollbar/Scrollbar.css'
-import MobileRemind from '@/utils/components/MobileRemind.vue'
+// import MobileRemind from '@/utils/components/MobileRemind.vue'
 
 const route = useRoute()
 // 判断是否为 用户资料页面
@@ -27,7 +27,7 @@ const isUserPage = computed(() => route.name === 'user')
         </router-view>
       </Scrollbar>
     </el-main>
-    <MobileRemind />
+    <!-- <MobileRemind /> -->
   </el-container>
 </template>
 
