@@ -2,7 +2,7 @@
 import notificationApi from '@/api/notification/notificationApi.js'
 import { useCurrentUserStore } from '@/stores/user'
 import { useOtherUserStore } from '@/stores/otherUser'
-import NotificationDetail from '@/components/com/NotificationDetail.vue'
+import NotificationDetail from './NotificationDetail.vue'
 import emitter from '@/utils/emitter.js'
 
 export default {

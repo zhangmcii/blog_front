@@ -1,9 +1,6 @@
 import logOut from '../asset/logOut.png'
 import cherry from '../asset/cherry5.jpg'
 import loading from '../asset/loading.gif'
-import book1 from '../asset/book/book1.webp'
-import book2 from '../asset/book/book2.webp'
-import book3 from '../asset/book/book3.webp'
 import imageApi from '@/api/user/imageApi.js'
 
 function getRandomImage() {
@@ -25,6 +22,5 @@ const imageCfg = {
   loginFail: cherry,
   logOut: logOut,
   preLoading: loading,
-  book: [book1, book2, book3]
 }
 export default imageCfg

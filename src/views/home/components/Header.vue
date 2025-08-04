@@ -104,7 +104,7 @@ import daysApi from '@/api/days/daysApi.js'
 import emitter from '@/utils/emitter.js'
 import imageCfg from '@/config/image.js'
 import homeIcon from '@/asset/svg/homeIcon.svg?component'
-import BellCom from '@/components/com/BellCom.vue'
+import BellCom from './BellCom.vue'
 export default {
   name: 'BurgerMenu',
   components: {

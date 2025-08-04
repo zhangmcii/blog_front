@@ -1,5 +1,5 @@
 <script setup>
-import AppHeader from './AppHeader.vue'
+import Header from './components/Header.vue'
 import { Scrollbar } from 'vue-amazing-ui'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
@@ -14,7 +14,7 @@ const isUserPage = computed(() => route.name === 'user')
 <template>
   <el-container>
     <el-header>
-      <AppHeader />
+      <Header />
     </el-header>
     <el-divider />
     <el-main :class="{ 'no-padding': isUserPage }">
