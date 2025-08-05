@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
+import os from 'os'
 import { include, exclude } from './build/optimize'
 import { loadEnv } from 'vite'
 import { getPluginsList } from './build/plugins'
@@ -6,7 +7,19 @@ import { root, wrapperEnv } from './build/utils'
 
 export default ({ mode }) => {
   const { VITE_COMPRESSION, VITE_PORT } = wrapperEnv(loadEnv(mode, root))
-
+  // 获取本机局域网IP
+  function getLocalIP() {
+    const interfaces = os.networkInterfaces()
+    for (const name of Object.keys(interfaces)) {
+      for (const iface of interfaces[name] || []) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          return iface.address
+        }
+      }
+    }
+    return 'localhost'
+  }
+  const backendAddr = `http://${getLocalIP()}:8082`
   return {
     plugins: getPluginsList(VITE_COMPRESSION),
     resolve: {
@@ -20,13 +33,13 @@ export default ({ mode }) => {
       proxy: {
         // 后端接口代理
         '/api': {
-          target: `${loadEnv(mode, process.cwd()).VITE_SERVE}`,
+          target: backendAddr,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         },
         // websocket代理
         '/socket.io/': {
-          target: `${loadEnv(mode, process.cwd()).VITE_SERVE}`,
+          target: backendAddr,
           changeOrigin: true,
           // 启用 WebSocket 代理
           ws: true
