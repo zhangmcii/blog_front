@@ -1,24 +1,13 @@
 import { fileURLToPath, URL } from 'node:url'
-import os from 'os'
 import { include, exclude } from './build/optimize'
 import { loadEnv } from 'vite'
 import { getPluginsList } from './build/plugins'
 import { root, wrapperEnv } from './build/utils'
+import { getLocalIP } from './src/utils/ipUtil.js'
 
 export default ({ mode }) => {
   const { VITE_COMPRESSION, VITE_PORT } = wrapperEnv(loadEnv(mode, root))
-  // 获取本机局域网IP
-  function getLocalIP() {
-    const interfaces = os.networkInterfaces()
-    for (const name of Object.keys(interfaces)) {
-      for (const iface of interfaces[name] || []) {
-        if (iface.family === 'IPv4' && !iface.internal) {
-          return iface.address
-        }
-      }
-    }
-    return 'localhost'
-  }
+
   const backendAddr = `http://${getLocalIP()}:8082`
   return {
     plugins: getPluginsList(VITE_COMPRESSION),
