@@ -71,6 +71,32 @@ const error = [
     component: () => import('../views/error/NetError.vue')
   }
 ]
+const admin = [
+  {
+    path: '/editProfileAdmin/:id',
+    name: 'editProfileAdmin',
+    component: () => import('../views/user/EditProfileAdmin.vue'),
+    meta: { roles: ['admin'] }
+  },
+  {
+    path: '/commentManagement',
+    name: 'commentManagement',
+    component: () => import('../views/comment/commentManagement.vue'),
+    meta: { roles: ['admin'] }
+  },
+  {
+    path: '/operateLog',
+    name: 'operateLog',
+    component: () => import('../views/data_manage/OperateLog.vue'),
+    meta: { roles: ['admin'] }
+  },
+  {
+    path: '/tag',
+    name: 'tag',
+    component: () => import('../views/user/admin/Tag.vue'),
+     meta: { roles: ['admin'] }
+  }
+]
 const routes = [
   {
     path: '/home',
@@ -88,13 +114,6 @@ const routes = [
         name: 'user',
         component: () => import('../views/user/UserData.vue'),
         meta: { keepAlive: true }
-      },
-
-      {
-        path: '/editProfileAdmin/:id',
-        name: 'editProfileAdmin',
-        component: () => import('../views/user/EditProfileAdmin.vue'),
-        meta: { roles: ['admin'] }
       },
 
       // 上传公共背景库图片
@@ -132,18 +151,7 @@ const routes = [
         name: 'follow',
         component: () => import('../views/user/FollowList.vue')
       },
-      {
-        path: '/commentManagement',
-        name: 'commentManagement',
-        component: () => import('../views/comment/commentManagement.vue'),
-        meta: { roles: ['admin'] }
-      },
-      {
-        path: '/operateLog',
-        name: 'operateLog',
-        component: () => import('../views/data_manage/OperateLog.vue'),
-        meta: { roles: ['admin'] }
-      },
+
       {
         path: '/register',
         name: 'register',
@@ -152,6 +160,7 @@ const routes = [
       ...updateUser,
       ...setting,
       ...error,
+      ...admin
     ]
   },
   { path: '/', redirect: '/welcome' },

@@ -12,5 +12,8 @@ export default {
   },
   editUser(data){
     return $http.post(`${url_prefix}/update_user`, data)
+  },
+  updateTag(data){
+    return $http.post('/update_tag', data)
   }
 }

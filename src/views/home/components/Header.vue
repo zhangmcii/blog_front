@@ -43,6 +43,12 @@
               @click="handleCellClick('/commentManagement')"
             />
             <van-cell
+              title="标签管理"
+              icon="medal-o"
+              clickable
+              @click="handleCellClick('/tag')"
+            />
+            <van-cell
               title="操作日志"
               icon="shield-o"
               clickable
