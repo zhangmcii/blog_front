@@ -1,6 +1,6 @@
 <template>
   <PageHeadBack>
-    <div class="flex gap-2">
+    <div>
       <el-tag
         v-for="tag in dynamicTags"
         :key="tag.name"
@@ -25,12 +25,13 @@
         + 新增 Tag
       </el-button>
     </div>
+
     <div class="del" v-if="tagRemove.length">
       待删除的标签：
       <el-tag
         v-for="tag in tagRemove"
         :key="tag"
-        type="error"
+        type="danger"
         round
         closable
         @close="cancelDel(tag)"
@@ -38,7 +39,9 @@
         {{ tag }}
       </el-tag>
     </div>
+
     <div class="but">
+      <el-text>注：可用空格分隔，一次输入多个标签</el-text>
       <el-button type="primary" round :disabled="!tagChange" @click="reset">重置</el-button>
       <el-button type="primary" round :disabled="!tagChange" @click="save">保存</el-button>
     </div>
@@ -102,15 +105,23 @@ const handleInputConfirm = () => {
     inputValue.value = ''
     return
   }
-  const exits = dynamicTags.value.some((tag) => tag.name == inputValue.value)
-  if (exits) {
-    ElMessage.warning('该标签已存在')
-    return
+  // 可批量输入tag
+  const t = [...new Set(inputValue.value.split(' '))]
+  for (const item of t) {
+    const exits = dynamicTags.value.some((tag) => tag.name == item)
+    if (exits) {
+      ElMessage.warning(`标签${item}已存在`)
+      return
+    }
   }
-  dynamicTags.value.push({
-    name: inputValue.value,
-    type: newColor
+
+  t.forEach((item) => {
+    dynamicTags.value.push({
+      name: item,
+      type: newColor
+    })
   })
+
   inputVisible.value = false
   inputValue.value = ''
 }
@@ -132,6 +143,8 @@ getTagList()
 
 const reset = () => {
   dynamicTags.value = [...originTag.value]
+  inputVisible.value = false
+  inputValue.value = ''
 }
 const save = () => {
   if (!tagChange.value) {
@@ -211,6 +224,7 @@ function updateOriginTag(tagAdd, tagRemove) {
   //   margin: 30px 0px;
   width: 100%;
   .el-button {
+    margin-top: 10px;
     width: 45%;
   }
 }
