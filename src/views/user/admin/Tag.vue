@@ -106,7 +106,7 @@ const handleInputConfirm = () => {
     return
   }
   // 可批量输入tag
-  const t = [...new Set(inputValue.value.split(' '))]
+  const t = [...new Set(inputValue.value.split(' '))].filter((item)=>item!='')
   for (const item of t) {
     const exits = dynamicTags.value.some((tag) => tag.name == item)
     if (exits) {
