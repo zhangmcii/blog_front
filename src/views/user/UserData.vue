@@ -83,7 +83,7 @@
                       <el-col :xs="6" :xl="4">所在地</el-col>
                       <el-col :xs="16" :xl="10">{{ location }}</el-col>
                     </el-row>
-                    <el-row>
+                    <el-row v-if="user.sex">
                       <el-col :xs="6" :xl="4">性别</el-col>
                       <el-col :xs="15" :xl="10">{{ user.sex }}</el-col>
                     </el-row>
