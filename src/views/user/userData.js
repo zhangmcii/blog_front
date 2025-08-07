@@ -164,7 +164,6 @@ export default {
     // 进入新的用户资料
     else {
       this.isUserPage = true
-      this.getUser()
     }
   },
   mounted() {},
