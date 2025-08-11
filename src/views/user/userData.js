@@ -134,7 +134,7 @@ export default {
       return this.isUserPage ? '#ffffff' : '#000000'
     },
     socialCount() {
-      return Object.values(this.currentUser.userInfo.social_account).every(
+      return Object.values(this.user.social_account).every(
         (value) => value === '' || value === null || value === undefined
       )
     },

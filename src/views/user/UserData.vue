@@ -152,7 +152,7 @@
         />
         <interest :showInterest="activeInterest" :interest="user.interest" />
         <el-card class="socialLinks" v-if="!socialCount">
-          <socialLinks :links="currentUser.userInfo.social_account" />
+          <socialLinks :links="user.social_account" />
         </el-card>
 
         <!-- <div class="hamburger" @click="but = !but">
