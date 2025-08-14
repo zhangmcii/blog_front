@@ -88,9 +88,9 @@ export default {
 </script>
 
 <template>
-  <div :style="containerStyle">
+  <div class="post-card" :style="containerStyle">
     <PostHeader :post="post" />
-     <PostContent :postContent="post.body" :preview="true" />
+    <PostContent :postContent="post.body" :preview="true" />
     <slot name="image"></slot>
 
     <PostAction :post="post" />
@@ -99,10 +99,5 @@ export default {
   </div>
 </template>
 <style lang="scss" scoped>
-// 用户名13px  时间12px  文字14px  图片121px
-.block {
-  width: 100%;
-  height: 5px;
-  background-color: #f5f7fa;
-}
+@import './PostCard.scss';
 </style>

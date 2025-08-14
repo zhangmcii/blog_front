@@ -95,96 +95,102 @@ export default {
 </script>
 
 <template>
-  <GradientText
-    class="gradient-text"
-    :size="28"
-    :weight="500"
-    :gradient="{
-      deg: '90deg',
-      from: '#09c8ce',
-      to: '#eb2f96'
-    }"
-    >你好 {{ currentUser.priorityName }}</GradientText
-  >
-  <PostPublish
-    @loading-begin="(flag) => (loading.publishPost = flag)"
-    @posts-result="getPostsResult"
-    v-if="currentUser.isLogin"
-  />
-  <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
-    <el-tab-pane label="广场" name="all">
-      <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0 && !loading.card" />
-      <SkeletonUtil :loading="loading.card" :row="5" :throttle="throttle" :useNew="true">
-        <PostPreview
-          v-for="item in posts"
-          :key="item.id"
-          :post="item"
-          :containerStyle="{ marginBottom: '10px' }"
-          @click="$router.push(`/postDetail/${item.id}`)"
-          v-slide-in
-        >
-          <template #image>
-            <PostImage :postImages="item.post_images" @click.stop="" />
-          </template>
-        </PostPreview>
-      </SkeletonUtil>
-    </el-tab-pane>
-    <el-tab-pane name="showFollowed" v-if="currentUser.isLogin">
-      <template #label>
-        <van-badge :dot="showDot" :offset="[1, -1]"> 关注 </van-badge>
-      </template>
-      <el-empty
-        :image-size="200"
-        v-if="activeName == 'showFollowed' && posts_count == 0 && !loading.card"
-      />
-      <SkeletonUtil :loading="loading.card" :row="5" :throttle="throttle" :useNew="true">
-        <PostPreview
-          v-for="item in posts"
-          :key="item.id"
-          :post="item"
-          :containerStyle="{ marginBottom: '10px' }"
-          @click="$router.push(`/postDetail/${item.id}`)"
-          v-slide-in
-        >
-          <template #image>
-            <PostImage :postImages="item.post_images" @click.stop="" />
-          </template>
-        </PostPreview>
-      </SkeletonUtil>
-    </el-tab-pane>
-  </el-tabs>
-  <el-pagination
-    v-model:current-page="currentPage"
-    :page-size="10"
-    layout="total, prev, pager, next"
-    :total="posts_count"
-    @current-change="handleCurrentChange"
-    :hide-on-single-page="true"
-    :pager-count="5"
-  />
-  <ICP />
+  <div class="posts-container">
+    <GradientText
+      class="gradient-text"
+      :size="28"
+      :weight="500"
+      :gradient="{
+        deg: '90deg',
+        from: '#09c8ce',
+        to: '#eb2f96'
+      }"
+      >你好 {{ currentUser.priorityName }}</GradientText
+    >
+    <PostPublish
+      @loading-begin="(flag) => (loading.publishPost = flag)"
+      @posts-result="getPostsResult"
+      v-if="currentUser.isLogin"
+    />
+    <el-tabs v-model="activeName" type="card" class="demo-tabs" @tab-change="changeTab">
+      <el-tab-pane label="广场" name="all">
+        <el-empty :image-size="200" v-if="activeName == 'all' && posts_count == 0 && !loading.card" />
+        <SkeletonUtil :loading="loading.card" :row="5" :throttle="throttle" :useNew="true">
+          <transition-group name="slide-in">
+            <PostPreview
+              v-for="item in posts"
+              :key="item.id"
+              :post="item"
+              :containerStyle="{ marginBottom: '20px' }"
+              @click="$router.push(`/postDetail/${item.id}`)"
+              v-slide-in
+            >
+              <template #image>
+                <PostImage :postImages="item.post_images" @click.stop="" />
+              </template>
+            </PostPreview>
+          </transition-group>
+        </SkeletonUtil>
+      </el-tab-pane>
+      <el-tab-pane name="showFollowed" v-if="currentUser.isLogin">
+        <template #label>
+          <van-badge :dot="showDot" :offset="[1, -1]"> 关注 </van-badge>
+        </template>
+        <el-empty
+          :image-size="200"
+          v-if="activeName == 'showFollowed' && posts_count == 0 && !loading.card"
+        />
+        <SkeletonUtil :loading="loading.card" :row="5" :throttle="throttle" :useNew="true">
+          <transition-group name="slide-in">
+            <PostPreview
+              v-for="item in posts"
+              :key="item.id"
+              :post="item"
+              :containerStyle="{ marginBottom: '20px' }"
+              @click="$router.push(`/postDetail/${item.id}`)"
+              v-slide-in
+            >
+              <template #image>
+                <PostImage :postImages="item.post_images" @click.stop="" />
+              </template>
+            </PostPreview>
+          </transition-group>
+        </SkeletonUtil>
+      </el-tab-pane>
+    </el-tabs>
+    <el-pagination
+      v-model:current-page="currentPage"
+      :page-size="10"
+      layout="total, prev, pager, next"
+      :total="posts_count"
+      @current-change="handleCurrentChange"
+      :hide-on-single-page="true"
+      :pager-count="5"
+    />
+    <ICP />
+  </div>
 </template>
-<style scoped>
+<style lang="scss" scoped>
+@import './components/PostCard.scss';
+
+.posts-container {
+  padding: 10px;
+}
+
 .gradient-text {
-  margin: 0px 0px 0px 0px;
-}
-
-.el-pagination {
-  /* float: right; */
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
-}
-.demo-tabs {
-  margin-top: 20px;
-  /* 当内容较少时，让icp出现在最下方，而不是中间 */
-  min-height: 57vh;
-}
-
-.demo-tabs > .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
+  margin: 0px 0px 10px 0px;
+  position: relative;
+  display: inline-block;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #09c8ce, #eb2f96);
+    border-radius: 2px;
+  }
 }
 </style>

@@ -163,19 +163,5 @@ export default {
   />
 </template>
 <style scoped>
-.footer {
-  margin: 0px 0px 10px 0px;
-}
-.praise-enter-active,
-.praise-leave-active {
-  transition: all 0.15s cubic-bezier(0.42, 0, 0.34, 1.55);
-}
-.praise-enter-from,
-.praise-leave-to {
-  transform: scale(0);
-}
-.praise-enter-to,
-.praise-leave-from {
-  transform: scale(1);
-}
+/* 底部操作区样式由 PostCard.scss 统一管理 */
 </style>

@@ -45,24 +45,13 @@ export default {
       }}</el-text>
     </div>
     <div>
-      <el-text size="small" class="head-time">{{ from_now }}</el-text>
+      <el-text size="small" class="head-time">
+        <i class="el-icon-time"></i>
+        {{ from_now }}
+      </el-text>
     </div>
   </el-row>
 </template>
 <style lang="scss" scoped>
-.head {
-  height: 40px;
-  margin: 0px 0px 10px 0px;
-}
-.head-name {
-  display: flex;
-  align-items: center;
-  .el-text {
-    margin-left: 5px;
-    font-size: 13px;
-  }
-}
-.head-time {
-  margin-right: 1px;
-}
+/* 头部样式由 PostCard.scss 统一管理 */
 </style>
