@@ -193,4 +193,14 @@ export default {
     border-radius: 2px;
   }
 }
+// .el-pagination {
+//   /* float: right; */
+//   display: flex;
+//   justify-content: flex-end;
+//   margin-bottom: 10px;
+// }
+.demo-tabs {
+  margin-top: 20px;
+}
+
 </style>
