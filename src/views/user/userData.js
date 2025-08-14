@@ -144,6 +144,12 @@ export default {
   },
   // 当从A资料跳转B资料时，更新资料页面
   created() {
+    // 首次加载时获取用户数据，但只在非缓存组件的情况下
+    // 使用 this._inactive 判断组件是否处于缓存状态
+    if (!this._inactive) {
+      this.getUser()
+    }
+    
     this.$watch(
       () => this.$route.params.userName,
       () => {
@@ -156,14 +162,30 @@ export default {
   },
   // 在首次挂载、以及每次从缓存中被重新插入的时候调用
   activated() {
-    // 还是上一个用户资料
-    if (this.otherUser.userInfo.username === this.$route.params.userName) {
-      this.user = { ...this.otherUser.userInfo }
+    // 检查当前用户是否已登录且是查看自己的资料
+    const isViewingSelf = this.currentUser.isLogin && 
+      this.$route.params.userName === this.currentUser.userInfo.username
+    
+    // 如果是查看自己的资料，确保使用最新的用户信息
+    if (isViewingSelf) {
+      this.user = { ...this.currentUser.userInfo }
+      this.isUserPage = true
       this.setMainProperty()
     }
-    // 进入新的用户资料
+    // 还是上一个用户资料
+    else if (this.otherUser.userInfo.username === this.$route.params.userName) {
+      this.user = { ...this.otherUser.userInfo }
+      this.isUserPage = true
+      this.setMainProperty()
+    }
+    // 进入新的用户资料，但避免与 created 重复调用
     else {
       this.isUserPage = true
+      // 只有当组件是从缓存中激活时才调用 getUser
+      // 首次加载时 created 已经调用过了
+      if (this._inactive) {
+        this.getUser()
+      }
     }
   },
   mounted() {},
@@ -172,8 +194,19 @@ export default {
       if (!this.isUserPage) {
         return
       }
+      
+      // 确保背景图片URL是最新的
+      let bgImageUrl = this.bgImage
+      
+      // 如果是当前用户，确保使用最新的背景图片
+      if (this.isCurrentUser && this.currentUser.backGroundUrl) {
+        bgImageUrl = this.currentUser.backGroundUrl
+      } else if (!this.isCurrentUser && this.otherUser.backGroundUrl) {
+        bgImageUrl = this.otherUser.backGroundUrl
+      }
+      
       const root = document.documentElement
-      root.style.setProperty('--leleo-background-image-url', `url('${this.bgImage}')`)
+      root.style.setProperty('--leleo-background-image-url', `url('${bgImageUrl}')`)
     },
     // 每次点击tag触发动画
     playTagAnimation(e) {
@@ -209,22 +242,54 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)'
       })
       this.loading.userData = true
+      
+      // 检查是否是查看当前登录用户的资料
+      const isViewingSelf = this.currentUser.isLogin && 
+        userName === this.currentUser.userInfo.username
+      
+      // 如果是查看自己的资料且已有数据，优先使用当前用户的数据
+      if (isViewingSelf && Object.keys(this.currentUser.userInfo).length > 0) {
+        this.user = { ...this.currentUser.userInfo }
+        this.imgList = [this.user.image]
+        this.loading.userData = false
+        this.loading.skeleton = false
+        this.setMainProperty()
+        loading.close()
+        return
+      }
+      
       if (!userName) {
         userName = this.otherUser.userInfo.username
       }
       if (!userName) {
         this.$message.error('要显示资料的用户名为空！')
+        loading.close()
         return
       }
+      
       userApi.getUserByUsername(userName).then((res) => {
         this.loading.userData = false
         this.user = res.data.data
-        this.otherUser.userInfo = res.data.data
-        // 这里不能直接保存。当游客访问时，将别人的信息保存成当前用户。会将游客变为已登录用户
-        if (this.currentUser.isLogin && this.isCurrentUser) {
+        
+        // 更新对应的存储
+        if (isViewingSelf) {
           this.currentUser.setUserInfo(res.data.data)
+          // 确保背景图片URL也被更新
+          if (res.data.data.bg_image) {
+            this.currentUser.bg_image = res.data.data.bg_image
+          }
+        } else {
+          this.otherUser.userInfo = res.data.data
+          // 确保背景图片URL也被更新
+          if (res.data.data.bg_image) {
+            this.otherUser.bg_image = res.data.data.bg_image
+          }
         }
+        
+        // 清空并重新添加图片列表
+        this.imgList = []
         this.imgList.push(this.user.image)
+        
         // 让私信和关注按钮与用户数据同时出现
         setTimeout(() => {
           this.loading.skeleton = false
@@ -234,6 +299,12 @@ export default {
             loading.close()
           })
         }, this.skeletonThrottle.trailing)
+      }).catch(err => {
+        this.loading.userData = false
+        this.loading.skeleton = false
+        loading.close()
+        this.$message.error('获取用户数据失败')
+        console.error(err)
       })
     },
     async getPosts(userName, page) {
