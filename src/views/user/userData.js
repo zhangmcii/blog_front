@@ -16,7 +16,6 @@ import { showConfirmDialog } from 'vant'
 import { loginReminder, compressImages, waitImage } from '@/utils/common.js'
 import { ElLoading } from 'element-plus'
 
-
 export default {
   components: {
     typewriter,
@@ -144,17 +143,16 @@ export default {
   },
   // 当从A资料跳转B资料时，更新资料页面
   created() {
-    // 首次加载时获取用户数据，但只在非缓存组件的情况下
-    // 使用 this._inactive 判断组件是否处于缓存状态
-    if (!this._inactive) {
-      this.getUser()
-    }
+    // 首次加载时获取用户数据
+    this.getUser()
     
+    // 监听路由参数变化
     this.$watch(
       () => this.$route.params.userName,
-      () => {
-        // 跳转到用户资料才会执行(避免切换出也调用) ，并且优先使用缓存
-        if (this.$route.name === 'user' && this.otherUser.userInfo.username !== this.$route.params.userName) {
+      (newUserName, oldUserName) => {
+        // 当用户名参数变化且当前路由是用户资料页时，重新获取用户数据
+        if (this.$route.name === 'user' && newUserName !== oldUserName) {
+          this.isUserPage = true
           this.getUser()
         }
       }
@@ -162,9 +160,12 @@ export default {
   },
   // 在首次挂载、以及每次从缓存中被重新插入的时候调用
   activated() {
+    // 获取当前路由中的用户名参数
+    const routeUserName = this.$route.params.userName
+    
     // 检查当前用户是否已登录且是查看自己的资料
     const isViewingSelf = this.currentUser.isLogin && 
-      this.$route.params.userName === this.currentUser.userInfo.username
+      routeUserName === this.currentUser.userInfo.username
     
     // 如果是查看自己的资料，确保使用最新的用户信息
     if (isViewingSelf) {
@@ -172,20 +173,16 @@ export default {
       this.isUserPage = true
       this.setMainProperty()
     }
-    // 还是上一个用户资料
-    else if (this.otherUser.userInfo.username === this.$route.params.userName) {
-      this.user = { ...this.otherUser.userInfo }
+    // 检查是否与当前显示的用户资料不同
+    else if (this.user.username !== routeUserName) {
+      // 用户名不匹配，需要重新获取数据
       this.isUserPage = true
-      this.setMainProperty()
+      this.getUser()
     }
-    // 进入新的用户资料，但避免与 created 重复调用
+    // 用户名匹配但可能需要刷新属性
     else {
       this.isUserPage = true
-      // 只有当组件是从缓存中激活时才调用 getUser
-      // 首次加载时 created 已经调用过了
-      if (this._inactive) {
-        this.getUser()
-      }
+      this.setMainProperty()
     }
   },
   mounted() {},
