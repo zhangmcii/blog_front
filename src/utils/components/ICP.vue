@@ -1,6 +1,6 @@
 <script setup>
-// import gonganCodeIcon from '../assets/img/gongan-code-icon.png'
 import { ref, onMounted, onUnmounted } from 'vue'
+
 let beginYear = '2024'
 let currentYear = new Date().getFullYear()
 let author = {
@@ -13,49 +13,34 @@ let icp = {
   code: import.meta.env.VITE_ICP,
   link: 'http://beian.miit.gov.cn/'
 }
-// 公安备案
-let gongan = {
-  code: '公安备案号',
-  link: 'http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=CODE'
+
+const isFixed = ref(false)
+
+function checkFooterPosition() {
+  const bodyHeight = document.body.scrollHeight
+  const windowHeight = window.innerHeight
+  // 如果内容高度小于视口高度，ICP需要固定在底部
+  isFixed.value = bodyHeight <= windowHeight
 }
-let idTmp = 0
-// 一些其它的经营性 ICP 许可证。没有的话，忽略即可。
-let otherItems = [
-  {
-    id: idTmp++,
-    code: '',
-    link: ''
-  }
-]
-// const isFixed = ref(false)
 
-// function checkFooterPosition() {
-//   const bodyHeight = document.body.scrollHeight
-//   const windowHeight = window.innerHeight
-//   // 如果内容高度小于视口高度，ICP需要固定在底部
-//   console.log('bodyHeight', bodyHeight)
-//   console.log('windowHeight', windowHeight)
-//   isFixed.value = bodyHeight <= windowHeight
-//   console.log('11', isFixed.value)
-// }
+onMounted(() => {
+  window.addEventListener('resize', checkFooterPosition)
+  window.addEventListener('load', checkFooterPosition)
+  // 初始检查一次
+  checkFooterPosition()
+})
 
-// onMounted(() => {
-//   window.addEventListener('resize', checkFooterPosition)
-//   window.addEventListener('scroll', checkFooterPosition)
-//   checkFooterPosition()
-// })
-
-// onUnmounted(() => {
-//   window.removeEventListener('resize', checkFooterPosition)
-//   window.removeEventListener('scroll', checkFooterPosition)
-// })
+onUnmounted(() => {
+  window.removeEventListener('resize', checkFooterPosition)
+  window.removeEventListener('load', checkFooterPosition)
+})
 </script>
 
 <template>
-  <div id="copyright-icp-footer" class="footer">
-    <!-- <div id="copyright-icp-footer" class="footer" :class="{ fixed: isFixed }"></div> -->
+  <div id="copyright-icp-footer" class="footer" :class="{ fixed: isFixed }">
+    <div class="footer-divider"></div>
     <ul id="copyright-icp-ul">
-      <li v-if="icp.code">
+      <li v-if="icp.code" class="icp-item">
         <svg
           class="code-icon"
           fill="#008cff"
@@ -69,7 +54,7 @@ let otherItems = [
         </svg>
         <a class="code-text" :href="icp.link" target="_blank">{{ icp.code }}</a>
       </li>
-      <li v-if="author.name">
+      <li v-if="author.name" class="copyright-item">
         {{ `Copyright © ${beginYear}-${currentYear} ` }}
         <a v-if="!author.link">{{ author.name }}</a>
         <a
@@ -83,48 +68,49 @@ let otherItems = [
           author.name
         }}</a>
       </li>
-
-      <!-- <li v-if="gongan.code">
-        <img class="code-icon" alt="公安备案" :src="gonganCodeIcon" />
-        <a class="code-text" :href="gongan.link" target="_blank">{{ gongan.code }}</a>
-      </li> -->
-      <!-- <li v-for="item in validOtherItems" :key="item.id">
-        <a :href="item.link" target="_blank">{{ item.code }}</a>
-      </li> -->
     </ul>
   </div>
 </template>
 
 <style scoped lang="scss">
 .footer {
-  margin-bottom: 10px;
+  width: 100%;
+  padding: 15px 0 10px;
+  margin-top: 30px;
+  transition: all 0.3s ease;
 }
-// .footer {
-//   margin-bottom: 10px;
-//   transition:
-//     left 0.2s,
-//     right 0.2s,
-//     bottom 0.2s;
-// }
-// .footer.fixed {
-//   position: fixed;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   z-index: 99;
-//   background: #fff;
-//   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.03);
-// }
+
+.footer.fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
+}
+
+.footer-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1), transparent);
+  margin-bottom: 12px;
+}
+
 ul {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  font-size: 14px;
+  font-size: 12px;
+  color: #999;
 }
+
 .code-icon {
-  height: 1.1em;
-  width: 1.1em;
+  height: 1em;
+  width: 1em;
+  margin-right: 3px;
+  transition: transform 0.3s ease;
 }
 
 .code-icon,
@@ -133,15 +119,46 @@ ul {
 }
 
 #copyright-icp-ul > li > a {
-  color: gray;
+  color: #999;
   text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
 }
 
 #copyright-icp-ul > li > a[href]:hover {
   color: #0069c2;
-  text-decoration: underline;
 }
+
+#copyright-icp-ul > li > a[href]::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: #0069c2;
+  transition: width 0.3s ease;
+}
+
+#copyright-icp-ul > li > a[href]:hover::after {
+  width: 100%;
+}
+
+.icp-item:hover .code-icon {
+  transform: scale(1.1);
+}
+
 li {
-  margin: 3px 0px;
+  margin: 4px 0;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 10px 0 8px;
+  }
+  
+  ul {
+    font-size: 12px;
+  }
 }
 </style>
