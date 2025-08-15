@@ -57,19 +57,78 @@ export default {
 
 <template>
   <PageHeadBack>
-    <PostHeader :post="post" />
-    <PostContent :postContent="post.body" />
-    <PostImage :postImages="post.post_images" />
-
-    <PostAction :post="post" :showShare="true" :showEdit="true" />
-    <CommentCard :post-id="postId" />
+    <div class="post-detail-container">
+      <div class="post-main-content">
+        <PostHeader :post="post" class="post-header" />
+        <PostContent :postContent="post.body" class="post-content" />
+        <PostImage :postImages="post.post_images" class="post-images" />
+      </div>
+      
+      <div class="post-actions">
+        <PostAction :post="post" :showShare="true" :showEdit="true" />
+      </div>
+      
+      <div class="post-comments">
+        <CommentCard :post-id="postId" />
+      </div>
+    </div>
   </PageHeadBack>
 </template>
+
 <style scoped lang="scss">
-.el-button {
-  margin-top: 10px;
+@use './components/PostDetail.scss' as *;
+
+.post-detail-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: $spacing-md;
+  background-color: #fff;
+  border-radius: $border-radius-md;
+  box-shadow: 0 1px 3px $shadow-color;
+  @extend .fade-in;
 }
+
+.post-main-content {
+  margin-bottom: $spacing-lg;
+  @extend .slide-up;
+}
+
+.post-header {
+  margin-bottom: $spacing-md;
+}
+
+.post-content {
+  margin-bottom: $spacing-md;
+}
+
+.post-images {
+  margin-bottom: $spacing-lg;
+}
+
+.post-actions {
+  padding: $spacing-sm 0;
+  border-top: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
+  margin-bottom: $spacing-md;
+}
+
+.post-comments {
+  margin-top: $spacing-md;
+}
+
+.el-button {
+  margin-top: $spacing-sm;
+}
+
 .Scrollbar {
   height: calc(100vh - var(--el-main-padding) * 2 - 50px);
+}
+
+@include mobile {
+  .post-detail-container {
+    padding: $spacing-sm;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 </style>

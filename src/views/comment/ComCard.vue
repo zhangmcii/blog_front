@@ -1,27 +1,43 @@
 <template>
-  <u-comment-scroll :disable="disable" @more="more">
-    <u-comment
-      ref="commentRef"
-      :config="config"
-      @submit="submit"
-      @like="like"
-      @mention-search="mentionSearch"
-      @reply-page="replyPage"
-      @show-info="showInfo"
-      class="UComment"
-    >
-      <u-comment-nav v-model="latest" @sorted="sorted"></u-comment-nav>
-      <template #avatar="scope">
-        <el-avatar alt="用户图像" :src="scope.user.avatar" style="margin-top: 5px" />
-      </template>
-      <template #operate="scope">
-        <Operate :comment="scope" @remove="remove" />
-      </template>
-      <template #card="scope">
-        <UserInfo :scope="scope" :loading="loading" :config="config" />
-      </template>
-    </u-comment>
-  </u-comment-scroll>
+  <div class="comment-section">
+    <div class="comment-header">
+      <h3 class="comment-title">评论区</h3>
+      <div class="comment-count">共 {{ query.total }} 条评论</div>
+    </div>
+    
+    <u-comment-scroll :disable="disable" @more="more" class="comment-scroll">
+      <u-comment
+        ref="commentRef"
+        :config="config"
+        @submit="submit"
+        @like="like"
+        @mention-search="mentionSearch"
+        @reply-page="replyPage"
+        @show-info="showInfo"
+        class="UComment"
+      >
+        <u-comment-nav v-model="latest" @sorted="sorted" class="comment-nav"></u-comment-nav>
+        <template #avatar="scope">
+          <el-avatar 
+            alt="用户图像" 
+            :src="scope.user.avatar" 
+            class="comment-avatar"
+          />
+        </template>
+        <template #operate="scope">
+          <Operate :comment="scope" @remove="remove" />
+        </template>
+        <template #card="scope">
+          <UserInfo :scope="scope" :loading="loading" :config="config" />
+        </template>
+      </u-comment>
+    </u-comment-scroll>
+    
+    <div v-if="query.total === 0" class="empty-comments">
+      <van-icon name="comment-o" class="empty-icon" />
+      <p>暂无评论，快来发表第一条评论吧！</p>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -248,7 +264,146 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+.comment-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.comment-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 2px;
+    bottom: 2px;
+    width: 3px;
+    background: linear-gradient(to bottom, #09c8ce, #eb2f96);
+    border-radius: 3px;
+  }
+}
+
+.comment-count {
+  font-size: 14px;
+  color: #999;
+}
+
+.comment-scroll {
+  max-height: 800px;
+}
+
 .UComment {
-  padding: 0px;
+  padding: 0;
+  
+  :deep(.u-comment-box) {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    
+    .u-comment-textarea {
+      border-radius: 6px;
+      border-color: #e8e8e8;
+      
+      &:focus {
+        border-color: #1890ff;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+      }
+    }
+    
+    .u-comment-submit {
+      background-color: #1890ff;
+      border-radius: 4px;
+      
+      &:hover {
+        background-color: #40a9ff;
+      }
+    }
+  }
+  
+  :deep(.u-comment-item) {
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    background-color: #fafafa;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+}
+
+.comment-avatar {
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.comment-nav {
+  margin-bottom: 16px;
+  
+  :deep(.u-comment-nav-item) {
+    padding: 6px 12px;
+    border-radius: 16px;
+    
+    &.active {
+      background-color: #e6f7ff;
+      color: #1890ff;
+    }
+  }
+}
+
+.empty-comments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #999;
+  
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #d9d9d9;
+  }
+  
+  p {
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .comment-section {
+    margin-top: 16px;
+    padding-top: 12px;
+  }
+  
+  .comment-title {
+    font-size: 16px;
+  }
+  
+  .comment-count {
+    font-size: 12px;
+  }
+  
+  .UComment {
+    :deep(.u-comment-item) {
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  }
 }
 </style>

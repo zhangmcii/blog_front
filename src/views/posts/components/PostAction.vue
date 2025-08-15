@@ -108,39 +108,26 @@ export default {
 </script>
 
 <template>
-  <el-row justify="end" class="footer">
-    <el-col
-      :xs="4"
-      :sm="4"
-      :md="2"
-      :lg="2"
-      :xl="2"
-      v-if="showEdit && post.author == currentUser.userInfo.username"
-    >
-      <van-icon name="edit" @click.stop="edit" :size="iconSize" />
-    </el-col>
-    <el-col
-      :xs="4"
-      :sm="4"
-      :md="2"
-      :lg="2"
-      :xl="2"
-      v-else-if="showEdit && currentUser.userInfo.isAdmin == 'true'"
-    >
-      <van-icon name="edit" @click.stop="edit" :size="iconSize" color="red" />
-    </el-col>
-
-    <el-col :xs="4" :sm="4" :md="2" :lg="2" :xl="2" v-if="showShare && !isUserRoute">
-      <van-icon name="share-o" @click.stop="show = !show" :size="iconSize" />
-    </el-col>
-    <el-col :xs="4" :sm="3" :md="4" :lg="2" :xl="2">
-      <el-space :size="3">
-        <van-icon name="notes-o" @click.stop="comment" :size="iconSize" />
-        <el-text>{{ post.comment_count }}</el-text>
-      </el-space>
-    </el-col>
-    <el-col :xs="2" :sm="3" :md="2" :lg="2" :xl="2">
-      <el-space :size="3">
+  <div class="post-action-container">
+    <div class="action-left">
+      <div class="action-item" v-if="showEdit && post.author == currentUser.userInfo.username">
+        <van-icon name="edit" @click.stop="edit" :size="iconSize" class="action-icon" />
+      </div>
+      <div class="action-item" v-else-if="showEdit && currentUser.userInfo.isAdmin == 'true'">
+        <van-icon name="edit" @click.stop="edit" :size="iconSize" color="red" class="action-icon" />
+      </div>
+      <div class="action-item" v-if="showShare && !isUserRoute">
+        <van-icon name="share-o" @click.stop="show = !show" :size="iconSize" class="action-icon" />
+      </div>
+    </div>
+    
+    <div class="action-right">
+      <div class="action-item comment">
+        <van-icon name="notes-o" @click.stop="comment" :size="iconSize" class="action-icon" />
+        <span class="action-count">{{ post.comment_count }}</span>
+      </div>
+      
+      <div class="action-item like">
         <transition :name="hasPraised ? 'praise' : ''" mode="out-in">
           <van-icon
             name="good-job"
@@ -148,13 +135,22 @@ export default {
             :size="iconSize"
             v-if="hasPraised"
             key="praised"
+            class="action-icon praised"
           />
-          <van-icon name="good-job-o" @click.stop="praise" :size="iconSize" v-else key="unPraise" />
+          <van-icon 
+            name="good-job-o" 
+            @click.stop="praise" 
+            :size="iconSize" 
+            v-else 
+            key="unPraise"
+            class="action-icon"
+          />
         </transition>
-        <el-text>{{ praiseNum }}</el-text>
-      </el-space>
-    </el-col>
-  </el-row>
+        <span class="action-count">{{ praiseNum }}</span>
+      </div>
+    </div>
+  </div>
+  
   <van-share-sheet
     v-model:show="show"
     title="立即分享给好友"
@@ -162,6 +158,68 @@ export default {
     @select="shareSelect"
   />
 </template>
-<style scoped>
-/* 底部操作区样式由 PostCard.scss 统一管理 */
+
+<style scoped lang="scss">
+.post-action-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  width: 100%;
+}
+
+.action-left, .action-right {
+  display: flex;
+  align-items: center;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+  cursor: pointer;
+  
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.action-icon {
+  margin-right: 4px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+  
+  // &.praised {
+  //   color: #ff6b6b;
+  // }
+}
+
+.action-count {
+  font-size: 14px;
+  color: #666;
+}
+
+.praise-enter-active,
+.praise-leave-active {
+  transition: all 0.3s ease;
+}
+
+.praise-enter-from,
+.praise-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+@media (max-width: 768px) {
+  .post-action-container {
+    padding: 6px 0;
+  }
+  
+  .action-item {
+    margin-right: 12px;
+  }
+}
 </style>

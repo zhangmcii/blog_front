@@ -171,7 +171,7 @@ export default {
   </div>
 </template>
 <style lang="scss" scoped>
-@import './components/PostCard.scss';
+@use './components/PostCard.scss' as *;
 
 .posts-container {
   padding: 10px;

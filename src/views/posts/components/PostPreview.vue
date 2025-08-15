@@ -99,5 +99,5 @@ export default {
   </div>
 </template>
 <style lang="scss" scoped>
-@import './PostCard.scss';
+@use './PostCard.scss' as *;
 </style>
