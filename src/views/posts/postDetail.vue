@@ -74,6 +74,7 @@ export default {
 
 <template>
   <PageHeadBack>
+    <el-backtop target=".scrollbar-container" :right="20" :bottom="100" />
     <div class="post-detail-container">
       <div class="post-main-content">
         <PostHeader :post="post" class="post-header" />

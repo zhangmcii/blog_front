@@ -792,4 +792,26 @@ url保存至后端。 richEditorPublish()
   需要：图片的key数组
 
 
-  
+# elementPlus的回到顶部组件不显示
+原因：如果是简单的页面，直接使用那没问题但遇到复杂的大项目时组件之间的嵌套会特别深，再加上各种div的包裹，回顶组件通常无法生效了。这里出现问题的关键在于target属性。
+**target要指向触发滚动的对象——通俗来讲即这个滚动条到底是哪个最外侧组件的。**
+问题来了实际开发中项目复杂，页面层级嵌套巨多。这时该如何快速定位到滚动的对象是哪个呢
+~~~
+//把下边的代码粘贴到浏览器Console中敲回车，然后滚动界面，它会输出滚动的元素
+function findScroller(element) {
+    element.onscroll = function() { console.log(element)}
+
+    Array.from(element.children).forEach(findScroller);
+}
+
+findScroller(document.body);
+~~~
+
+解决：
+1.要写于最外层块级区域的第一行，不可写于代码末尾。
+2.指定target为外层的滚动条class
+
+~~~
+ <el-backtop target=".scrollbar-container" :right="20" :bottom="100" />
+~~~
+参考：https://juejin.cn/post/7272283132664365112?searchId=202508152049008F48141D136848CE3AD0
