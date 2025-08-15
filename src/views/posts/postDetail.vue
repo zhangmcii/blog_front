@@ -5,6 +5,7 @@ import PostAction from '@/views/posts/components/PostAction.vue'
 import CommentCard from '@/views/comment/ComCard.vue'
 import PostHeader from '@/views/posts/components/PostHeader.vue'
 import PostContent from '@/views/posts/components/PostContent.vue'
+import ReadProgress from '@/utils/components/ReadProgress.vue'
 import FontSizeAdjuster from '@/views/posts/components/FontSizeAdjuster.vue'
 import postApi from '@/api/posts/postApi.js'
 
@@ -16,6 +17,7 @@ export default {
     PostAction,
     PostHeader,
     PostContent,
+    ReadProgress,
     FontSizeAdjuster
   },
   data() {
@@ -35,7 +37,8 @@ export default {
         post_images: []
       },
       postId: -1,
-      fontSize: 14 // 默认字体大小
+      // 默认字体大小
+      fontSize: 14 
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -74,7 +77,10 @@ export default {
 
 <template>
   <PageHeadBack>
+    <!-- 回到顶部 -->
     <el-backtop target=".scrollbar-container" :right="20" :bottom="100" />
+    <!-- 阅读进度条 -->
+    <ReadProgress target=".scrollbar-container"/>
     <div class="post-detail-container">
       <div class="post-main-content">
         <PostHeader :post="post" class="post-header" />
