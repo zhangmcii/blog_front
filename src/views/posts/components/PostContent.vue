@@ -8,12 +8,16 @@ export default {
     preview: {
       type: Boolean,
       default: false
+    },
+    fontSize: {
+      type: Number,
+      default: 16
     }
   },
   data() {
     return {
       pContent: '',
-      truncationTryCount: 0 // 新增
+      truncationTryCount: 0, // 新增
     }
   },
   watch: {
@@ -26,15 +30,45 @@ export default {
         })
       },
       immediate: true
+    },
+    fontSize: {
+      handler(newVal) {
+        this.updateFontSize(newVal)
+      }
     }
   },
   mounted() {
     this.$nextTick(() => {
       this.updateTruncation()
+      // 从本地存储加载字体大小设置
+      const savedFontSize = localStorage.getItem('article-font-size')
+      if (savedFontSize) {
+        this.fontSize = parseInt(savedFontSize)
+        this.updateFontSize(this.fontSize)
+      }
     })
   },
   computed: {},
   methods: {
+    updateFontSize(size) {
+      const contentDom = this.$refs.md?.$el?.querySelector('.v-show-content')
+      if (contentDom) {
+        contentDom.style.fontSize = `${size}px`
+        
+        // 根据字体大小调整其他元素
+        const h1Elements = contentDom.querySelectorAll('h1')
+        const h2Elements = contentDom.querySelectorAll('h2')
+        
+        h1Elements.forEach(el => {
+          el.style.fontSize = `${size * 1.8 / 16}em`
+        })
+        
+        h2Elements.forEach(el => {
+          el.style.fontSize = `${size * 1.5 / 16}em`
+        })
+      }
+    },
+    
     updateTruncation() {
       if (!this.preview) return
 
@@ -275,7 +309,7 @@ export default {
 // 适配移动端
 @media (max-width: 768px) {
   :deep(.v-show-content) {
-    font-size: 15px;
+    font-size: 14px;
     
     h1 {
       font-size: 1.6em;

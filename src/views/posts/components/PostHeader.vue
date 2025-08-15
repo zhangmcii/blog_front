@@ -37,93 +37,32 @@ export default {
 </script>
 
 <template>
-  <div class="post-header">
-    <div class="author-info">
-      <el-avatar 
-        class="author-avatar" 
-        alt="用户图像" 
-        :src="post.image" 
-        @click.stop="$router.push(`/user/${post.author}`)" 
-      />
-      <div class="author-details">
-        <div 
-          class="author-name" 
-          @click.stop="$router.push(`/user/${post.author}`)"
-        >
-          {{ post.nick_name ? post.nick_name : post.author }}
-        </div>
-        <div class="post-time">
-          <van-icon name="clock-o" class="time-icon" />
-          {{ from_now }}
-        </div>
-      </div>
+  <el-row class="head" justify="space-between" align="middle">
+    <div class="head-name">
+      <el-avatar alt="用户图像" :src="post.image" @click.stop="$router.push(`/user/${post.author}`)" />
+      <el-text @click.stop="$router.push(`/user/${post.author}`)">{{
+        post.nick_name ? post.nick_name : post.author
+      }}</el-text>
     </div>
-  </div>
+    <div>
+      <el-text size="small" class="head-time">{{ from_now }}</el-text>
+    </div>
+  </el-row>
 </template>
-
 <style lang="scss" scoped>
-.post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-  margin-bottom: 12px;
+.head {
+  height: 40px;
+  margin: 0px 0px 10px 0px;
 }
-
-.author-info {
+.head-name {
   display: flex;
   align-items: center;
-}
-
-.author-avatar {
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  
-  &:hover {
-    transform: scale(1.05);
+  .el-text {
+    margin-left: 5px;
+    font-size: 13px;
   }
 }
-
-.author-details {
-  margin-left: 12px;
-  display: flex;
-  flex-direction: column;
-}
-
-.author-name {
-  font-weight: 500;
-  font-size: 16px;
-  color: #333;
-  cursor: pointer;
-  
-  &:hover {
-    color: #1890ff;
-    text-decoration: underline;
-  }
-}
-
-.post-time {
-  font-size: 13px;
-  color: #999;
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-}
-
-.time-icon {
-  font-size: 14px;
-  margin-right: 4px;
-}
-
-@media (max-width: 768px) {
-  .author-name {
-    font-size: 15px;
-  }
-  
-  .post-time {
-    font-size: 12px;
-  }
+.head-time {
+  margin-right: 1px;
 }
 </style>

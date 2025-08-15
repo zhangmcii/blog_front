@@ -5,8 +5,8 @@ import PostAction from '@/views/posts/components/PostAction.vue'
 import CommentCard from '@/views/comment/ComCard.vue'
 import PostHeader from '@/views/posts/components/PostHeader.vue'
 import PostContent from '@/views/posts/components/PostContent.vue'
+import FontSizeAdjuster from '@/views/posts/components/FontSizeAdjuster.vue'
 import postApi from '@/api/posts/postApi.js'
-import { Scrollbar } from 'vue-amazing-ui'
 
 export default {
   components: {
@@ -15,7 +15,8 @@ export default {
     PostImage,
     PostAction,
     PostHeader,
-    PostContent
+    PostContent,
+    FontSizeAdjuster
   },
   data() {
     return {
@@ -33,13 +34,20 @@ export default {
         has_praised: false,
         post_images: []
       },
-      postId: -1
+      postId: -1,
+      fontSize: 14 // 默认字体大小
     }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.postId = Number(to.params.id)
       vm.getPostById(vm.postId)
+      
+      // 从本地存储加载字体大小设置
+      const savedFontSize = localStorage.getItem('article-font-size')
+      if (savedFontSize) {
+        vm.fontSize = parseInt(savedFontSize)
+      }
     })
   },
   computed: {},
@@ -50,6 +58,15 @@ export default {
           this.post = res.data.data
         }
       })
+    },
+    updateFontSize(size) {
+      // 这里不再实时更新字体大小，只在预览中显示
+      // 不做任何操作，因为我们只想在保存时更新字体大小
+    },
+    saveFontSizeSettings(size) {
+      // 只有在保存时才更新实际的字体大小
+      this.fontSize = size
+      localStorage.setItem('article-font-size', size.toString())
     }
   }
 }
@@ -60,7 +77,12 @@ export default {
     <div class="post-detail-container">
       <div class="post-main-content">
         <PostHeader :post="post" class="post-header" />
-        <PostContent :postContent="post.body" class="post-content" />
+        <PostContent 
+          :postContent="post.body" 
+          class="post-content" 
+          :fontSize="fontSize"
+          ref="postContent"
+        />
         <PostImage :postImages="post.post_images" class="post-images" />
       </div>
       
@@ -71,6 +93,13 @@ export default {
       <div class="post-comments">
         <CommentCard :post-id="postId" />
       </div>
+      
+      <!-- 字体大小调整悬浮按钮 -->
+      <FontSizeAdjuster 
+        :defaultFontSize="fontSize"
+        @update:fontSize="updateFontSize"
+        @save="saveFontSizeSettings"
+      />
     </div>
   </PageHeadBack>
 </template>
