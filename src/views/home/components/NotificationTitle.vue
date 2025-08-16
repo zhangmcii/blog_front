@@ -41,7 +41,15 @@ export default {
 </template>
 <style scoped>
 .notification-title {
-  font-weight: 600; /* font-semibold */
-  font-size: 0.875rem; /* 假设基础字体大小 */
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 </style>

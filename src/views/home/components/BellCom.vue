@@ -171,23 +171,30 @@ export default {
 </script>
 
 <template>
-  <div>
-    <van-popover :show-arrow="false" close-on-click-action :offset="[-120, 15]">
+  <div class="notification-wrapper">
+    <van-popover 
+      :show-arrow="false" 
+      close-on-click-action 
+      :offset="[-120, 15]"
+      class="notification-popover"
+    >
       <template #reference>
-        <van-badge :dot="showDot" :offset="[-6, 5]">
-          <el-button circle class="notification">
-            <template #icon>
-              <el-icon :size="20"><i-ep-Bell /></el-icon>
-            </template>
-          </el-button>
-        </van-badge>
+        <div class="notification-icon-container">
+          <van-badge :dot="showDot" :offset="[-8, 5]">
+            <el-button circle class="notification-button">
+              <template #icon>
+                <el-icon :size="20" class="bell-icon"><i-ep-Bell /></el-icon>
+              </template>
+            </el-button>
+          </van-badge>
+        </div>
       </template>
       <template #default>
-        <div class="container">
-          <el-tabs v-model="activeName" class="demo-tabs" :stretch="true" @tab-click="handleClick">
+        <div class="notification-container">
+          <el-tabs v-model="activeName" class="notification-tabs" :stretch="true" @tab-click="handleClick">
             <el-tab-pane name="first">
               <template #label>
-                <van-badge :content="atUnreadNum" :show-zero="false" :offset="[8, 0]">
+                <van-badge :content="atUnreadNum" :show-zero="false" :offset="[12, -5]">
                   @我的
                 </van-badge>
               </template>
@@ -199,7 +206,7 @@ export default {
             </el-tab-pane>
             <el-tab-pane name="second">
               <template #label>
-                <van-badge :content="commentUnreadNum" :show-zero="false" :offset="[8, 0]"
+                <van-badge :content="commentUnreadNum" :show-zero="false" :offset="[12, -5]"
                   >评论
                 </van-badge>
               </template>
@@ -211,7 +218,7 @@ export default {
             </el-tab-pane>
             <el-tab-pane name="third">
               <template #label>
-                <van-badge :content="praiseUnreadNum" :show-zero="false" :offset="[8, 0]"
+                <van-badge :content="praiseUnreadNum" :show-zero="false" :offset="[12, -5]"
                   >赞</van-badge
                 >
               </template>
@@ -223,7 +230,7 @@ export default {
             </el-tab-pane>
             <el-tab-pane name="fourth">
               <template #label>
-                <van-badge :content="chatUnreadNum" :show-zero="false" :offset="[8, 0]">
+                <van-badge :content="chatUnreadNum" :show-zero="false" :offset="[12, -5]">
                   私信
                 </van-badge>
               </template>
@@ -236,14 +243,25 @@ export default {
             </el-tab-pane>
           </el-tabs>
         </div>
-        <div class="footer">
-          <el-button class="view-all-btn" :disabled="!showDot" @click="handleMakeAll">
-            查看所有消息
+        <div class="notification-footer">
+          <el-button 
+            class="view-all-btn" 
+            :disabled="!showDot" 
+            @click="handleMakeAll"
+            type="primary"
+            size="small"
+            :icon="showDot ? 'Check' : ''"
+          >
+            标记全部已读
           </el-button>
           <el-button
             :disabled="notifications.length <= 0"
             class="clear-btn"
             @click="handleNoticeClear"
+            type="danger"
+            size="small"
+            plain
+            :icon="notifications.length > 0 ? 'Delete' : ''"
           >
             清空
           </el-button>
@@ -253,50 +271,139 @@ export default {
   </div>
 </template>
 <style scoped>
-.notification {
-  border-color: #fff;
-}
-.van-cell {
-  width: 170px;
-}
-.van-popover {
-  width: 370px;
-}
-.container {
-  /* padding: 10px 20px 10px 20px; */
-  padding: 10px;
-}
-.demo-tabs > .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
+:root {
+  --primary-color: #3a7bd5;
+  --secondary-color: #00d2ff;
+  --accent-color: #4a90e2;
+  --danger-color: #f56c6c;
+  --text-color: #2c3e50;
+  --light-text: #6c757d;
+  --border-color: #e9ecef;
+  --hover-color: #f8f9fa;
+  --shadow-color: rgba(0, 0, 0, 0.08);
 }
 
-.footer {
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-button {
+  border-color: transparent;
+  /* background: linear-gradient(145deg, #f0f4f8, #ffffff); */
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.3s ease;
+  height: 35px;
+  width: 40px;
+}
+
+.notification-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.bell-icon {
+  color: var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.notification-button:hover .bell-icon {
+  transform: rotate(12deg);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+.notification-popover :deep(.van-popover__content) {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
+}
+
+.notification-container {
+  width: 340px;
+  max-height: 500px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.notification-popover :deep(.van-popover) {
+  width: 340px !important;
+  max-width: 340px !important;
+}
+
+.notification-tabs {
+  padding: 10px;
+}
+
+.notification-tabs :deep(.el-tabs__nav) {
+  width: 100%;
+}
+
+/* 修复tab上的红点显示问题 */
+.notification-tabs :deep(.van-badge) {
+  position: absolute;
+  top: 2px;
+  right: -8px;
+  transform: scale(0.8);
+}
+
+.notification-tabs :deep(.van-badge__content) {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+
+.notification-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid var(--border);
-  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border-color);
+  padding: 12px 16px;
+  background-color: #f9fafc;
 }
 
-.clear-btn {
-  font-size: 0.875rem;
-  padding: 0.25rem 0.5rem;
-  background: none;
-  border: none;
+.view-all-btn, .clear-btn {
+  font-size: 12px;
+  border-radius: 20px;
+  padding: 6px 12px;
+  transition: all 0.3s ease;
 }
 
-.view-all-btn {
-  font-size: 0.875rem;
+.view-all-btn:not(:disabled):hover, .clear-btn:not(:disabled):hover {
+  transform: translateY(-1px);
 }
 /* 禁用状态样式 */
 button[disabled] {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
-.praise {
-  font-size: 11px;
+
+.van-cell {
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.van-cell:hover {
+  background-color: var(--hover-color);
 }
 </style>
