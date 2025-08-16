@@ -226,6 +226,10 @@ export default {
       }
     },
     async beforeSwitch() {
+      // 从文章列表切换到用户资料页时，不会发请求
+      if(!this.isUserPage){
+        return true
+      }
       this.loading.switch = true
       await this.getPosts(this.$route.params.userName, 1)
       this.loading.switch = false
