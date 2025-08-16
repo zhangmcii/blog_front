@@ -8,15 +8,15 @@ import { GradientText } from 'vue-amazing-ui'
 import 'vue-amazing-ui/es/gradienttext/GradientText.css'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import ICP from '@/utils/components/ICP.vue'
-import PostPublish from './PostPublish.vue'
+import PublishEntry from '@/views/posts/components/PublishEntry.vue'
 import emitter from '@/utils/emitter.js'
 
 export default {
   components: {
     PostPreview,
     PostImage,
-    PostPublish,
     GradientText,
+    PublishEntry,
     SkeletonUtil,
     ICP
   },
@@ -107,7 +107,8 @@ export default {
       }"
       >你好 {{ currentUser.priorityName }}</GradientText
     >
-    <PostPublish
+    <!-- 使用新的发布入口组件 -->
+    <PublishEntry
       @loading-begin="(flag) => (loading.publishPost = flag)"
       @posts-result="getPostsResult"
       v-if="currentUser.isLogin"
