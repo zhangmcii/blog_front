@@ -125,7 +125,7 @@ const routes = [
       },
       {
         path: '/postDetail/:id',
-        name: 'detail',
+        name: 'postDetail',
         component: () => import('../views/posts/PostDetail.vue')
       },
       {

@@ -49,13 +49,25 @@ export default {
     next((vm) => {
       vm.postId = Number(to.params.id)
       vm.getPostById(vm.postId)
-      
+
       // 从本地存储加载字体大小设置
       const savedFontSize = localStorage.getItem('article-font-size')
       if (savedFontSize) {
         vm.fontSize = parseInt(savedFontSize)
       }
     })
+  },
+  // 通知栏上可能会频繁切换跳转的文章
+  created() {
+    this.$watch(
+      () => this.$route.params.id,
+      (newVal) => {
+        if (this.$route.name === 'postDetail') {
+          this.postId = Number(newVal)
+          this.getPostById(this.postId)
+        }
+      }
+    )
   },
   computed: {},
   methods: {
@@ -84,47 +96,34 @@ export default {
     <!-- 回到顶部 -->
     <el-backtop target=".scrollbar-container" :right="20" :bottom="30" />
     <!-- 阅读进度条 -->
-    <ReadProgress target=".scrollbar-container"/>
+    <ReadProgress target=".scrollbar-container" />
     <div class="post-detail-container">
       <div class="post-main-content">
         <PostHeader :post="post" class="post-header" />
-        <PostContent 
-          :postContent="post.body" 
-          class="post-content" 
-          :fontSize="fontSize"
-          ref="postContent"
-        />
+        <PostContent :postContent="post.body" class="post-content" :fontSize="fontSize" ref="postContent" />
         <PostImage :postImages="post.post_images" class="post-images" />
       </div>
-      
+
       <div class="post-actions">
         <PostAction :post="post" :showShare="true" :showEdit="true" />
       </div>
-      
+
       <div class="post-comments">
         <CommentCard :post-id="postId" />
       </div>
-      
+
       <!-- 字体大小调整悬浮按钮 -->
-      <FontSizeAdjuster 
-        :defaultFontSize="fontSize"
-        @update:fontSize="updateFontSize"
-        @save="saveFontSizeSettings"
-      />
-      
+      <FontSizeAdjuster :defaultFontSize="fontSize" @update:fontSize="updateFontSize" @save="saveFontSizeSettings" />
+
       <!-- 搜索按钮 -->
       <div class="search-button" @click="showSearch = !showSearch">
-          <el-button type="primary" circle size="large" :class="{ 'active': showSearch }">
-            <el-icon><i-ep-Search /></el-icon>
-          </el-button>
+        <el-button type="primary" circle size="large" :class="{ 'active': showSearch }">
+          <el-icon><i-ep-Search /></el-icon>
+        </el-button>
       </div>
-      
+
       <!-- 搜索组件 -->
-      <PostSearch 
-        v-if="showSearch" 
-        :contentRef="$refs.postContent"
-        @close="showSearch = false"
-      />
+      <PostSearch v-if="showSearch" :contentRef="$refs.postContent" @close="showSearch = false" />
     </div>
   </PageHeadBack>
 </template>
@@ -138,19 +137,19 @@ export default {
   right: 20px;
   z-index: 999;
   transition: all 0.3s ease;
-  
+
   .el-button {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    
+
     &.active {
       background-color: #409eff;
       transform: rotate(90deg);
     }
-    
+
     &:hover {
       transform: scale(1.1);
-      
+
       &.active {
         transform: rotate(90deg) scale(1.1);
       }
