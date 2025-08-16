@@ -103,7 +103,7 @@ export default {
 .font-size-adjuster {
   position: fixed;
   right: 20px;
-  bottom: 80px;
+  bottom: 130px;
   z-index: 999;
 }
 
@@ -162,10 +162,5 @@ export default {
   gap: 12px;
 }
 
-@media (max-width: 768px) {
-  .font-size-adjuster {
-    right: 16px;
-    bottom: 190px;
-  }
-}
+
 </style>

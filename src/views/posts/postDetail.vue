@@ -7,6 +7,7 @@ import PostHeader from '@/views/posts/components/PostHeader.vue'
 import PostContent from '@/views/posts/components/PostContent.vue'
 import ReadProgress from '@/utils/components/ReadProgress.vue'
 import FontSizeAdjuster from '@/views/posts/components/FontSizeAdjuster.vue'
+import PostSearch from '@/views/posts/components/PostSearch.vue'
 import postApi from '@/api/posts/postApi.js'
 
 export default {
@@ -18,7 +19,8 @@ export default {
     PostHeader,
     PostContent,
     ReadProgress,
-    FontSizeAdjuster
+    FontSizeAdjuster,
+    PostSearch
   },
   data() {
     return {
@@ -38,7 +40,9 @@ export default {
       },
       postId: -1,
       // 默认字体大小
-      fontSize: 14 
+      fontSize: 14,
+      // 是否显示搜索框
+      showSearch: false
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -78,7 +82,7 @@ export default {
 <template>
   <PageHeadBack>
     <!-- 回到顶部 -->
-    <el-backtop target=".scrollbar-container" :right="20" :bottom="100" />
+    <el-backtop target=".scrollbar-container" :right="20" :bottom="30" />
     <!-- 阅读进度条 -->
     <ReadProgress target=".scrollbar-container"/>
     <div class="post-detail-container">
@@ -107,12 +111,52 @@ export default {
         @update:fontSize="updateFontSize"
         @save="saveFontSizeSettings"
       />
+      
+      <!-- 搜索按钮 -->
+      <div class="search-button" @click="showSearch = !showSearch">
+          <el-button type="primary" circle size="large" :class="{ 'active': showSearch }">
+            <el-icon><i-ep-Search /></el-icon>
+          </el-button>
+      </div>
+      
+      <!-- 搜索组件 -->
+      <PostSearch 
+        v-if="showSearch" 
+        :contentRef="$refs.postContent"
+        @close="showSearch = false"
+      />
     </div>
   </PageHeadBack>
 </template>
 
 <style scoped lang="scss">
 @use './components/PostDetail.scss' as *;
+
+.search-button {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 999;
+  transition: all 0.3s ease;
+  
+  .el-button {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    &.active {
+      background-color: #409eff;
+      transform: rotate(90deg);
+    }
+    
+    &:hover {
+      transform: scale(1.1);
+      
+      &.active {
+        transform: rotate(90deg) scale(1.1);
+      }
+    }
+  }
+}
 
 .post-detail-container {
   max-width: 800px;
