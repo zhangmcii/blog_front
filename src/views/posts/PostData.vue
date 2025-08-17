@@ -96,17 +96,6 @@ export default {
 
 <template>
   <div class="posts-container">
-    <GradientText
-      class="gradient-text"
-      :size="28"
-      :weight="500"
-      :gradient="{
-        deg: '90deg',
-        from: '#09c8ce',
-        to: '#eb2f96'
-      }"
-      >你好 {{ currentUser.priorityName }}</GradientText
-    >
     <!-- 使用新的发布入口组件 -->
     <PublishEntry
       @loading-begin="(flag) => (loading.publishPost = flag)"
