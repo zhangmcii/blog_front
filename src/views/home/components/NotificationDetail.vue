@@ -1,7 +1,7 @@
 <script>
 import { Scrollbar } from 'vue-amazing-ui'
 import NotificationTitle from './NotificationTitle.vue'
-import dayjs from '@/config/dayjsCfg.js'
+import date from '@/utils/date.js'
 
 export default {
   props: {
@@ -24,7 +24,7 @@ export default {
   mounted() {},
   methods: {
     formatTime(time) {
-      return dayjs(time).fromNow()
+      return date.dateShow(time)
     },
     getNotificationTypeClass(type) {
       const typeMap = {
