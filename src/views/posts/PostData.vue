@@ -191,8 +191,46 @@ export default {
 // }
 .demo-tabs {
   margin-top: 20px;
-   /* 当内容较少时，让icp出现在最下方，而不是中间 */
+  /* 当内容较少时，让icp出现在最下方，而不是中间 */
   min-height: 47vh;
+  
+  :deep(.el-tabs__header) {
+    margin-bottom: 20px;
+    border-bottom: none;
+  }
+  
+  :deep(.el-tabs__nav) {
+    border: none;
+    background: transparent;
+  }
+  
+  :deep(.el-tabs__item) {
+    height: 40px;
+    line-height: 40px;
+    padding: 0 20px;
+    font-size: 15px;
+    color: #606266;
+    border: none;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    background-color: #f5f7fa;
+    
+    &.is-active {
+      color: #fff;
+      background: linear-gradient(90deg, #09c8ce, #3a7bd5);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    &:hover:not(.is-active) {
+      color: #409eff;
+      background-color: #ecf5ff;
+    }
+  }
+  
+  :deep(.el-tabs__nav-wrap::after) {
+    display: none;
+  }
 }
 
 </style>

@@ -65,15 +65,16 @@
               maxlength="300"
               show-word-limit
             />
-            <div class="emoji-container">
+            <!-- <div class="emoji-container">
               <Emoji emoName="Heo_100" :offset="[-5,8]" @selectEmoji="insertEmoji" />
-            </div>
+            </div> -->
           </div>
 
           <!-- 图文发布 -->
           <div v-if="activeType === 'image'" class="image-publish">
             <el-input
               v-model="imageContent"
+              class="image-text"
               type="textarea"
               :autosize="{ minRows: 3, maxRows: 6 }"
               placeholder="书写片段，温润流年..."
@@ -391,6 +392,9 @@ export default {
   }
 }
 
+.image-text{
+  margin-bottom: 5px;
+}
 .publish-actions {
   display: flex;
   justify-content: flex-end;
