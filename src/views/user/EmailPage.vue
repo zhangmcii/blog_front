@@ -98,40 +98,199 @@ export default {
 
 <template>
   <PageHeadBack>
-    <h1>请输入您的邮箱</h1>
-    <el-form
-      label-position="top"
-      label-width="auto"
-      :model="form"
-      :rules="rules"
-      ref="formRef"
-      style="max-width: 600px"
-    >
-      <el-form-item prop="email" label="邮箱">
-        <el-input v-model="form.email" style="width: 65%" @blur="validateEmail" />
-        <el-button @click="applyCode" type="primary" :disabled="!isEmailValid" v-if="showButton">
-          发送验证码
-        </el-button>
-        <el-countdown prefix="重新发送" format="ss" :value="value" @finish="finish" v-else />
-      </el-form-item>
-      <el-form-item prop="code" label="验证码">
-        <el-input v-model="form.code" style="width: 40%" />
-      </el-form-item>
-      <el-form-item>
-        <ButtonClick
-          content="提交"
-          type="primary"
-          :disabled="isSubmit"
-          :loading="loading"
-          @do-search="submitForm"
-        />
-      </el-form-item>
-    </el-form>
+    <div class="email-binding-container">
+      <div class="email-header">
+        <div class="email-icon">
+          <i class="el-icon-message"></i>
+        </div>
+        <h1>邮箱绑定</h1>
+        <p class="subtitle">绑定邮箱可以提高账户安全性，并接收重要通知</p>
+      </div>
+      
+      <div class="form-card">
+        <el-form
+          label-position="top"
+          label-width="auto"
+          :model="form"
+          :rules="rules"
+          ref="formRef"
+        >
+          <el-form-item prop="email" label="邮箱地址">
+            <div class="input-group">
+              <el-input 
+                v-model="form.email" 
+                placeholder="请输入您的邮箱地址" 
+                @blur="validateEmail"
+                prefix-icon="el-icon-message"
+              />
+              <div class="code-button">
+                <el-button 
+                  @click="applyCode" 
+                  type="primary" 
+                  :disabled="!isEmailValid" 
+                  v-if="showButton"
+                  class="send-code-btn"
+                >
+                  发送验证码
+                </el-button>
+                <el-countdown 
+                  prefix="重新发送" 
+                  format="ss秒" 
+                  :value="value" 
+                  @finish="finish" 
+                  v-else 
+                  class="countdown"
+                />
+              </div>
+            </div>
+          </el-form-item>
+          
+          <el-form-item prop="code" label="验证码">
+            <el-input 
+              v-model="form.code" 
+              placeholder="请输入收到的验证码"
+              prefix-icon="el-icon-key"
+            />
+          </el-form-item>
+          
+          <el-form-item>
+            <ButtonClick
+              content="绑定邮箱"
+              type="primary"
+              :disabled="isSubmit"
+              :loading="loading"
+              @do-search="submitForm"
+              class="submit-btn"
+            />
+          </el-form-item>
+        </el-form>
+        
+        <div class="tips">
+          <p><i class="el-icon-info"></i> 绑定邮箱后，您可以：</p>
+          <ul>
+            <!-- <li>接收系统通知和重要提醒</li> -->
+            <li>使用邮箱找回密码</li>
+            <li>提高账户安全性</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </PageHeadBack>
 </template>
+
 <style scoped>
+.email-binding-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.email-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.email-icon {
+  background: linear-gradient(135deg, #409EFF, #007bff);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+}
+
+.email-icon i {
+  font-size: 32px;
+  color: white;
+}
+
+.email-header h1 {
+  margin: 10px 0;
+  font-size: 28px;
+  color: #303133;
+}
+
+.subtitle {
+  color: #606266;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.form-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.code-button {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.send-code-btn {
+  width: 100%;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.countdown {
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  background: #f5f7fa;
+  border-radius: 6px;
+}
+
 :deep(.el-statistic__content) {
-  font-size: 0.8rem;
-  color: #9d9d9d;
+  font-size: 14px;
+  color: #909399;
+  font-weight: 500;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 10px;
+  height: 44px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.tips {
+  margin-top: 25px;
+  padding: 15px;
+  background: #f0f9ff;
+  border-radius: 8px;
+  border-left: 4px solid #409EFF;
+}
+
+.tips p {
+  color: #303133;
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tips ul {
+  padding-left: 20px;
+  margin: 8px 0 0;
+}
+
+.tips li {
+  color: #606266;
+  margin-bottom: 5px;
+  font-size: 13px;
 }
 </style>
