@@ -1,13 +1,17 @@
 <template>
   <PageHeadBack>
-    <h1 style="text-align: center">注册</h1>
-    <div class="info">密码通过加密签名(SHA-256)保护，请放心注册</div>
-    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm">
+    <div class="header">
+      <h2>创建账号 ✨</h2>
+      <p>加入我们，开启您的创作之旅</p>
+    </div>
+    
+    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" style="max-width: 600px">
       <el-form-item prop="user">
         <el-input
           type="text"
           v-model="ruleForm.user"
           autocomplete="off"
+          size="large"
           placeholder="用户名"
         ></el-input>
       </el-form-item>
@@ -17,6 +21,7 @@
           v-model="ruleForm.password"
           autocomplete="off"
           show-password
+          size="large"
           placeholder="密码"
         ></el-input>
       </el-form-item>
@@ -26,16 +31,27 @@
           v-model="ruleForm.confirmPass"
           autocomplete="off"
           show-password
+          size="large"
           placeholder="确认密码"
         ></el-input>
       </el-form-item>
 
+      <div class="security-info">
+        <el-icon><i-ep-Lock /></el-icon>
+        <span>密码通过加密签名(SHA-256)保护</span>
+      </div>
+
       <el-form-item>
         <el-button type="primary" round :disabled="!isChange" :loading="loading" @click="register"
-          >注册</el-button
+          >创建账号</el-button
         >
       </el-form-item>
     </el-form>
+    
+    <div class="login-container">
+      <el-text class="login-account">已有账号?</el-text>
+      <el-link class="login" @click="$router.push('/login')">立即登录</el-link>
+    </div>
   </PageHeadBack>
 </template>
 
@@ -161,29 +177,80 @@ export default {
 </script>
 
 <style scoped>
-body {
-  margin: 0;
+* {
+  font-family: -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue', arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  font-size: 14px;
+  -webkit-tap-highlight-color: transparent;
+  padding-left: 3px;
 }
-#login-container {
-  width: 400px;
-  height: 290px;
-  background: #e5e9f2;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin-left: -220px;
-  margin-top: -170px;
-  border-radius: 5px;
-  padding-top: 40px;
-  padding-right: 40px;
+
+.header {
+  margin-top: 5vh;
+  margin-bottom: 2rem;
 }
-.info {
-  font-size: 0.9rem;
-  color: gray;
-  text-align: center;
-  margin-bottom: 50px;
+
+h2 {
+  font-size: 30px;
+  color: #323639;
+  margin: 0px 0px 12px 0px;
 }
+
+p {
+  color: #71717a;
+}
+
+.el-form {
+  width: 95%;
+}
+
+.el-form-item {
+  padding-bottom: 0.8rem;
+}
+
+.el-input {
+  height: 38px;
+}
+
+:deep(.el-input__wrapper) {
+  border-radius: 7px;
+}
+
 .el-button {
-  width: 100%;
+  width: 95%;
+  letter-spacing: 2px;
+  margin-left: 9px;
+  margin-top: 1rem;
+}
+
+.security-info {
+  display: flex;
+  align-items: center;
+  color: #71717a;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  padding-left: 5px;
+}
+
+.security-info .el-icon {
+  margin-right: 8px;
+  font-size: 16px;
+  color: #71717a;
+}
+
+.login-container {
+  width: 95%;
+  display: flex;
+  justify-content: center;
+  margin-top: 3vh;
+}
+
+.login-account {
+  color: #323639;
+}
+
+.login {
+  color: #006be6;
 }
 </style>
