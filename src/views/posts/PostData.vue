@@ -9,6 +9,7 @@ import 'vue-amazing-ui/es/gradienttext/GradientText.css'
 import SkeletonUtil from '@/utils/components/SkeletonUtil.vue'
 import ICP from '@/utils/components/ICP.vue'
 import PublishEntry from '@/views/posts/components/PublishEntry.vue'
+import RegisterPrompt from '@/components/RegisterPrompt.vue'
 import emitter from '@/utils/emitter.js'
 
 export default {
@@ -18,7 +19,8 @@ export default {
     GradientText,
     PublishEntry,
     SkeletonUtil,
-    ICP
+    ICP,
+    RegisterPrompt,
   },
   data() {
     return {
@@ -96,6 +98,12 @@ export default {
 
 <template>
   <div class="posts-container">
+    <RegisterPrompt 
+      v-if="!currentUser.isLogin" 
+      :key="'register-prompt'"
+      v-slide-in
+    />
+    
     <!-- 使用新的发布入口组件 -->
     <PublishEntry
       @loading-begin="(flag) => (loading.publishPost = flag)"
