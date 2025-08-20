@@ -1,143 +1,173 @@
-About
-一个Vue+Flask前后端分离的社交平台
-www.xx.com
+# 社交平台项目
 
---- 
+> 一个基于 Vue + Flask 的前后端分离社交平台
 
-## 关于：
+## 🚀 快速开始
 
-本项目是基于狗书(Flask Web开发)项目不断扩展而成。
-狗书项目采用的是服务端渲染模式，但目前普遍采用前后端分离模式，所以前端改用Vue，后端用Flask， 用户身份验证采用JWT，并加入很多新功能～
--补充狗书图片
+### 前端启动
 
-在线体验：www.xx.com
+```bash
+# 1. 克隆项目
+git clone xx
 
-## 前置工作：
+# 2. 安装依赖
+npm install
 
-**1.需要七牛云凭证, qq邮箱授权码**
+# 3. 配置环境变量
+# 复制 .env.example 到 .env 并修改相关配置
+cp .env.example .env
 
-七牛云凭证共包含4项，包括accesskey, secretkey,以及bucket和域名。 
-
-accesskey, secretkey在个人信息中可以查到。Bucket则是存储空间的名称，也就是新建存储空间时候输入的名字。如果是新用户，则找到对象存储，新建存储空间。如果没有域名，七牛云对每个存储空间分配了可使用30天的测试域名。有域名直接对存储空间进行绑定即可。
-
-具体可参考如下文章：
-
-[七牛云获取qn（url、bucket、access-key、secret-key）_教程-CSDN专栏](https://download.csdn.net/blog/column/11693119/132181583)
-
-qq邮箱授权码的获取可参考如下文章：
-
-[如何拿到qq邮箱服务授权码_qq邮箱授权码-CSDN博客]([如何拿到qq邮箱服务授权码_qq邮箱授权码-CSDN博客](https://blog.csdn.net/weixin_68846313/article/details/147430548))
-
-**2.需要安装mysql,  redis**
-
-## 开发环境：
-
-前端：
-
-```
-1.克隆远程库： git clone xx
-2.进入项目目录后，安装依赖: npm install 
-3.在项目根目录创建.env文件，将.env.example文件内容复制到.env中，然后修改对应变量的值
-4.运行服务器: npm run dev
+# 4. 启动开发服务器
+npm run dev
 ```
 
-后端：
+### 后端启动
 
+```bash
+# 1. 创建虚拟环境
+
+# 2. 进入后端目录
+cd blog_backend
+
+# 3. 安装依赖
+pip install -r ./requirements/dev.txt
+
+# 4. 初始化角色（仅首次启动需要）
+flask shell
+# 在 shell 中执行:
+Role.insert_roles()
+# 然后退出 shell:
+exit()
+
+# 5. 配置环境变量
+# 复制 .env.example 到 .env 并修改相关配置
+cp .env.example .env
+
+# 6. 启动后端服务（确保 Redis 已启动）
+python flasky.py
 ```
-1.创建虚拟环境
-2.cd blog_backend
-3.pip install -r ./requirements/dev.txt
-4.执行flask shell
-5.进入到shell环境中后，执行 Role.insert_roles()；最后执行exit()退出shell环境
-6.在项目根目录创建.env文件，将.env.example文件内容复制到.env中，然后修改对应变量的值
-7.执行python flasky.py（redis需要提前启动，否则可能会报错）
-```
 
-注意： 步骤4，5只在第一次启动Flask应用时需要。后续启动只需要执行 `python flasky.py`
+## 📋 功能介绍
 
-## 生产环境：
+- **用户系统**
+  - 注册、登录
+  - 上传用户头像和兴趣封面
+  - 修改密码（支持邮箱验证码）
+  - 绑定邮箱（支持邮箱验证码）
 
-支持docker部署：
+- **内容发布**
+  - 发布文章（支持富文本和图片上传）
+  - 评论文章
+  - 点赞文章
+  - 回复评论
+  - 点赞评论
 
-1.修改后端项目中 deploy.sh文件
-2.更改第一行： source /Users/v/Documents/proj/blog/blog_front/front.sh 为前端项目在本机的绝对位置
-3.修改remote_cmd_backend命令中的环境变量值（参考前面写的修改.env环境变量）
-4.修改ROMOTE_USER和ROMOTE_HOST为远程主机的用户名和远程主机名（本项目中这两个变量存放在系统环境变量中，所以代码中未显式定义）
+- **社交功能**
+  - 用户关注
+  - 私信聊天
+  - 消息推送（@提及、评论、点赞、私信）
 
-4.cd blog_backend
-5.执行 ./deploy.sh 或者 bash ./deploy.sh
-6.可访问云服务器ip地址+端口 （本项目中访问的端口是1717，端口需要在云服务器上手动开放才能访问到）
+- **安全与管理**
+  - JWT 权限验证
+  - 用户角色管理（普通用户、内容管理员、管理员）
+  - 评论敏感词过滤
+  - 图文请求次数限制
 
-## 内置功能：
+## 🔧 项目依赖
 
-- 注册，登录，上传用户图像、兴趣封面
-- jwt权限验证
-- 修改密码/绑定邮箱支持邮箱验证码
-- 发布文章（支持带图片，富文本）
-- 评论，点赞文章
-- 回复，点赞评论
-- 用户间发送消息
-- 关注用户
-- @，评论，点赞，私信时websocket消息推送
-- 普通用户，内容管理员（可禁用评论），管理员（可禁用评论）
-- 评论敏感词过滤，图文请求限制次数
-- 七牛云图片存储
+### 前置条件
 
-## 预览页面：
+1. **七牛云账号**
+   - 需要 accesskey、secretkey、bucket 和域名
+   - 用于存储用户图像、文章图片和资料卡兴趣图片
+   - [如何获取七牛云凭证](https://download.csdn.net/blog/column/11693119/132181583)
 
-## 技术栈：
+2. **QQ 邮箱授权码**
+   - 用于账号邮件绑定和密码找回
+   - [如何获取 QQ 邮箱授权码](https://blog.csdn.net/weixin_68846313/article/details/147430548)
 
-前端： 
+3. **数据库**
+   - MySQL：存储结构化数据
+   - Redis：用于 Celery 异步任务、WebSocket 用户状态、邮件验证码和请求限制
 
-- vue3
+## 🏗️ 技术架构
 
-- vue-router
+### 前端技术栈
+- Vue 3
+- Vue Router
+- Pinia
+- Axios
+- Scss
+- Socket.io
+- Qiniu-js
 
-- pinia
-
-- axios
-
-- scss
-
-- socket-io
-
-- qiniu-js
-
-后端：
-
+### 后端技术栈
 - Flask
-
 - Flask-JWT-Extended
-
 - Flask-SQLAlchemy
-
 - Flask-Limiter
-
-- flask-socketio
-
+- Flask-SocketIO
 - Celery
+- Redis
+- MySQL
 
-- redis
+## 🌐 生产环境部署
 
-- mysql
+支持 Docker 部署：
 
-七牛云凭证：存储用户图像，文章图片，资料卡兴趣图片
+```bash
+# 1. 修改后端项目中的 deploy.sh 文件
+# 2. 更改第一行为前端项目在本机的绝对位置
+# 例如：source /path/to/your/blog_front/front.sh
 
-qq邮箱授权码：账号邮件绑定，找回密码邮件验证
+# 3. 修改环境变量和远程主机信息
+# 修改 remote_cmd_backend 命令中的环境变量值
+# 修改 ROMOTE_USER 和 ROMOTE_HOST 为远程主机的用户名和主机名
 
-redis：充当celery异步任务的代理， 存储websocket用户状态， 存储邮件验证码, Limiter请求次数限制
+# 4. 进入后端目录
+cd blog_backend
 
-mysql：存储结构化数据
+# 5. 执行部署脚本
+./deploy.sh
+```
 
-nginx：部署前端
+部署后可通过 `http://服务器IP:1717` 访问（需确保服务器已开放该端口）
 
-docker：部署Flask应用、mysql、redis
+## 📦 技术组件说明
 
-| 环境           | 支持的功能                                                    |
-| ------------ | -------------------------------------------------------- |
-| mysql        | 存储结构化数据                                                  |
-| redis        | 充当celery异步任务的代理， 存储websocket用户状态， 存储邮件验证码, Limiter请求次数限制 |
-| 七牛云凭证        | 存储用户图像，文章图片，资料卡兴趣图片                                      |
-| qq邮箱授权码      | 账号邮件绑定，找回密码邮件验证                                          |
-| nginx        | 部署前端                                                     |
-| docker(生产环境) | 部署Flask应用、mysql、redis                                    |
+| 组件 | 用途 |
+|------|------|
+| MySQL | 存储结构化数据 |
+| Redis | Celery 异步任务代理、WebSocket 用户状态、邮件验证码、请求限制 |
+| 七牛云 | 存储用户图像、文章图片、资料卡兴趣图片 |
+| QQ 邮箱 | 账号邮件绑定、找回密码邮件验证 |
+| Nginx | 部署前端 |
+| Docker | 部署 Flask 应用、MySQL、Redis（生产环境） |
+
+## 📸 项目界面预览
+
+> 以下是项目主要功能界面的截图展示
+
+<!-- 
+在此处添加项目截图，建议按以下格式：
+
+### 首页/动态流
+![首页界面](path/to/home_screenshot.png)
+
+### 文章详情
+![文章详情](path/to/post_detail_screenshot.png)
+
+### 用户个人主页
+![用户主页](path/to/profile_screenshot.png)
+
+### 消息中心
+![消息中心](path/to/message_screenshot.png)
+-->
+
+## 🔗 在线体验
+
+访问：[www.xx.com](http://www.xx.com)
+
+---
+
+*本项目基于《Flask Web 开发》(狗书)项目扩展而成，将原服务端渲染模式改为前后端分离模式。*
